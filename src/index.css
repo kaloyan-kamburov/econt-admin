@@ -1,13 +1,88 @@
+html {
+  overflow-y: auto;
+}
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.hide-legend legend {
+  opacity: 0 !important;
+}
+
+.MuiOutlinedInput-input {
+  /* cursor: pointer; */
+}
+
+.d-flex {
+  display: flex;
+}
+
+.mh-0 {
+  min-height: 0 !important;
+}
+
+.align-center {
+  align: center;
+  text-align: center;
+}
+
+.MuiDataGrid-row.Mui-selected {
+  background-color: #e6eeff !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.flex-row {
+  flex-direction: row !important;
+}
+
+.table-cell-value {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  padding: 0 5px;
+}
+
+.span-selected {
+  padding: 10px;
+}
+
+@media (max-width: 900px) {
+  .mobile-hide {
+    display: none;
+  }
+  .mobile-show {
+    display: inline-block;
+  }
+}
+@media (min-width: 900px) {
+  .mobile-hide {
+    display: inline-block;
+  }
+  .mobile-show {
+    display: none;
+  }
 }
