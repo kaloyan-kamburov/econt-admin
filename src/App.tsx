@@ -1,8 +1,14 @@
 import { Suspense } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider, QueryCache } from "react-query";
 import toast from "react-hot-toast";
 import "moment/locale/en-gb";
-import { useTranslation } from "react-i18next";
+import {
+  Routes,
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from "react-router-dom";
 
 //MUI components
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,6 +18,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 
 //Custom components
 import { AppWrapper } from "./components/layout/layout.components";
+import Loader from "./components/common/Loader/Loader.component";
+import Toast from "./components/common/Toast/Toast.component";
+
+//pages
+import PageHome from "./pages/common/home.page";
+import PageLogin from "./pages/common/login.page";
+import PageBegin from "./pages/authenticated/Begin/begin.page";
 
 //Utils
 import theme from "./styles/theme";
@@ -30,6 +43,7 @@ const queryClient = new QueryClient({
       refetchOnReconnect: false,
       retry: false,
       cacheTime: 0,
+      enabled: false,
     },
     mutations: {
       retry: false,
@@ -41,8 +55,17 @@ const queryClient = new QueryClient({
   },
 });
 
+//router
+const router = createBrowserRouter(
+  createRoutesFromElements([
+    <Route path="/login" element={<PageLogin />} />,
+    <Route path="/" element={<PageHome />} errorElement={<div>error</div>}>
+      <Route path="/home" element={<PageBegin />} />
+    </Route>,
+  ])
+);
+
 function App() {
-  const { t, i18n } = useTranslation();
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<div>loading</div>}>
@@ -50,16 +73,13 @@ function App() {
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <AppWrapper>
-              <div>
-                {t("pages.home.hi")}
-                <button onClick={() => i18n.changeLanguage("asd")}>
-                  click
-                </button>
-              </div>
+              <RouterProvider router={router} />
             </AppWrapper>
+            <Loader />
           </ThemeProvider>
         </LocalizationProvider>
       </Suspense>
+      <Toast />
     </QueryClientProvider>
   );
 }
