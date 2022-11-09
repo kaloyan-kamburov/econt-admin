@@ -1,3 +1,3 @@
-import AppWrapper from "./appWrapper.layout.component";
+import AppWrapper from "./AppWrapper.layout.component";
 
 export { AppWrapper };

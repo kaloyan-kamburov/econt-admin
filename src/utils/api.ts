@@ -1,5 +1,7 @@
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import { createBrowserHistory } from "history";
+import MockAdapter from "axios-mock-adapter";
+import toast from "react-hot-toast";
 // import { useRoutes } from "react-router-dom";
 
 const baseURL = process.env.REACT_APP_API_URL;
@@ -31,14 +33,30 @@ const history = createBrowserHistory();
 instance.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
-    if (error?.response?.status === 401 || error?.response?.status === 403) {
-      localStorage.removeItem("auth");
-      history.replace("/login");
-      history.push("/login");
-      window.location.href = "/login";
-    }
+    toast.error(error?.message || "An error occured");
     return error;
+    // if (error?.response?.status === 401 || error?.response?.status === 403) {
+    //   localStorage.removeItem("auth");
+    //   history.replace("/login");
+    //   history.push("/login");
+    //   window.location.href = "/login";
+    // }
+    // return error;
   }
 );
+
+const mock = new MockAdapter(instance, { delayResponse: 1000 });
+
+// mock.onGet("logged").reply(500, {
+//   users: [{ id: 1, name: "John Smith" }],
+// });
+
+mock.onGet("logged").networkError();
+
+// mock.onGet("logged").reply(200, {
+//   user: {
+//     name: "john",
+//   },
+// });
 
 export default instance;
