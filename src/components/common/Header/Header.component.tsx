@@ -31,16 +31,16 @@ const Header: React.FC<{}> = () => {
       <div></div>
       <SearchInputWrapper>
         <TextField
-          // InputProps={{
-          //   startAdornment: <IconSearch />,
-          // }}
+          InputProps={{
+            startAdornment: <IconSearch />,
+          }}
           // InputLabelProps={{
           //   style: {
           //     paddingLeft: "20px",
           //   },
           // }}
           sx={{ width: "100%" }}
-          size="medium"
+          size="small"
           className="with-start-icon"
           label={t("form.labels.search")}
         />
