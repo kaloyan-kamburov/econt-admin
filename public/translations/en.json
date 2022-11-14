@@ -1,7 +1,19 @@
 {
   "pages": {
     "home": {
-      "hi": "Hi"
+      "hi": "Здрасти",
+      "add": "Добави"
+    },
+    "login": {
+      "loginError": "Error login"
+    }
+  },
+  "form": {
+    "labels": {
+      "mail": "Email"
+    },
+    "validations": {
+      "required": "This field is required"
     }
   }
 }

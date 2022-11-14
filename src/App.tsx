@@ -8,6 +8,7 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
   RouterProvider,
+  BrowserRouter,
 } from "react-router-dom";
 
 //MUI components
@@ -22,15 +23,20 @@ import Loader from "./components/common/Loader/Loader.component";
 import Toast from "./components/common/Toast/Toast.component";
 
 //pages
-import PageHome from "./pages/common/home.page";
-import PageLogin from "./pages/common/login.page";
-import PageBegin from "./pages/authenticated/Begin/begin.page";
+import PageHome from "./pages/common/Home.page";
+import PageLogin from "./pages/common/Login.page";
+import PageBegin from "./pages/authenticated/Begin/Begin.page";
 
 //Utils
 import theme from "./styles/theme";
 
+//context
+import { AuthProvider } from "./context/auth";
+
 //i18n
 import "./utils/i18n";
+import ProtectedRoute from "./pages/authenticated/ProtectedRoute";
+import useAuth from "./hooks/useAuth";
 
 //React query client
 const queryClient = new QueryClient({
@@ -59,22 +65,61 @@ const queryClient = new QueryClient({
 const router = createBrowserRouter(
   createRoutesFromElements([
     <Route path="/login" element={<PageLogin />} />,
-    <Route path="/" element={<PageHome />} errorElement={<div>error</div>}>
-      <Route path="/home" element={<PageBegin />} />
-    </Route>,
+    <Route
+      path="/"
+      element={<PageHome />}
+      errorElement={<div>error</div>}
+    ></Route>,
+    <Route
+      path="/home"
+      element={
+        <ProtectedRoute>
+          <PageBegin />
+        </ProtectedRoute>
+      }
+      errorElement={<div>error</div>}
+    ></Route>,
   ])
 );
 
 function App() {
+  const { user, setUser } = useAuth();
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<div>loading</div>}>
         <LocalizationProvider dateAdapter={AdapterMoment}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <AppWrapper>
-              <RouterProvider router={router} />
-            </AppWrapper>
+            <BrowserRouter>
+              <AuthProvider>
+                <Routes>
+                  <Route path="/login" element={<PageLogin />} />
+                  <Route
+                    path="/"
+                    element={
+                      <AppWrapper>
+                        <PageHome />
+                      </AppWrapper>
+                    }
+                    errorElement={<div>error</div>}
+                  />
+                  <Route
+                    path="/home"
+                    element={
+                      <ProtectedRoute>
+                        <AppWrapper>
+                          <PageBegin />
+                        </AppWrapper>
+                      </ProtectedRoute>
+                    }
+                    errorElement={<div>error</div>}
+                  />
+                </Routes>
+              </AuthProvider>
+            </BrowserRouter>
+            {/* <AuthProvider>
+               <RouterProvider router={router} /> 
+              </AuthProvider> */}
             <Loader />
           </ThemeProvider>
         </LocalizationProvider>

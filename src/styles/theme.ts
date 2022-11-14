@@ -1,7 +1,11 @@
 import { createTheme } from "@mui/material/styles";
 
+//general colors
 export const mainColor = "#212121";
 export const lightColor = "#616161";
+export const bgHeaders = "#fff";
+export const bgSections = "#fff";
+export const linkColor = "#003F85";
 
 //toast (alert) messages
 export const informationBgColor = "#E2F6FC";
@@ -17,9 +21,18 @@ export const warningColor = "#8E5006";
 export const warningColorFocus = "#D67C11";
 
 export const errorBgColor = "#FFCFCF";
-export const errorColor = "#BE0000";
+export const errorColor = "#E24E4A";
 export const errorColorFocus = "#BE0000";
 
+//forms
+export const inputBorder = "#C4C4C4";
+export const bgForms = "#fff";
+
+//buttons
+export const btnContainedPrimaryBgColor = "#234182";
+export const btnContainedPrimaryBgColorHover = "#162a54";
+
+//theme
 export default createTheme({
   palette: {
     background: {
@@ -51,7 +64,7 @@ export default createTheme({
       "sans-serif",
     ].join(","),
     body1: {
-      fontSize: "16px",
+      fontSize: "15px",
       lineHeight: "24px",
       small: {
         fontSize: "10px",
@@ -133,50 +146,62 @@ export default createTheme({
       styleOverrides: {
         root: {
           boxShadow: "none !important",
-        },
-        contained: {
-          color: "#fff",
-          borderRadius: "3px",
+          borderRadius: "20px",
+          height: "40px",
           fontSize: "18px",
-          lineHeight: "22px",
-          padding: "7px 9px",
-          minWidth: "90px",
-          height: "38px",
-          textTransform: "none",
-          // "&:hover": {
-          //   background: "#4f6987",
-          // },
-        },
-        outlined: {
-          fontSize: "18px",
-          lineHeight: "22px",
-          padding: "7px 9px",
-          minWidth: "90px",
+          fontWeight: "300",
+          width: "100%",
           textTransform: "none",
         },
-        text: {
-          textTransform: "none",
-          "&.nav-link": {
-            color: "#fff",
-            position: "relative",
-            borderRadius: 0,
-            borderBottom: "2px solid transparent",
-            fontSize: "22px",
-            letterSpacing: "0.5px",
-
-            "&:hover": {
-              background: "#3e4956",
-            },
-
-            "&.active": {
-              borderBottom: "2px solid #fff",
-            },
-
-            "&.log-out": {
-              fontSize: "16px",
-            },
+        containedPrimary: {
+          background: btnContainedPrimaryBgColor,
+          "&:hover": {
+            background: btnContainedPrimaryBgColorHover,
           },
         },
+        // contained: {
+        //   color: "#fff",
+        //   borderRadius: "3px",
+        //   fontSize: "18px",
+        //   lineHeight: "22px",
+        //   padding: "7px 9px",
+        //   minWidth: "90px",
+        //   height: "38px",
+        //   textTransform: "none",
+        //   // "&:hover": {
+        //   //   background: "#4f6987",
+        //   // },
+        // },
+        // outlined: {
+        //   fontSize: "18px",
+        //   lineHeight: "22px",
+        //   padding: "7px 9px",
+        //   minWidth: "90px",
+        //   textTransform: "none",
+        // },
+        // text: {
+        //   textTransform: "none",
+        //   "&.nav-link": {
+        //     color: "#fff",
+        //     position: "relative",
+        //     borderRadius: 0,
+        //     borderBottom: "2px solid transparent",
+        //     fontSize: "22px",
+        //     letterSpacing: "0.5px",
+
+        //     "&:hover": {
+        //       background: "#3e4956",
+        //     },
+
+        //     "&.active": {
+        //       borderBottom: "2px solid #fff",
+        //     },
+
+        //     "&.log-out": {
+        //       fontSize: "16px",
+        //     },
+        //   },
+        // },
       },
     },
     MuiStepper: {
@@ -186,31 +211,44 @@ export default createTheme({
         },
       },
     },
-    // MuiInputLabel: {
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          // top: "8px",
+          // fontSize: "15px",
+          fontStyle: "italic",
+          // color: lightColor,
+          // transform: "translate(14px, 14px) scale(1)",
+          // "&.Mui-focused": {
+          //   transform: "translate(14px, -9px) scale(0.75)",
+          // },
+          // background: "transparent",
+        },
+      },
+    },
+    // MuiFormControl: {
     //   styleOverrides: {
     //     root: {
     //       width: "100%",
-    //       paddingTop: "10px",
-    //       paddingBottom: "10px",
-    //       transform: "none",
-    //       paddingLeft: "14px",
+    //       height: "50px",
     //     },
     //   },
     // },
-    MuiFormControl: {
-      styleOverrides: {
-        root: {
-          width: "100%",
-        },
-      },
-    },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          width: "100%",
-        },
-      },
-    },
+    // MuiInputBase: {
+    //   styleOverrides: {
+    //     root: {
+    //       height: "50px",
+    //     },
+    //   },
+    // },
+    // MuiOutlinedInput: {
+    //   styleOverrides: {
+    //     root: {
+    //       width: "100%",
+    //       minHeight: "50px",
+    //     },
+    //   },
+    // },
     MuiDialogActions: {
       styleOverrides: {
         root: {

@@ -30,33 +30,33 @@ const instance = axios.create({
 
 const history = createBrowserHistory();
 
-instance.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  (error: AxiosError) => {
-    toast.error(error?.message || "An error occured");
-    return error;
-    // if (error?.response?.status === 401 || error?.response?.status === 403) {
-    //   localStorage.removeItem("auth");
-    //   history.replace("/login");
-    //   history.push("/login");
-    //   window.location.href = "/login";
-    // }
-    // return error;
-  }
-);
+// instance.interceptors.response.use(
+//   (response: AxiosResponse) => response,
+//   (error: AxiosError) => {
+//     toast.error(error?.message || "An error occured");
+//     return error;
+//     // if (error?.response?.status === 401 || error?.response?.status === 403) {
+//     //   localStorage.removeItem("auth");
+//     //   history.replace("/login");
+//     //   history.push("/login");
+//     //   window.location.href = "/login";
+//     // }
+//     // return error;
+//   }
+// );
 
 const mock = new MockAdapter(instance, { delayResponse: 1000 });
 
 // mock.onGet("logged").reply(500, {
-//   users: [{ id: 1, name: "John Smith" }],
+//   message: "Login failed",
 // });
 
-mock.onGet("logged").networkError();
+// mock.onGet("logged").networkError();
 
-// mock.onGet("logged").reply(200, {
-//   user: {
-//     name: "john",
-//   },
-// });
+mock.onGet("logged").reply(200, {
+  user: {
+    name: "john",
+  },
+});
 
 export default instance;

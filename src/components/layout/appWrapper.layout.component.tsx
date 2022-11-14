@@ -1,5 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
+
+//components
+import Header from "../common/Header/Header.component";
+import Sidebar from "../common/Sidebar/Sidebar.component";
+
+//hooks
+import useAuth from "../../hooks/useAuth";
 
 interface Props {
   children: JSX.Element;
@@ -14,18 +21,35 @@ const OuterContainer = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100vw;
+  max-width: 100%;
+  flex: 1;
+  display: flex;
+  position: relative;
+`;
+
+const InnerContentWrapper = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
 `;
 
+const PageWrapper = styled.div`
+  flex: 1;
+  padding: 20px;
+`;
+
 const AppWrapper: React.FC<Props> = ({ children }) => {
-  // const auth = useAuth();
+  const { user } = useAuth();
 
   return (
     <OuterContainer>
-      {/* {auth.user && auth.role && <TopBar />} */}
-      <ContentWrapper>{children}</ContentWrapper>
+      <ContentWrapper>
+        {user && <Sidebar />}
+        <InnerContentWrapper>
+          {user && <Header />}
+          <PageWrapper>{children}</PageWrapper>
+        </InnerContentWrapper>
+      </ContentWrapper>
     </OuterContainer>
   );
 };

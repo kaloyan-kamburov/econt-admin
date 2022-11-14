@@ -5,22 +5,29 @@ import axios from "axios";
 // import jwt_decode from "jwt-decode";
 import toast from "react-hot-toast";
 
+type User = {
+  name: string;
+};
+
 type AuthContextType = {
   // loading: boolean;
-  user: string | null;
-  role: string | null;
-  id: string | null;
+  user: User | null;
+  // role: string | null;
+  // id: string | null;
   // login: ((loginData: LoginType) => void) | (() => void);
   // logout: () => void;
+  setUser: (user?: any) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   // loading: false,
+  // user: { name: "John" },
   user: null,
-  role: null,
-  id: null,
+  // role: null,
+  // id: null,
   // login: () => {},
   // logout: () => {},
+  setUser: () => {},
 });
 
 interface Props {
@@ -39,17 +46,19 @@ type ApiResponse = {
 };
 
 export const useProvideAuth = () => {
-  const [user, setUser] = useState<string | null>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const [id, setId] = useState<string | null>(null);
+  const [user, setLoggedUser] = useState<User | null>({
+    name: "john",
+  });
+  // const [role, setRole] = useState<string | null>(null);
+  // const [id, setId] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const lsAuth = localStorage.getItem("auth");
     const auth = lsAuth ? JSON.parse(lsAuth) : null;
-    setUser(auth?.user || null);
-    setRole(auth?.role || null);
+    // setUser(auth?.user || null);
+    // setRole(auth?.role || null);
   }, []);
 
   // const loginUser = useMutation(
@@ -98,22 +107,25 @@ export const useProvideAuth = () => {
   // const login = ({ username, password, from }: LoginType) =>
   //   loginUser.mutate({ username, password, from });
 
+  const setUser = (user: any) => setLoggedUser(user);
+
   const logout = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("access_token");
-    setUser(null);
-    setRole(null);
-    setId(null);
+    // setUser(null);
+    // setRole(null);
+    // setId(null);
     navigate("/");
     toast("Logged out.");
   };
 
   return {
     // login,
+    setUser,
     logout,
     user,
-    role,
-    id,
+    // role,
+    // id,
     // loading: loginUser.isLoading || false,
   };
 };
