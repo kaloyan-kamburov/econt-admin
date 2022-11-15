@@ -64,8 +64,8 @@ export default createTheme({
       "sans-serif",
     ].join(","),
     body1: {
-      fontSize: "15px",
-      lineHeight: "24px",
+      fontSize: "calc(3 * var(--atom))px",
+      lineHeight: "calc(4.8 * var(--atom))px",
       small: {
         fontSize: "10px",
         lineHeight: "16px",
@@ -126,6 +126,16 @@ export default createTheme({
         },
       },
     },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          fontSize: "calc(5.6 * var(--atom))",
+          lineHeight: "calc(6.4 * var(--atom))",
+          fontWeight: 300,
+          padding: "calc(3 * var(--atom)) calc(4 * var(--atom))",
+        },
+      },
+    },
     MuiToolbar: {
       styleOverrides: {
         root: {
@@ -146,9 +156,9 @@ export default createTheme({
       styleOverrides: {
         root: {
           boxShadow: "none !important",
-          borderRadius: "20px",
-          height: "40px",
-          fontSize: "18px",
+          borderRadius: "calc(4 * var(--atom))",
+          height: "calc(8 * var(--atom))",
+          fontSize: "calc(3.6 * var(--atom))",
           fontWeight: "300",
           width: "100%",
           textTransform: "none",
@@ -208,6 +218,28 @@ export default createTheme({
       styleOverrides: {
         root: {
           width: "100%",
+        },
+      },
+    },
+    MuiFilledInput: {
+      styleOverrides: {
+        root: {
+          background: bgHeaders,
+          border: `1px solid ${inputBorder}`,
+          borderRadius: "5px",
+          "&.Mui-error": {
+            borderColor: errorColor,
+            background: bgHeaders,
+          },
+          "&:after": {
+            display: "none",
+          },
+          "&:before": {
+            display: "none",
+          },
+          "&:hover": {
+            background: bgHeaders,
+          },
         },
       },
     },

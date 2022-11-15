@@ -71,6 +71,16 @@ code {
   padding: 10px;
 }
 
+:root {
+  --atom: 5px;
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --atom: 4px;
+  }
+}
+
 @media (max-width: 900px) {
   .mobile-hide {
     display: none;

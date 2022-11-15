@@ -11,17 +11,17 @@ const HeaderWrapper = styled.header`
   top: 0;
   left: 0;
   width: 100%;
-  height: 64px;
+  height: calc(12.8 * var(--atom));
   background: ${bgHeaders};
   position: sticky;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 calc(4 * var(--atom));
 `;
 
 const SearchInputWrapper = styled.div`
-  width: 270px;
+  width: calc(54 * var(--atom));
 `;
 
 const Header: React.FC<{}> = () => {

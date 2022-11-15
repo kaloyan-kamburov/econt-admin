@@ -18,7 +18,7 @@ import {
 
 const ItemElement = styled.div`
   background: ${bgSections};
-  padding: 20px;
+  padding: calc(4 * var(--atom));
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   min-height: 258px;
@@ -99,7 +99,7 @@ const ItemElement = styled.div`
     flex-direction: column;
 
     button {
-      font-size: 20px;
+      font-size: calc(4 * var(--atom));
       line-height: 27px;
       padding: 0 15px;
     }
@@ -108,15 +108,26 @@ const ItemElement = styled.div`
 
 interface Props {
   isAdd?: boolean;
+  addItem?: () => void;
+  editItem?: () => void;
+  deleteItem?: () => void;
 }
 
-const Item: React.FC<Props> = ({ isAdd = false }) => {
+const Item: React.FC<Props> = ({
+  isAdd = false,
+  addItem = () => {},
+  editItem = () => {},
+  deleteItem = () => {},
+}) => {
   const { t } = useTranslation();
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
 
   return (
     <ItemElement className={isAdd ? "btn-add" : ""}>
-      <div className="content">
+      <div
+        className="content"
+        onClick={() => (isAdd && addItem ? addItem() : undefined)}
+      >
         {isAdd ? (
           <>
             <img alt="Icon plus" src={iconPlus} />
@@ -156,7 +167,12 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
                   color="primary"
                   size="small"
                   sx={{ borderRadius: 0 }}
-                  onClick={() => console.log("dsa")}
+                  onClick={() => {
+                    if (editItem) {
+                      editItem();
+                    }
+                    setMenuOpened(false);
+                  }}
                 >
                   {t("common.change")}
                 </Button>
@@ -165,7 +181,12 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
                   color="error"
                   size="small"
                   sx={{ borderRadius: 0 }}
-                  onClick={() => console.log("dsa")}
+                  onClick={() => {
+                    if (deleteItem) {
+                      deleteItem();
+                    }
+                    setMenuOpened(false);
+                  }}
                 >
                   {t("common.delete")}
                 </Button>

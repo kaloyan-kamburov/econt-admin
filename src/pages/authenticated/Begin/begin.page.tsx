@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 
 //MUI components
 import Grid from "@mui/material/Grid";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 //custom components
 import Item from "./Item.component";
@@ -106,15 +112,50 @@ const ItemAdd = styled.div`
 
 const PageBegin: React.FC<{}> = () => {
   const { t } = useTranslation();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   return (
-    <Grid container spacing={3}>
-      <Grid item lg={3} md={4} xs={12}>
-        <Item isAdd />
+    <>
+      <Grid container spacing={3}>
+        <Grid item lg={3} md={4} xs={12}>
+          <Item isAdd addItem={() => setModalOpen(true)} />
+        </Grid>
+        <Grid item lg={3} md={4} xs={12}>
+          <Item
+            editItem={() => setModalOpen(true)}
+            deleteItem={() => setModalOpen(true)}
+          />
+        </Grid>
       </Grid>
-      <Grid item lg={3} md={4} xs={12}>
-        <Item />
-      </Grid>
-    </Grid>
+      <Dialog
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        aria-labelledby="customized-dialog-title"
+        open={modalOpen}
+      >
+        <DialogTitle>
+          {t("pages.home.addCategory")}
+          <IconButton
+            aria-label="close"
+            onClick={() => setModalOpen(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>test</DialogContent>
+        <DialogActions>
+          {/* <Button autoFocus onClick={handleClose}>
+            Save changes
+          </Button> */}
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

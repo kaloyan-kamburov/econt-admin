@@ -20,17 +20,23 @@ import Input from "../../components/form/Input/Input.component";
 import useAuth from "../../hooks/useAuth";
 
 const LoginWrapper = styled.div`
-  padding: 48px 20px;
+  padding: calc(9.6 * var(--atom)) calc(4 * var(--atom));
   margin: auto;
   background: ${bgForms};
-  border-radius: 8px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: calc(1.6 * var(--atom));
+  box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom))
+    rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 414px;
+  max-width: calc(82.8 * var(--atom));
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+
+  > svg {
+    max-width: calc(30.8 * var(--atom));
+    max-height: calc(6.4 * var(--atom));
+  }
 
   form {
     width: 100%;
