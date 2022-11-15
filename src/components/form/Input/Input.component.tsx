@@ -62,6 +62,7 @@ const Input: React.FC<Props> = ({
             name={props.input.name}
             value={props.input.value}
             placeholder={placeholder}
+            variant="filled"
             onChange={(e) => {
               if (type === "number") {
                 if (e.target.value) {
