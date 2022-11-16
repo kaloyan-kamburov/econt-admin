@@ -1,31 +1,25 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 
 //MUI components
 import Grid from "@mui/material/Grid";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
+import Button from "@mui/material/Button";
 
 //custom components
 import Item from "./Item.component";
+import AddCategory from "./AddCategory.component";
+import Modal from "../../../components/common/Modal/Modal.component";
+import Loader from "../../../components/common/Loader/Loader.component";
 
 //icons
-import iconPlus from "../../../Icons/plus.svg";
+import iconTrash from "../../../Icons/trash.svg";
 
 //hooks
 import useAuth from "../../../hooks/useAuth";
 
 //theme
-import {
-  bgSections,
-  btnContainedPrimaryBgColor,
-  linkColor,
-} from "../../../styles/theme";
+import { bgSections, btnContainedPrimaryBgColor, linkColor } from "../../../styles/theme";
 
 const ItemAdd = styled.div`
   background: ${bgSections};
@@ -112,49 +106,68 @@ const ItemAdd = styled.div`
 
 const PageBegin: React.FC<{}> = () => {
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalCreateCategory, setModalCreateCategory] = useState<boolean>(false);
+  const [modalDeleteCategory, setModalDeleteCategory] = useState<boolean>(false);
+  const [categoryForDelete, setCategoryForDelete] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item lg={3} md={4} xs={12}>
-          <Item isAdd addItem={() => setModalOpen(true)} />
+        <Grid item xl={3} lg={4} md={6} xs={12}>
+          <Item isAdd addItem={() => setModalCreateCategory(true)} />
         </Grid>
-        <Grid item lg={3} md={4} xs={12}>
+        <Grid item xl={3} lg={4} md={6} xs={12}>
           <Item
-            editItem={() => setModalOpen(true)}
-            deleteItem={() => setModalOpen(true)}
+            editItem={() => setModalCreateCategory(true)}
+            deleteItem={() => {
+              setModalDeleteCategory(true);
+              setCategoryForDelete("Услуги от България");
+            }}
           />
         </Grid>
       </Grid>
-      <Dialog
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        aria-labelledby="customized-dialog-title"
-        open={modalOpen}
-      >
-        <DialogTitle>
-          {t("pages.home.addCategory")}
-          <IconButton
-            aria-label="close"
-            onClick={() => setModalOpen(false)}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>test</DialogContent>
-        <DialogActions>
-          {/* <Button autoFocus onClick={handleClose}>
-            Save changes
-          </Button> */}
-        </DialogActions>
-      </Dialog>
+      {modalCreateCategory && (
+        <Modal title={t("pages.home.addCategory")} closeFn={() => setModalCreateCategory(false)}>
+          <>
+            <AddCategory />
+            <Loader showExplicit inModal />
+          </>
+        </Modal>
+      )}
+      {modalDeleteCategory && (
+        <Modal closeFn={() => setModalDeleteCategory(false)}>
+          <>
+            <img className="icon-delete" src={iconTrash} alt="delete" />
+            <h6>{t("pages.home.deleteCategory")}</h6>
+            <span>
+              <Trans i18nKey="pages.home.deleteCategoryQuestion" tOptions={{ category: categoryForDelete }}>
+                <strong />
+              </Trans>
+            </span>
+            <div className="btns-wrapper">
+              <Button
+                variant="contained"
+                color="error"
+                type="submit"
+                size="large"
+                onClick={() => {
+                  setLoading(true);
+                  setTimeout(() => {
+                    setLoading(false);
+                    setModalDeleteCategory(false);
+                  }, 1000);
+                }}
+              >
+                {t("common.delete")}
+              </Button>
+              <Button variant="contained" color="info" type="submit" size="large" onClick={() => setModalDeleteCategory(false)}>
+                {t("common.cancel")}
+              </Button>
+            </div>
+            {loading && <Loader showExplicit inModal />}
+          </>
+        </Modal>
+      )}
     </>
   );
 };

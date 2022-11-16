@@ -3,6 +3,8 @@ import { createTheme } from "@mui/material/styles";
 //general colors
 export const mainColor = "#212121";
 export const lightColor = "#616161";
+export const infoColor = "#D7D7D7";
+export const infoColorContast = "#424242";
 export const bgHeaders = "#fff";
 export const bgSections = "#fff";
 export const linkColor = "#003F85";
@@ -45,27 +47,20 @@ export default createTheme({
     error: {
       main: errorColor,
     },
+    info: {
+      main: infoColor,
+      contrastText: infoColorContast,
+    },
   },
   typography: {
     allVariants: {
       color: mainColor,
     },
-    fontFamily: [
-      '"Open Sans"',
-      "-apple-system, BlinkMacSystemFont",
-      '"Segoe UI"',
-      '"Roboto"',
-      '"Oxygen"',
-      '"Ubuntu"',
-      '"Cantarell"',
-      '"Fira Sans"',
-      '"Droid Sans"',
-      '"Helvetica Neue"',
-      "sans-serif",
-    ].join(","),
+    fontFamily: ['"Open Sans"', "-apple-system, BlinkMacSystemFont", '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Cantarell"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', "sans-serif"].join(","),
     body1: {
       fontSize: "calc(3 * var(--atom))px",
       lineHeight: "calc(4.8 * var(--atom))px",
+      fontWeight: "300 !important",
       small: {
         fontSize: "10px",
         lineHeight: "16px",
@@ -122,7 +117,10 @@ export default createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          overflow: "visible",
+          "&.big": {
+            width: "100%",
+            maxWidth: "calc(138 * var(--atom))",
+          },
         },
       },
     },
@@ -133,6 +131,22 @@ export default createTheme({
           lineHeight: "calc(6.4 * var(--atom))",
           fontWeight: 300,
           padding: "calc(3 * var(--atom)) calc(4 * var(--atom))",
+          display: "flex",
+          justifyContent: "space-between",
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          paddingBottom: "20px",
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          padding: "calc(6.4 * var(--atom))",
         },
       },
     },
@@ -167,6 +181,12 @@ export default createTheme({
           background: btnContainedPrimaryBgColor,
           "&:hover": {
             background: btnContainedPrimaryBgColorHover,
+          },
+        },
+        containedInfo: {
+          background: infoColor,
+          "&:hover": {
+            color: bgHeaders,
           },
         },
         // contained: {
@@ -281,13 +301,6 @@ export default createTheme({
     //     },
     //   },
     // },
-    MuiDialogActions: {
-      styleOverrides: {
-        root: {
-          paddingBottom: "20px",
-        },
-      },
-    },
     MuiButtonBase: {
       styleOverrides: {
         root: {

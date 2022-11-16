@@ -2,7 +2,9 @@
   "pages": {
     "home": {
       "add": "Добави",
-      "addCategory": "Създай нова категория"
+      "addCategory": "Създай нова категория",
+      "deleteCategory": "Изтриване на категория",
+      "deleteCategoryQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{category}}\"</0>?"
     },
     "login": {
       "loginError": "Грешка при влизане"
@@ -20,6 +22,7 @@
   },
   "common": {
     "change": "Промени",
-    "delete": "Изтрий"
+    "delete": "Изтрий",
+    "cancel": "Отказ"
   }
 }
