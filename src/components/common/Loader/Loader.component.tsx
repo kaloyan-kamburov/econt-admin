@@ -30,6 +30,7 @@ const InnerWrapper = styled.div`
     top: 50%;
     left: 50%;
     margin: -25px;
+    position: absolute;
   }
   &.big {
     span {

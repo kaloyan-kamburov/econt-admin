@@ -152,7 +152,7 @@ const PageBegin: React.FC<{}> = () => {
           closeFn={() => setModalCreateCategory(false)}
         >
           <>
-            <AddCategory />
+            <AddCategory closeFn={() => setModalCreateCategory(false)} />
             {/* <Loader showExplicit inModal /> */}
           </>
         </Modal>

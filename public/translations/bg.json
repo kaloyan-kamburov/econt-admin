@@ -27,6 +27,8 @@
   "common": {
     "change": "Промени",
     "delete": "Изтрий",
-    "cancel": "Отказ"
+    "cancel": "Отказ",
+    "changeAndPublish": "Промени и публикувай",
+    "save": "Запази"
   }
 }

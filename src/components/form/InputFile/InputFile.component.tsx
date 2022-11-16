@@ -213,6 +213,7 @@ const InputFileWrapper = styled.div`
   padding: calc(4 * var(--atom));
   border: 1px dashed ${inputBorder};
   border-radius: calc(2.4 * var(--atom));
+  position: relative;
 
   input {
     position: absolute;
@@ -241,6 +242,31 @@ const InputFileWrapper = styled.div`
       line-height: calc(3.6 * var(--atom));
       margin-top: calc(1.2 * var(--atom));
     }
+  }
+  &.error {
+    border-color: ${errorColor};
+  }
+`;
+
+const ErrorWrapper = styled.div`
+  height: calc(4.6 * var(--atom));
+  font-size: calc(2.4 * var(--atom));
+  color: ${errorColor};
+  padding-left: calc(2.8 * var(--atom));
+  display: flex;
+  align-items: center;
+`;
+
+const FilePreview = styled.div`
+  width: calc(25 * var(--atom));
+  height: calc(25 * var(--atom));
+  margin-bottom: calc(4 * var(--atom));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img {
+    max-width: 100%;
+    max-height: 100%;
   }
 `;
 
@@ -301,24 +327,48 @@ const InputFile: React.FC<Props> = ({
   disabled = false,
   // form,
 }) => {
+  const [file, setFile] = useState<any>(null);
+
   return (
     <Field
       name={name}
-      validate={composeValidators(...(validate || []))}
+      // validate={composeValidators(...(validate || []))}
     >
-      {(props: any) => (
-        <InputFileWrapper>
-          <input
-            type="file"
-            name={name}
-          />
-          <div className="input-file-content">
-            {renderIcon(isImage)}
-            {label && <label htmlFor={name}>{label}</label>}
-            {desc && <span className="desc">{desc}</span>}
-          </div>
-        </InputFileWrapper>
-      )}
+      {(props: any) => {
+        return (
+          <>
+            {file && (
+              <FilePreview>
+                {isImage && (
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt="file"
+                  />
+                )}
+              </FilePreview>
+            )}
+
+            <InputFileWrapper className={props.meta.touched && props.meta.error ? "error" : ""}>
+              <input
+                type="file"
+                name={name}
+                accept={accept}
+                // {...props.input}
+                onChange={(e: any) => {
+                  props.input.onChange(e.target.files?.[0]);
+                  setFile(e.target.files?.[0] || null);
+                }}
+              />
+              <div className="input-file-content">
+                {renderIcon(isImage)}
+                {label && <label htmlFor={name}>{label}</label>}
+                {desc && <span className="desc">{desc}</span>}
+              </div>
+            </InputFileWrapper>
+            <ErrorWrapper>{props.meta.touched && props.meta.error && props.meta.error}</ErrorWrapper>
+          </>
+        );
+      }}
     </Field>
   );
 };
