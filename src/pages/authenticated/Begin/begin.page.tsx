@@ -105,18 +105,37 @@ const ItemAdd = styled.div`
 `;
 
 const PageBegin: React.FC<{}> = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [modalCreateCategory, setModalCreateCategory] = useState<boolean>(false);
   const [modalDeleteCategory, setModalDeleteCategory] = useState<boolean>(false);
   const [categoryForDelete, setCategoryForDelete] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+
   return (
     <>
-      <Grid container spacing={3}>
-        <Grid item xl={3} lg={4} md={6} xs={12}>
-          <Item isAdd addItem={() => setModalCreateCategory(true)} />
+      <Grid
+        container
+        spacing={3}
+      >
+        <Grid
+          item
+          xl={3}
+          lg={4}
+          md={6}
+          xs={12}
+        >
+          <Item
+            isAdd
+            addItem={() => setModalCreateCategory(true)}
+          />
         </Grid>
-        <Grid item xl={3} lg={4} md={6} xs={12}>
+        <Grid
+          item
+          xl={3}
+          lg={4}
+          md={6}
+          xs={12}
+        >
           <Item
             editItem={() => setModalCreateCategory(true)}
             deleteItem={() => {
@@ -126,21 +145,32 @@ const PageBegin: React.FC<{}> = () => {
           />
         </Grid>
       </Grid>
+
       {modalCreateCategory && (
-        <Modal title={t("pages.home.addCategory")} closeFn={() => setModalCreateCategory(false)}>
+        <Modal
+          title={t("pages.home.addCategory")}
+          closeFn={() => setModalCreateCategory(false)}
+        >
           <>
             <AddCategory />
-            <Loader showExplicit inModal />
+            {/* <Loader showExplicit inModal /> */}
           </>
         </Modal>
       )}
       {modalDeleteCategory && (
         <Modal closeFn={() => setModalDeleteCategory(false)}>
           <>
-            <img className="icon-delete" src={iconTrash} alt="delete" />
+            <img
+              className="icon-delete"
+              src={iconTrash}
+              alt="delete"
+            />
             <h6>{t("pages.home.deleteCategory")}</h6>
             <span>
-              <Trans i18nKey="pages.home.deleteCategoryQuestion" tOptions={{ category: categoryForDelete }}>
+              <Trans
+                i18nKey="pages.home.deleteCategoryQuestion"
+                tOptions={{ category: categoryForDelete }}
+              >
                 <strong />
               </Trans>
             </span>
@@ -160,11 +190,22 @@ const PageBegin: React.FC<{}> = () => {
               >
                 {t("common.delete")}
               </Button>
-              <Button variant="contained" color="info" type="submit" size="large" onClick={() => setModalDeleteCategory(false)}>
+              <Button
+                variant="contained"
+                color="info"
+                type="submit"
+                size="large"
+                onClick={() => setModalDeleteCategory(false)}
+              >
                 {t("common.cancel")}
               </Button>
             </div>
-            {loading && <Loader showExplicit inModal />}
+            {loading && (
+              <Loader
+                showExplicit
+                inModal
+              />
+            )}
           </>
         </Modal>
       )}

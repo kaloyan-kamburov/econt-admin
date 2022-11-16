@@ -24,8 +24,7 @@ const LoginWrapper = styled.div`
   margin: auto;
   background: ${bgForms};
   border-radius: calc(1.6 * var(--atom));
-  box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom))
-    rgba(0, 0, 0, 0.15);
+  box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom)) rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: calc(82.8 * var(--atom));
   display: flex;
@@ -63,9 +62,19 @@ const PageLogin: React.FC<Props> = () => {
         onSubmit={() => {}}
         initialValues={{}}
         render={({ handleSubmit, invalid, errors, values, form }) => (
-          <form autoComplete="off" onSubmit={handleSubmit}>
-            <Grid container spacing={2} sx={{ marginTop: "24px" }}>
-              <Grid item xs={12}>
+          <form
+            autoComplete="off"
+            onSubmit={handleSubmit}
+          >
+            <Grid
+              container
+              spacing={2}
+              sx={{ marginTop: "24px" }}
+            >
+              <Grid
+                item
+                xs={12}
+              >
                 <Input
                   name="name"
                   label={t("form.labels.mail")}
@@ -73,7 +82,10 @@ const PageLogin: React.FC<Props> = () => {
                   required
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid
+                item
+                xs={12}
+              >
                 <Button
                   variant="contained"
                   color="primary"

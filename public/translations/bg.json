@@ -4,7 +4,8 @@
       "add": "Добави",
       "addCategory": "Създай нова категория",
       "deleteCategory": "Изтриване на категория",
-      "deleteCategoryQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{category}}\"</0>?"
+      "deleteCategoryQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{category}}\"</0>?",
+      "uploadFileDesc": "Максималния размер е N/A, позволените разширения са .svg, .jpg, .png и .gif"
     },
     "login": {
       "loginError": "Грешка при влизане"
@@ -14,7 +15,10 @@
     "labels": {
       "mail": "Мейл адрес",
       "loginWithSSO": "Вход със SSO",
-      "search": "Търсене"
+      "search": "Търсене",
+      "categoryName": "Заглавие",
+      "description": "Описание",
+      "uploadImage": "Избери или качи изображение"
     },
     "validations": {
       "required": "Това поле е задължително"

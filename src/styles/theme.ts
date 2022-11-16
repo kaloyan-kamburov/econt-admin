@@ -146,7 +146,7 @@ export default createTheme({
     MuiDialogContent: {
       styleOverrides: {
         root: {
-          padding: "calc(6.4 * var(--atom))",
+          padding: "calc(4 * var(--atom))",
         },
       },
     },
