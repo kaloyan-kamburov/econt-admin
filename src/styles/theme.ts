@@ -8,6 +8,7 @@ export const infoColorContast = "#424242";
 export const bgHeaders = "#fff";
 export const bgSections = "#fff";
 export const linkColor = "#003F85";
+export const linkMenuHoverBg = "#F5F5F5";
 
 //toast (alert) messages
 export const informationBgColor = "#E2F6FC";
@@ -229,6 +230,74 @@ export default createTheme({
             fontSize: "calc(3.6 * var(--atom))",
             padding: "calc(2.4 * var(--atom)) calc(3.2 * var(--atom))",
           },
+        },
+      },
+    },
+    MuiAccordion: {
+      styleOverrides: {
+        root: {
+          boxShadow: "none",
+          ".MuiButtonBase-root": {
+            padding: "0 calc(3.2 * var(--atom))",
+            margin: "0 0 calc(1.2 * var(--atom)) 0",
+          },
+          ".MuiAccordion-rounded": {
+            paddingLeft: "calc(3.2 * var(--atom))",
+          },
+        },
+        region: {
+          a: {
+            fontSize: "calc(2.6 * var(--atom))",
+            lineHeight: "calc(3.4 * var(--atom))",
+            textDecoration: "none",
+            width: "100%",
+            padding: "calc(1.6 * var(--atom)) calc(3.2 * var(--atom))",
+            color: mainColor,
+            display: "flex",
+            "&:hover": {
+              background: linkMenuHoverBg,
+            },
+          },
+        },
+      },
+    },
+    MuiAccordionSummary: {
+      styleOverrides: {
+        root: {
+          fontSize: "calc(3 * var(--atom))",
+          lineHeight: "calc(3.4 * var(--atom))",
+          minHeight: "calc(5 * var(--atom)) 0",
+          "&.Mui-expanded": {
+            minHeight: "calc(5 * var(--atom)) 0",
+
+            "&:first-of-type": {
+              minHeight: "calc(5 * var(--atom)) 0",
+            },
+          },
+
+          "&:hover": {
+            background: linkMenuHoverBg,
+          },
+        },
+        content: {
+          margin: "calc(1.6 * var(--atom)) 0",
+          "&.Mui-expanded": {
+            margin: "calc(1.6 * var(--atom)) 0",
+          },
+        },
+      },
+    },
+    MuiAccordionDetails: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+        },
+      },
+    },
+    MuiCollapse: {
+      styleOverrides: {
+        root: {
+          margin: "calc(3.2 * calc(--atom)) 0",
         },
       },
     },

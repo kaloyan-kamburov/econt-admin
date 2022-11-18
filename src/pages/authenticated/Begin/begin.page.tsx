@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 //custom components
 import Item from "./Item.component";
 import AddCategory from "./AddCategory.component";
+import EditCategory from "./EditCategory.component";
 import Modal from "../../../components/common/Modal/Modal.component";
 import Loader from "../../../components/common/Loader/Loader.component";
 
@@ -107,6 +108,7 @@ const ItemAdd = styled.div`
 const PageBegin: React.FC<{}> = () => {
   const { t, i18n } = useTranslation();
   const [modalCreateCategory, setModalCreateCategory] = useState<boolean>(false);
+  const [modalEditCategory, setModalEditCategory] = useState<boolean>(false);
   const [modalDeleteCategory, setModalDeleteCategory] = useState<boolean>(false);
   const [categoryForDelete, setCategoryForDelete] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -137,7 +139,7 @@ const PageBegin: React.FC<{}> = () => {
           xs={12}
         >
           <Item
-            editItem={() => setModalCreateCategory(true)}
+            editItem={() => setModalEditCategory(true)}
             deleteItem={() => {
               setModalDeleteCategory(true);
               setCategoryForDelete("Услуги от България");
@@ -153,6 +155,17 @@ const PageBegin: React.FC<{}> = () => {
         >
           <>
             <AddCategory closeFn={() => setModalCreateCategory(false)} />
+            {/* <Loader showExplicit inModal /> */}
+          </>
+        </Modal>
+      )}
+      {modalEditCategory && (
+        <Modal
+          title={t("pages.home.changeCategory")}
+          closeFn={() => setModalEditCategory(false)}
+        >
+          <>
+            <EditCategory closeFn={() => setModalEditCategory(false)} />
             {/* <Loader showExplicit inModal /> */}
           </>
         </Modal>

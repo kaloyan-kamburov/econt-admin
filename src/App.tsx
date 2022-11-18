@@ -2,14 +2,7 @@ import { Suspense } from "react";
 import { QueryClient, QueryClientProvider, QueryCache } from "react-query";
 import toast from "react-hot-toast";
 import "moment/locale/en-gb";
-import {
-  Routes,
-  Route,
-  createBrowserRouter,
-  createRoutesFromElements,
-  RouterProvider,
-  BrowserRouter,
-} from "react-router-dom";
+import { Routes, Route, createBrowserRouter, createRoutesFromElements, RouterProvider, BrowserRouter } from "react-router-dom";
 
 //MUI components
 import CssBaseline from "@mui/material/CssBaseline";
@@ -26,6 +19,7 @@ import Toast from "./components/common/Toast/Toast.component";
 import PageHome from "./pages/common/Home.page";
 import PageLogin from "./pages/common/Login.page";
 import PageBegin from "./pages/authenticated/Begin/Begin.page";
+import PageCategory from "./pages/authenticated/Category/Category.page";
 
 //Utils
 import theme from "./styles/theme";
@@ -64,7 +58,10 @@ const queryClient = new QueryClient({
 //router
 const router = createBrowserRouter(
   createRoutesFromElements([
-    <Route path="/login" element={<PageLogin />} />,
+    <Route
+      path="/login"
+      element={<PageLogin />}
+    />,
     <Route
       path="/"
       element={<PageHome />}
@@ -93,7 +90,10 @@ function App() {
             <BrowserRouter>
               <AuthProvider>
                 <Routes>
-                  <Route path="/login" element={<PageLogin />} />
+                  <Route
+                    path="/login"
+                    element={<PageLogin />}
+                  />
                   <Route
                     path="/"
                     element={
@@ -101,7 +101,6 @@ function App() {
                         <PageHome />
                       </AppWrapper>
                     }
-                    errorElement={<div>error</div>}
                   />
                   <Route
                     path="/home"
@@ -112,7 +111,16 @@ function App() {
                         </AppWrapper>
                       </ProtectedRoute>
                     }
-                    errorElement={<div>error</div>}
+                  />
+                  <Route
+                    path="/category/:id"
+                    element={
+                      <ProtectedRoute>
+                        <AppWrapper>
+                          <PageCategory />
+                        </AppWrapper>
+                      </ProtectedRoute>
+                    }
                   />
                 </Routes>
               </AuthProvider>
