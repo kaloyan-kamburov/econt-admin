@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useTranslation, Trans } from "react-i18next";
+import React from "react";
 
 //MUI components
 import Grid from "@mui/material/Grid";
@@ -10,8 +9,6 @@ import Folder from "./Folder.component";
 interface Props {}
 
 const PageCategory: React.FC<Props> = () => {
-  const { t } = useTranslation();
-
   return (
     <>
       <Grid

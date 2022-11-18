@@ -11,11 +11,11 @@ import Loader from "../../../components/common/Loader/Loader.component";
 import { IconTrash } from "../../../Icons/icons";
 
 interface Props {
-  categoryForDelete: string;
+  category: string;
   closeFn: () => void;
 }
 
-const DeleteCategory: React.FC<Props> = ({ categoryForDelete, closeFn }) => {
+const DeleteCategory: React.FC<Props> = ({ category, closeFn }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
   return (
@@ -25,7 +25,7 @@ const DeleteCategory: React.FC<Props> = ({ categoryForDelete, closeFn }) => {
       <span>
         <Trans
           i18nKey="pages.home.deleteCategoryQuestion"
-          tOptions={{ category: categoryForDelete }}
+          tOptions={{ category }}
         >
           <strong />
         </Trans>

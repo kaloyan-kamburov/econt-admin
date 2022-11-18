@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 //icons
 import { IconPlus } from "../../../Icons/icons";
@@ -24,6 +25,7 @@ const CategoryWrapper = styled.div`
   padding: calc(4 * var(--atom));
   box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom)) rgba(0, 0, 0, 0.15);
   border-radius: calc(1.6 * var(--atom));
+  height: 100%;
   min-height: calc(51.6 * var(--atom));
   display: flex;
   align-items: center;
@@ -44,6 +46,13 @@ const CategoryWrapper = styled.div`
     align-items: center;
     text-align: center;
     font-weight: 300;
+
+    .inner-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
 
     img {
       margin-bottom: calc(1.6 * var(--atom));
@@ -125,11 +134,11 @@ interface Props {
 
 const Item: React.FC<Props> = ({ isAdd = false }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
   const [modalCreateCategory, setModalCreateCategory] = useState<boolean>(false);
   const [modalEditCategory, setModalEditCategory] = useState<boolean>(false);
   const [modalDeleteCategory, setModalDeleteCategory] = useState<boolean>(false);
-  const [categoryForDelete, setCategoryForDelete] = useState<string>("");
 
   return (
     <>
@@ -145,16 +154,21 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
             </>
           ) : (
             <>
-              <img
-                alt="Icon map"
-                src={iconMap}
-              />
-              <span className="title">
-                Услуги от България
-                <br />
-                (Непубликуван)
-              </span>
-              <span className="description">Lorem ipsum dolor sit amet</span>
+              <div
+                className="inner-content"
+                onClick={() => navigate("/category/1")}
+              >
+                <img
+                  alt="Icon map"
+                  src={iconMap}
+                />
+                <span className="title">
+                  Услуги от България
+                  <br />
+                  (Непубликуван)
+                </span>
+                <span className="description">Lorem ipsum dolor sit amet</span>
+              </div>
 
               <IconButton
                 className={`btn-menu${menuOpened ? " active" : ""}`}
@@ -232,15 +246,13 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
         <Modal
           closeFn={() => {
             setModalDeleteCategory(false);
-            setCategoryForDelete("");
           }}
         >
           <DeleteCategory
             closeFn={() => {
               setModalDeleteCategory(false);
-              setCategoryForDelete("");
             }}
-            categoryForDelete={categoryForDelete}
+            category={"test"}
           />
         </Modal>
       )}
