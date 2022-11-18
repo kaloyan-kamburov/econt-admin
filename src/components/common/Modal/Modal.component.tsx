@@ -8,7 +8,7 @@ import DialogContent from "@mui/material/DialogContent";
 import IconButton from "@mui/material/IconButton";
 
 //icons
-import iconClose from "../../../Icons/close.svg";
+import { IconClose } from "../../../Icons/icons";
 
 //theme
 import { linkColor } from "../../../styles/theme";
@@ -69,8 +69,12 @@ const Modal: React.FC<Props> = ({ title = "", closeFn = () => {}, children, smal
     >
       <DialogTitle>
         {title}
-        <IconButton aria-label="close" onClick={closeFn} sx={{ marginLeft: "auto" }}>
-          <img src={iconClose} alt="close" />
+        <IconButton
+          aria-label="close"
+          onClick={closeFn}
+          sx={{ marginLeft: "auto" }}
+        >
+          <IconClose />
         </IconButton>
       </DialogTitle>
       <DialogContent>

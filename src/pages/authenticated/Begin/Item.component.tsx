@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 
 //icons
+import { IconPlus } from "../../../Icons/icons";
 import iconMap from "../../../Icons/map.svg";
-import iconPlus from "../../../Icons/plus.svg";
 
 //MUI component
 import Button from "@mui/material/Button";
@@ -122,10 +122,7 @@ const Item: React.FC<Props> = ({ isAdd = false, addItem = () => {}, editItem = (
       <div className="content">
         {isAdd ? (
           <>
-            <img
-              alt="Icon plus"
-              src={iconPlus}
-            />
+            <IconPlus />
             <span className="text-add">{t("pages.home.add")}</span>
           </>
         ) : (

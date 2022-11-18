@@ -14,7 +14,7 @@ import Modal from "../../../components/common/Modal/Modal.component";
 import Loader from "../../../components/common/Loader/Loader.component";
 
 //icons
-import iconTrash from "../../../Icons/trash.svg";
+import { IconTrash } from "../../../Icons/icons";
 
 //hooks
 import useAuth from "../../../hooks/useAuth";
@@ -173,11 +173,7 @@ const PageBegin: React.FC<{}> = () => {
       {modalDeleteCategory && (
         <Modal closeFn={() => setModalDeleteCategory(false)}>
           <>
-            <img
-              className="icon-delete"
-              src={iconTrash}
-              alt="delete"
-            />
+            <IconTrash />
             <h6>{t("pages.home.deleteCategory")}</h6>
             <span>
               <Trans
