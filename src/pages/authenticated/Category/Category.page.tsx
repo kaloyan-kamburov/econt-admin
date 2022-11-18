@@ -21,7 +21,7 @@ const PageCategory: React.FC<Props> = () => {
         <Grid
           item
           xl={2}
-          lg={2}
+          lg={3}
           md={4}
           xs={12}
         >
@@ -33,7 +33,7 @@ const PageCategory: React.FC<Props> = () => {
         <Grid
           item
           xl={2}
-          lg={2}
+          lg={3}
           md={4}
           xs={12}
         >
