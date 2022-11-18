@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import { useTranslation, Trans } from "react-i18next";
 
 //MUI components
@@ -11,6 +10,8 @@ import Folder from "./Folder.component";
 interface Props {}
 
 const PageCategory: React.FC<Props> = () => {
+  const { t } = useTranslation();
+
   return (
     <>
       <Grid
@@ -25,9 +26,19 @@ const PageCategory: React.FC<Props> = () => {
           md={4}
           xs={12}
         >
+          <Folder isAdd />
+        </Grid>
+        <Grid
+          item
+          xl={2}
+          lg={3}
+          md={4}
+          xs={12}
+        >
           <Folder
-            isAdd
-            addItem={() => {}}
+            archived={false}
+            published
+            title="Населени места"
           />
         </Grid>
         <Grid
@@ -38,8 +49,22 @@ const PageCategory: React.FC<Props> = () => {
           xs={12}
         >
           <Folder
-            addItem={() => {}}
+            archived={false}
+            published={false}
             title="Населени места"
+          />
+        </Grid>
+        <Grid
+          item
+          xl={2}
+          lg={3}
+          md={4}
+          xs={12}
+        >
+          <Folder
+            archived
+            title="Куриерски пратки"
+            published
           />
         </Grid>
       </Grid>

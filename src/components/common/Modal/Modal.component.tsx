@@ -46,6 +46,7 @@ const ModalContent = styled.div`
 
     button {
       margin: calc(2 * var(--atom));
+      padding: calc(1.6 * var(--atom)) calc(6 * var(--atom));
     }
   }
 `;

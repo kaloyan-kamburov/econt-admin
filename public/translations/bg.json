@@ -8,6 +8,14 @@
       "uploadFileDesc": "Максималния размер е N/A, позволените разширения са .svg, .jpg, .png и .gif",
       "changeCategory": "Промени категория"
     },
+    "category": {
+      "addFolder": "Създай папка",
+      "changeFolder": "Промени папка",
+      "archiveFolder": "Архивиране на папка",
+      "unpublishFolderQuestion": "Сигурен ли си, че искаш премахнеш <0>\"{{folder}}\"</0> от публикувани?",
+      "deleteFolder": "Изтриване на папка",
+      "deleteFolderQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{folder}}\"</0>?"
+    },
     "login": {
       "loginError": "Грешка при влизане"
     }
@@ -30,6 +38,9 @@
     "delete": "Изтрий",
     "cancel": "Отказ",
     "changeAndPublish": "Промени и публикувай",
-    "save": "Запази"
+    "save": "Запази",
+    "publish": "Публикувай",
+    "removeFromPublish": "Премахни от публикувани",
+    "archive": "Архивирай"
   }
 }
