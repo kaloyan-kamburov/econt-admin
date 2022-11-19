@@ -154,8 +154,8 @@ const BtnsWrapper = styled.div`
   height: calc(12.8 * var(--atom));
   position: sticky;
   bottom: 0;
-
-  .content {
+  left: 0;
+  z-i .content {
     display: flex;
     width: 100%;
     padding: 0 calc(4 * var(--atom));
