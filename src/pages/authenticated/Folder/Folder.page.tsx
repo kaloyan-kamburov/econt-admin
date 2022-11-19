@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import Grid from "@mui/material/Grid";
 
 //custom components
-import Folder from "./Folder.component";
+import Group from "./Group.component";
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
@@ -14,7 +14,7 @@ interface Props {}
 const PageCategory: React.FC<Props> = () => {
   const { setTitle } = usePageTitle();
   useEffect(() => {
-    setTitle("Услуги от България");
+    setTitle("Забравени предмети");
   }, []);
   return (
     <>
@@ -30,7 +30,10 @@ const PageCategory: React.FC<Props> = () => {
           md={4}
           xs={12}
         >
-          <Folder isAdd />
+          <Group
+            isAdd
+            published
+          />
         </Grid>
         <Grid
           item
@@ -39,7 +42,7 @@ const PageCategory: React.FC<Props> = () => {
           md={4}
           xs={12}
         >
-          <Folder
+          <Group
             archived={false}
             published
             title="Населени места"
@@ -52,7 +55,7 @@ const PageCategory: React.FC<Props> = () => {
           md={4}
           xs={12}
         >
-          <Folder
+          <Group
             archived={false}
             published={false}
             title="Населени места"
@@ -65,7 +68,7 @@ const PageCategory: React.FC<Props> = () => {
           md={4}
           xs={12}
         >
-          <Folder
+          <Group
             archived
             title="Куриерски пратки"
             published

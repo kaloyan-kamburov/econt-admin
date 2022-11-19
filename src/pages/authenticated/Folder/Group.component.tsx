@@ -5,25 +5,28 @@ import { useNavigate } from "react-router-dom";
 
 //icons
 import iconMap from "../../../Icons/map.svg";
-import { IconDots, IconPlus, IconFolder, IconAddFolder } from "../../../Icons/icons";
+import { IconDots, IconPlus } from "../../../Icons/icons";
 
 //MUI component
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 
 //custom components
-import AddFolder from "./Folder.add.component";
-import EditFolder from "./Folder.edit.component";
-import ArchiveFolder from "./Folder.archive.component";
-import PublishFolder from "./Folder.publish.component";
-import UnpublishFolder from "./Folder.unpublish.component";
-import DeleteFolder from "./Folder.delete.component";
+// import AddFolder from "./Folder.add.component";
+// import EditFolder from "./Folder.edit.component";
+// import ArchiveFolder from "./Folder.archive.component";
+// import PublishFolder from "./Folder.publish.component";
+// import UnpublishFolder from "./Folder.unpublish.component";
+// import DeleteFolder from "./Folder.delete.component";
 import Modal from "../../../components/common/Modal/Modal.component";
+
+//icons
+import { IconGroup, IconGroupAdd, IconGroupUnpublished } from "../../../Icons/icons";
 
 //theme
 import { bgSections, btnContainedPrimaryBgColor, lightColor } from "../../../styles/theme";
 
-const FolderWrapper = styled.div`
+const GroupWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -34,8 +37,8 @@ const FolderWrapper = styled.div`
   }
 
   .bg-wrapper {
-    width: 218px;
-    height: 150px;
+    width: 144px;
+    height: 174px;
     position: relative;
     // background: red;
 
@@ -82,12 +85,13 @@ const FolderWrapper = styled.div`
 
   .add-wrapper {
     position: absolute;
-    top: 40px;
+    top: 50px;
     display: flex;
     flex-direction: column;
     cursor: pointer;
     z-index: 2;
     align-items: center;
+    transform: translateX(15px);
 
     span {
       font-size: 15px;
@@ -134,13 +138,14 @@ const FolderWrapper = styled.div`
   }
 `;
 
-const renderBackground = (isAdd: boolean) => (isAdd ? <IconFolder /> : <IconAddFolder />);
+const renderBackground = (isAdd: boolean, published: boolean) =>
+  isAdd ? <IconGroupAdd /> : published ? <IconGroup /> : <IconGroupUnpublished />;
 
 interface Props {
   isAdd?: boolean;
   title?: string;
   archived?: boolean;
-  published?: boolean;
+  published: boolean;
 }
 
 const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) => {
@@ -158,7 +163,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
 
   return (
     <>
-      <FolderWrapper className={archived ? "archived" : ""}>
+      <GroupWrapper className={archived ? "archived" : ""}>
         {isAdd && (
           <div
             className="add-wrapper"
@@ -169,7 +174,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
           </div>
         )}
         <div className={`bg-wrapper${!isAdd ? " default" : ""}`}>
-          {renderBackground(isAdd)}
+          {renderBackground(isAdd, published)}
           {!isAdd && (
             <>
               <div
@@ -245,9 +250,9 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
           )}
         </div>
         <div className="content">{!isAdd && <span>Услуги от България</span>}</div>
-      </FolderWrapper>
+      </GroupWrapper>
 
-      {modalCreateFolder && (
+      {/* {modalCreateFolder && (
         <Modal
           title={t("pages.category.addFolder")}
           closeFn={() => setModalCreateFolder(false)}
@@ -264,7 +269,6 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
         >
           <>
             <EditFolder closeFn={() => setModalEditFolder(false)} />
-            {/* <Loader showExplicit inModal /> */}
           </>
         </Modal>
       )}
@@ -325,7 +329,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
             folder={"Забравени предмети"}
           />
         </Modal>
-      )}
+      )} */}
     </>
   );
 };

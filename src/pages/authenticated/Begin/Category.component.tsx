@@ -127,7 +127,6 @@ const CategoryWrapper = styled.div`
     }
   }
 `;
-
 interface Props {
   isAdd?: boolean;
 }

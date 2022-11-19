@@ -2,7 +2,14 @@ import { Suspense } from "react";
 import { QueryClient, QueryClientProvider, QueryCache } from "react-query";
 import toast from "react-hot-toast";
 import "moment/locale/en-gb";
-import { Routes, Route, createBrowserRouter, createRoutesFromElements, RouterProvider, BrowserRouter } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+  BrowserRouter,
+} from "react-router-dom";
 
 //MUI components
 import CssBaseline from "@mui/material/CssBaseline";
@@ -20,12 +27,14 @@ import PageHome from "./pages/common/Home.page";
 import PageLogin from "./pages/common/Login.page";
 import PageBegin from "./pages/authenticated/Begin/Begin.page";
 import PageCategory from "./pages/authenticated/Category/Category.page";
+import PageFolder from "./pages/authenticated/Folder/Folder.page";
 
 //Utils
 import theme from "./styles/theme";
 
 //context
 import { AuthProvider } from "./context/auth";
+import { PageTitleProvider } from "./context/pageTitle";
 
 //i18n
 import "./utils/i18n";
@@ -89,40 +98,52 @@ function App() {
             <CssBaseline />
             <BrowserRouter>
               <AuthProvider>
-                <Routes>
-                  <Route
-                    path="/login"
-                    element={<PageLogin />}
-                  />
-                  <Route
-                    path="/"
-                    element={
-                      <AppWrapper>
-                        <PageHome />
-                      </AppWrapper>
-                    }
-                  />
-                  <Route
-                    path="/home"
-                    element={
-                      <ProtectedRoute>
+                <PageTitleProvider>
+                  <Routes>
+                    <Route
+                      path="/login"
+                      element={<PageLogin />}
+                    />
+                    <Route
+                      path="/"
+                      element={
                         <AppWrapper>
-                          <PageBegin />
+                          <PageHome />
                         </AppWrapper>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/category/:id"
-                    element={
-                      <ProtectedRoute>
-                        <AppWrapper>
-                          <PageCategory />
-                        </AppWrapper>
-                      </ProtectedRoute>
-                    }
-                  />
-                </Routes>
+                      }
+                    />
+                    <Route
+                      path="/home"
+                      element={
+                        <ProtectedRoute>
+                          <AppWrapper>
+                            <PageBegin />
+                          </AppWrapper>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/category/:id"
+                      element={
+                        <ProtectedRoute>
+                          <AppWrapper>
+                            <PageCategory />
+                          </AppWrapper>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/category/:id/:folderId"
+                      element={
+                        <ProtectedRoute>
+                          <AppWrapper>
+                            <PageFolder />
+                          </AppWrapper>
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Routes>
+                </PageTitleProvider>
               </AuthProvider>
             </BrowserRouter>
             {/* <AuthProvider>

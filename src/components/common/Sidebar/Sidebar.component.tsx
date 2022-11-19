@@ -87,6 +87,7 @@ const Sidebar: React.FC<{}> = () => {
                 }
                 aria-controls="panel1a-content"
                 id="panel1a-header"
+                onClick={() => navigate("/category/1")}
               >
                 Услуги от България
               </AccordionSummary>
