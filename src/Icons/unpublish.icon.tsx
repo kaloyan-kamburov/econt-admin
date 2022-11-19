@@ -60,13 +60,13 @@ const IconUnpublish = () => (
     <path
       d="M86.8262 117.092L109.557 93.2783"
       stroke="#999999"
-      stroke-width="0.963"
+      strokeWidth="0.963"
       stroke-linecap="round"
     />
     <path
       d="M108.474 117.092L85.7432 93.2783"
       stroke="#999999"
-      stroke-width="0.963"
+      strokeWidth="0.963"
       stroke-linecap="round"
     />
   </svg>

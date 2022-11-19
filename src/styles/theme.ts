@@ -35,6 +35,13 @@ export const bgForms = "#fff";
 export const btnContainedPrimaryBgColor = "#234182";
 export const btnContainedPrimaryBgColorHover = "#162a54";
 
+//modal
+export const modalBg = "#E3E3E3";
+
+//other
+export const dragActive = "#BAD0FF";
+export const footerBg = "#EBEBEB";
+
 //theme
 export default createTheme({
   palette: {
@@ -57,7 +64,19 @@ export default createTheme({
     allVariants: {
       color: mainColor,
     },
-    fontFamily: ['"Open Sans"', "-apple-system, BlinkMacSystemFont", '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Cantarell"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', "sans-serif"].join(","),
+    fontFamily: [
+      '"Open Sans"',
+      "-apple-system, BlinkMacSystemFont",
+      '"Segoe UI"',
+      '"Roboto"',
+      '"Oxygen"',
+      '"Ubuntu"',
+      '"Cantarell"',
+      '"Fira Sans"',
+      '"Droid Sans"',
+      '"Helvetica Neue"',
+      "sans-serif",
+    ].join(","),
     body1: {
       fontSize: "calc(3 * var(--atom))px",
       lineHeight: "calc(4.8 * var(--atom))px",
@@ -150,6 +169,15 @@ export default createTheme({
             width: "100%",
             maxWidth: "calc(138 * var(--atom))",
           },
+          "&.large": {
+            width: "100%",
+            maxWidth: "calc(185.2 * var(--atom))",
+
+            ".MuiDialogContent-root": {
+              background: modalBg,
+              padding: "calc(4 * var(--atom)) 0 0",
+            },
+          },
         },
       },
     },
@@ -219,6 +247,7 @@ export default createTheme({
         },
       },
     },
+    //buttons
     MuiButtonBase: {
       styleOverrides: {
         root: {
@@ -233,6 +262,7 @@ export default createTheme({
         },
       },
     },
+    //accordion
     MuiAccordion: {
       styleOverrides: {
         root: {
@@ -301,19 +331,6 @@ export default createTheme({
         },
       },
     },
-    // MuiSelect: {
-    //   styleOverrides: {
-    //     outlined: {
-    //       width: "100%",
-    //       background: tableFilterInputsBg,
-    //       paddingTop: "10px",
-    //       paddingBottom: "10px",
-    //       ".MuiButtonBase-root": {
-    //         marginRight: "10px",
-    //       },
-    //     },
-    //   },
-    // },
     MuiTabs: {
       styleOverrides: {
         root: {

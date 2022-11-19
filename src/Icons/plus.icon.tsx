@@ -11,13 +11,13 @@ const IconPlus = () => (
     <path
       d="M1 21.838L41 21.6453"
       stroke="#234182"
-      stroke-width="0.992"
+      strokeWidth="0.992"
       strokeLinecap="round"
     />
     <path
       d="M20.5418 41L20.3546 1"
       stroke="#234182"
-      stroke-width="0.992"
+      strokeWidth="0.992"
       strokeLinecap="round"
     />
   </svg>

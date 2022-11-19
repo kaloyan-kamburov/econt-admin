@@ -56,15 +56,22 @@ interface Props {
   closeFn: () => void;
   children: React.ReactNode;
   small?: boolean;
+  large?: boolean;
 }
 
-const Modal: React.FC<Props> = ({ title = "", closeFn = () => {}, children, small = false }) => {
+const Modal: React.FC<Props> = ({
+  title = "",
+  closeFn = () => {},
+  children,
+  small = false,
+  large = false,
+}) => {
   return (
     <Dialog
       aria-labelledby="customized-dialog-title"
       open
       classes={{
-        paper: small ? "small" : "big",
+        paper: large ? "large" : small ? "small" : "big",
       }}
       transitionDuration={0}
     >

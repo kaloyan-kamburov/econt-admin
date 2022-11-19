@@ -12,9 +12,11 @@
       "addFolder": "Създай папка",
       "changeFolder": "Промени папка",
       "archiveFolder": "Архивиране на папка",
+      "archiveFolderQuestion": "Сигурен ли си, че искаш да архивираш <0>\"{{folder}}\"</0>?",
       "unpublishFolderQuestion": "Сигурен ли си, че искаш премахнеш <0>\"{{folder}}\"</0> от публикувани?",
       "deleteFolder": "Изтриване на папка",
-      "deleteFolderQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{folder}}\"</0>?"
+      "deleteFolderQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{folder}}\"</0>?",
+      "confirmPublish": "Потвърждение за публикуване"
     },
     "login": {
       "loginError": "Грешка при влизане"
@@ -41,6 +43,7 @@
     "save": "Запази",
     "publish": "Публикувай",
     "removeFromPublish": "Премахни от публикувани",
-    "archive": "Архивирай"
+    "archive": "Архивирай",
+    "copyright": "Всички права запазени (C) 2022 - Еконт Експрес ООД"
   }
 }

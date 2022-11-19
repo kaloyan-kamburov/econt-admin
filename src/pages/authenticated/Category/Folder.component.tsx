@@ -370,6 +370,8 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
           closeFn={() => {
             setModalPublishFolder(false);
           }}
+          title={t("pages.category.confirmPublish")}
+          large
         >
           <PublishFolder
           // closeFn={() => {
