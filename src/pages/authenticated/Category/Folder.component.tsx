@@ -374,10 +374,10 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
           large
         >
           <PublishFolder
-          // closeFn={() => {
-          //   setModalUnublishFolder(false);
-          // }}
-          // folderForArchive={"sda"}
+            closeFn={() => {
+              setModalPublishFolder(false);
+            }}
+            // folderForArchive={"sda"}
           />
         </Modal>
       )}

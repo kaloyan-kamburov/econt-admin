@@ -169,9 +169,11 @@ const BtnsWrapper = styled.div`
   }
 `;
 
-interface Props {}
+interface Props {
+  closeFn: () => void;
+}
 
-const CategoryDelete: React.FC<Props> = () => {
+const CategoryDelete: React.FC<Props> = ({ closeFn }) => {
   const [width, setWidth] = useState<number>(100);
   const [rowHeight, setRowHeight] = useState<number>(180);
   const { width: windowWidth, height: windowHeight } = useWindowSize();
@@ -317,7 +319,7 @@ const CategoryDelete: React.FC<Props> = () => {
             variant="text"
             color="primary"
             size="large"
-            onClick={() => {}}
+            onClick={closeFn}
           >
             {t("common.cancel")}
           </Button>
