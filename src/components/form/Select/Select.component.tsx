@@ -66,7 +66,10 @@ const SelectComponent: React.FC<Props> = ({
 
   return (
     <FieldWrapper>
-      <Field name={name} validate={composeValidators(...(validate || []))}>
+      <Field
+        name={name}
+        validate={composeValidators(...(validate || []))}
+      >
         {(props: any) => {
           return (
             <FormControl sx={{ width: "100%" }}>
@@ -74,16 +77,12 @@ const SelectComponent: React.FC<Props> = ({
                 <>
                   <Autocomplete
                     multiple
-                    options={
-                      isCreatable ? options : getOptions(props.input.value)
-                    }
+                    options={isCreatable ? options : getOptions(props.input.value)}
                     // options={getOptions(props.input.value)}
                     disableCloseOnSelect
                     getOptionLabel={(option: any) =>
                       (() => {
-                        const foundedOption = options.find(
-                          (opt) => opt.value === option
-                        );
+                        const foundedOption = options.find((opt) => opt.value === option);
                         return foundedOption
                           ? foundedOption.label || ""
                           : option
@@ -92,12 +91,10 @@ const SelectComponent: React.FC<Props> = ({
                       })()
                     }
                     filterSelectedOptions
-                    size="small"
+                    // size="small"
                     getOptionDisabled={(opt: any) =>
                       Array.isArray(props.input.value)
-                        ? !!props.input.value.find(
-                            (option: any) => option?.value === opt?.value
-                          )
+                        ? !!props.input.value.find((option: any) => option?.value === opt?.value)
                         : false
                     }
                     renderOption={(propsValues, option: any, state) => (
@@ -145,14 +142,8 @@ const SelectComponent: React.FC<Props> = ({
                   }}
                   disabled={disabled}
                   getOptionLabel={(option: any) => {
-                    const foundedOption = options.find(
-                      (opt) => opt.value === option
-                    );
-                    return foundedOption
-                      ? foundedOption.label
-                      : option
-                      ? option.label
-                      : "";
+                    const foundedOption = options.find((opt) => opt.value === option);
+                    return foundedOption ? foundedOption.label : option ? option.label : "";
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -163,24 +154,18 @@ const SelectComponent: React.FC<Props> = ({
                       autoFocus={autoFocus}
                       // placeholder="Клиент"
                       fullWidth
-                      size="small"
+                      // size="small"
                     />
                   )}
                 />
               )}
 
               {((props.meta.touched && props.meta.invalid) ||
-                (initialDisabled &&
-                  props.meta.error &&
-                  props.meta.touched &&
-                  !disabled)) && (
+                (initialDisabled && props.meta.error && props.meta.touched && !disabled)) && (
                 <FormHelperText
                   error={
                     (props.meta.touched && props.meta.invalid) ||
-                    (initialDisabled &&
-                      props.meta.error &&
-                      props.meta.touched &&
-                      !disabled)
+                    (initialDisabled && props.meta.error && props.meta.touched && !disabled)
                   }
                 >
                   {props.meta.error}

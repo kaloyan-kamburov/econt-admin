@@ -29,10 +29,6 @@ const FolderWrapper = styled.div`
   flex-direction: column;
   align-items: center;
 
-  &.archived {
-    opacity: 0.5;
-  }
-
   .bg-wrapper {
     width: 218px;
     height: 150px;
@@ -129,6 +125,15 @@ const FolderWrapper = styled.div`
         padding: 0 calc(3 * var(--atom));
         justify-content: flex-start;
         white-space: nowrap;
+      }
+    }
+  }
+
+  &.archived {
+    .bg-wrapper {
+      > svg,
+      .img-wrapper {
+        opacity: 0.5;
       }
     }
   }

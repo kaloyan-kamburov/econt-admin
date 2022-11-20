@@ -56,7 +56,7 @@ const PageCategory: React.FC<Props> = () => {
           xs={12}
         >
           <Group
-            archived={false}
+            archived
             published={false}
             title="Населени места"
           />

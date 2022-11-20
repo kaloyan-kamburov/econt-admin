@@ -12,12 +12,13 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 
 //custom components
-// import AddFolder from "./Folder.add.component";
-// import EditFolder from "./Folder.edit.component";
-// import ArchiveFolder from "./Folder.archive.component";
-// import PublishFolder from "./Folder.publish.component";
-// import UnpublishFolder from "./Folder.unpublish.component";
-// import DeleteFolder from "./Folder.delete.component";
+import AddGroup from "./Group.add.component";
+import MoveGroup from "./Group.move.component";
+import EditGroup from "./Group.edit.component";
+import ArchiveGroup from "./Group.archive.component";
+import PublishGroup from "./Group.publish.component";
+import UnpublishGroup from "./Group.unpublish.component";
+import DeleteGroup from "./Group.delete.component";
 import Modal from "../../../components/common/Modal/Modal.component";
 
 //icons
@@ -31,10 +32,6 @@ const GroupWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  &.archived {
-    opacity: 0.5;
-  }
 
   .bg-wrapper {
     width: 144px;
@@ -56,8 +53,8 @@ const GroupWrapper = styled.div`
     width: 70px;
     height: 70px;
     cursor: pointer;
-    top: 40px;
-    left: 50%;
+    top: 60px;
+    left: 83px;
     transform: translateX(-50%);
     display: flex;
     justify-content: center;
@@ -85,13 +82,15 @@ const GroupWrapper = styled.div`
 
   .add-wrapper {
     position: absolute;
-    top: 50px;
+    top: 36px;
     display: flex;
     flex-direction: column;
     cursor: pointer;
     z-index: 2;
     align-items: center;
-    transform: translateX(15px);
+    transform: translateX(11px);
+    max-width: 110px;
+    text-align: center;
 
     span {
       font-size: 15px;
@@ -102,10 +101,22 @@ const GroupWrapper = styled.div`
     }
   }
 
+  .file-count {
+    width: 18px;
+    position: absolute;
+    top: 20px;
+    left: 47px;
+    color: ${bgSections};
+    font-size: 13px;
+    z-index: 1;
+    font-weight: 600;
+    text-align: center;
+  }
+
   .menu-wrapper {
     position: absolute;
-    top: 38px;
-    left: 180px;
+    top: 10px;
+    left: 150px;
     z-index: 2;
 
     // .btn-menu {
@@ -136,6 +147,15 @@ const GroupWrapper = styled.div`
       }
     }
   }
+
+  &.archived {
+    .bg-wrapper {
+      > svg,
+      .img-wrapper {
+        opacity: 0.5;
+      }
+    }
+  }
 `;
 
 const renderBackground = (isAdd: boolean, published: boolean) =>
@@ -153,13 +173,13 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
   const navigate = useNavigate();
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
 
-  const [modalCreateFolder, setModalCreateFolder] = useState<boolean>(false);
-  const [modalEditFolder, setModalEditFolder] = useState<boolean>(false);
-  const [modalPublishFolder, setModalPublishFolder] = useState<boolean>(false);
-  const [modalUnublishFolder, setModalUnublishFolder] = useState<boolean>(false);
-  const [modalArchiveFolder, setModalArchiveFolder] = useState<boolean>(false);
-
-  const [modalDeleteFolder, setModalDeleteFolder] = useState<boolean>(false);
+  const [modalAddGroup, setModalAddGroup] = useState<boolean>(false);
+  const [modalEditGroup, setModalEditGroup] = useState<boolean>(false);
+  const [modalMoveGroup, setModalMoveGroup] = useState<boolean>(false);
+  const [modalArchiveGroup, setModalArchiveGroup] = useState<boolean>(false);
+  const [modalPublishGroup, setModalPublishGroup] = useState<boolean>(false);
+  const [modalUnublishGroup, setModalUnublishGroup] = useState<boolean>(false);
+  const [modalDeleteGroup, setModalDeleteGroup] = useState<boolean>(false);
 
   return (
     <>
@@ -167,10 +187,10 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
         {isAdd && (
           <div
             className="add-wrapper"
-            onClick={() => setModalCreateFolder(true)}
+            onClick={() => setModalAddGroup(true)}
           >
             <IconPlus />
-            <span className="text-add">{t("pages.home.add")}</span>
+            <span className="text-add">{t("pages.folder.addGroup")}</span>
           </div>
         )}
         <div className={`bg-wrapper${!isAdd ? " default" : ""}`}>
@@ -201,7 +221,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
                       size="small"
                       sx={{ borderRadius: 0 }}
                       onClick={() => {
-                        setModalEditFolder(true);
+                        setModalEditGroup(true);
                         setMenuOpened(false);
                       }}
                     >
@@ -213,7 +233,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
                       size="small"
                       sx={{ borderRadius: 0 }}
                       onClick={() => {
-                        published ? setModalUnublishFolder(true) : setModalPublishFolder(true);
+                        published ? setModalUnublishGroup(true) : setModalPublishGroup(true);
                         setMenuOpened(false);
                       }}
                     >
@@ -225,7 +245,20 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
                       size="small"
                       sx={{ borderRadius: 0 }}
                       onClick={() => {
-                        setModalArchiveFolder(true);
+                        // setModalArchiveFolder(true);
+                        setModalMoveGroup(true);
+                        setMenuOpened(false);
+                      }}
+                    >
+                      {t("common.move")}
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="primary"
+                      size="small"
+                      sx={{ borderRadius: 0 }}
+                      onClick={() => {
+                        setModalArchiveGroup(true);
                         setMenuOpened(false);
                       }}
                     >
@@ -237,7 +270,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
                       size="small"
                       sx={{ borderRadius: 0 }}
                       onClick={() => {
-                        setModalDeleteFolder(true);
+                        setModalDeleteGroup(true);
                         setMenuOpened(false);
                       }}
                     >
@@ -246,90 +279,106 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
                   </div>
                 )}
               </div>
+              <div className="file-count">99</div>
             </>
           )}
         </div>
         <div className="content">{!isAdd && <span>Услуги от България</span>}</div>
       </GroupWrapper>
 
-      {/* {modalCreateFolder && (
+      {modalAddGroup && (
         <Modal
-          title={t("pages.category.addFolder")}
-          closeFn={() => setModalCreateFolder(false)}
+          title={t("pages.folder.addGroup")}
+          closeFn={() => setModalAddGroup(false)}
+          small
         >
           <>
-            <AddFolder closeFn={() => setModalCreateFolder(false)} />
+            <AddGroup closeFn={() => setModalAddGroup(false)} />
           </>
         </Modal>
       )}
-      {modalEditFolder && (
+
+      {modalEditGroup && (
         <Modal
-          title={t("pages.category.changeFolder")}
-          closeFn={() => setModalEditFolder(false)}
+          title={t("pages.folder.changeGroup")}
+          closeFn={() => setModalEditGroup(false)}
+          small
         >
           <>
-            <EditFolder closeFn={() => setModalEditFolder(false)} />
+            <EditGroup closeFn={() => setModalEditGroup(false)} />
           </>
         </Modal>
       )}
-      {modalArchiveFolder && (
+
+      {modalMoveGroup && (
+        <Modal
+          title={t("pages.folder.moveGroup")}
+          closeFn={() => setModalMoveGroup(false)}
+          small
+        >
+          <>
+            <MoveGroup closeFn={() => setModalMoveGroup(false)} />
+          </>
+        </Modal>
+      )}
+
+      {modalArchiveGroup && (
         <Modal
           closeFn={() => {
-            setModalArchiveFolder(false);
+            setModalArchiveGroup(false);
           }}
         >
-          <ArchiveFolder
+          <ArchiveGroup
             closeFn={() => {
-              setModalArchiveFolder(false);
+              setModalArchiveGroup(false);
             }}
-            folderForArchive={"asd"}
+            groupForArchive={"asd"}
           />
         </Modal>
       )}
-      {modalPublishFolder && (
+      {modalPublishGroup && (
         <Modal
           closeFn={() => {
-            setModalPublishFolder(false);
+            setModalPublishGroup(false);
           }}
           title={t("pages.category.confirmPublish")}
           large
         >
-          <PublishFolder
+          <PublishGroup
             closeFn={() => {
-              setModalPublishFolder(false);
+              setModalPublishGroup(false);
             }}
-            // folderForArchive={"sda"}
           />
         </Modal>
       )}
-      {modalUnublishFolder && (
+      {modalUnublishGroup && (
         <Modal
           closeFn={() => {
-            setModalUnublishFolder(false);
+            setModalUnublishGroup(false);
           }}
         >
-          <UnpublishFolder
+          <UnpublishGroup
             closeFn={() => {
-              setModalUnublishFolder(false);
+              setModalUnublishGroup(false);
             }}
-            folder={""}
+            group={"asd"}
           />
         </Modal>
       )}
-      {modalDeleteFolder && (
+      {modalDeleteGroup && (
         <Modal
           closeFn={() => {
-            setModalDeleteFolder(false);
+            setModalDeleteGroup(false);
           }}
         >
-          <DeleteFolder
+          <DeleteGroup
             closeFn={() => {
-              setModalDeleteFolder(false);
+              setModalDeleteGroup(false);
             }}
             folder={"Забравени предмети"}
           />
         </Modal>
-      )} */}
+      )}
     </>
   );
 };
