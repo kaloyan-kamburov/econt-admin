@@ -6,6 +6,7 @@ import { bgHeaders, linkColor } from "../../../styles/theme";
 
 //MUI icons
 import IconSearch from "@mui/icons-material/Search";
+import Autocomplete from "@mui/material/Autocomplete";
 
 //context
 import usePageTitle from "../../../hooks/usePageTitle";
@@ -14,17 +15,42 @@ const HeaderWrapper = styled.header`
   top: 0;
   left: 0;
   width: 100%;
-  height: calc(12.8 * var(--atom));
+  height: calc(14 * var(--atom));
   background: ${bgHeaders};
   position: sticky;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 calc(4 * var(--atom));
+  z-index: 2;
 `;
 
 const SearchInputWrapper = styled.div`
-  width: calc(54 * var(--atom));
+  width: calc(70 * var(--atom));
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  .icon-search {
+    position: absolute;
+    z-index: 2;
+    left: calc(2 * var(--atom));
+    top: calc(2 * var(--atom));
+  }
+
+  label {
+    padding-left: calc(6 * var(--atom));
+  }
+
+  .Mui-focused {
+    label {
+      padding-left: 0;
+    }
+  }
+
+  input {
+    padding-left: calc(7 * var(--atom)) !important;
+  }
 `;
 
 const TitleWrapper = styled.div`
@@ -41,19 +67,23 @@ const Header: React.FC<{}> = () => {
     <HeaderWrapper>
       <TitleWrapper>{title}</TitleWrapper>
       <SearchInputWrapper>
-        <TextField
-          InputProps={{
-            startAdornment: <IconSearch />,
-          }}
-          // InputLabelProps={{
-          //   style: {
-          //     paddingLeft: "20px",
-          //   },
-          // }}
+        <IconSearch className="icon-search" />
+        <Autocomplete
+          disablePortal
+          id="combo-box-demo"
+          options={[{ label: "Услуги от България" }]}
           sx={{ width: "100%" }}
-          size="small"
-          className="with-start-icon"
-          label={t("form.labels.search")}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              // InputProps={{
+              //   startAdornment: <IconSearch />,
+              // }}
+              label={t("form.labels.search")}
+              className="with-start-icon"
+              size="small"
+            />
+          )}
         />
       </SearchInputWrapper>
     </HeaderWrapper>

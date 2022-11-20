@@ -35,6 +35,15 @@ const PageBegin: React.FC<{}> = () => {
         >
           <Category />
         </Grid>
+        <Grid
+          item
+          xl={3}
+          lg={4}
+          md={6}
+          xs={12}
+        >
+          <Category />
+        </Grid>
       </Grid>
     </>
   );
