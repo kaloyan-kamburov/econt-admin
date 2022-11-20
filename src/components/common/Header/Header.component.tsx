@@ -72,6 +72,8 @@ const Header: React.FC<{}> = () => {
           disablePortal
           id="combo-box-demo"
           options={[{ label: "Услуги от България" }]}
+          // onChange={() => console.log(123)}
+          // onKeyDown={() => console.log("dsa")}
           sx={{ width: "100%" }}
           renderInput={(params) => (
             <TextField

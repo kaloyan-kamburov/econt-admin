@@ -63,7 +63,7 @@ const IconGroup: React.FC<any> = () => {
           width="147.73"
           height="179.5"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
           <feFlood
             flood-opacity="0"
@@ -104,7 +104,7 @@ const IconGroup: React.FC<any> = () => {
           width="147.73"
           height="179.5"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
           <feFlood
             flood-opacity="0"
@@ -145,7 +145,7 @@ const IconGroup: React.FC<any> = () => {
           width="147.73"
           height="179.5"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
           <feFlood
             flood-opacity="0"
