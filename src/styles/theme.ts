@@ -234,6 +234,7 @@ export default createTheme({
       styleOverrides: {
         root: {
           fontStyle: "italic",
+          paddingLeft: 0,
         },
       },
     },

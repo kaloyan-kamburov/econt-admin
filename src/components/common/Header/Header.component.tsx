@@ -38,16 +38,6 @@ const SearchInputWrapper = styled.div`
     top: calc(2 * var(--atom));
   }
 
-  label {
-    padding-left: calc(6 * var(--atom));
-  }
-
-  .Mui-focused {
-    label {
-      padding-left: 0;
-    }
-  }
-
   input {
     padding-left: calc(7 * var(--atom)) !important;
   }
@@ -72,16 +62,14 @@ const Header: React.FC<{}> = () => {
           disablePortal
           id="combo-box-demo"
           options={[{ label: "Услуги от България" }]}
-          // onChange={() => console.log(123)}
-          // onKeyDown={() => console.log("dsa")}
           sx={{ width: "100%" }}
           renderInput={(params) => (
             <TextField
               {...params}
-              // InputProps={{
-              //   startAdornment: <IconSearch />,
-              // }}
-              label={t("form.labels.search")}
+              InputLabelProps={{
+                shrink: false,
+              }}
+              placeholder={t("form.labels.search")}
               className="with-start-icon"
               size="small"
             />

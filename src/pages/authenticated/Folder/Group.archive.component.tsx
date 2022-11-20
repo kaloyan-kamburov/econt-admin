@@ -21,10 +21,10 @@ const ArchiveGroup: React.FC<Props> = ({ groupForArchive, closeFn }) => {
   return (
     <>
       <IconArchive />
-      <h6>{t("pages.group.archiveGroup")}</h6>
+      <h6>{t("pages.folder.archiveGroup")}</h6>
       <span>
         <Trans
-          i18nKey="pages.group.archiveGroupQuestion"
+          i18nKey="pages.folder.archiveGroupQuestion"
           tOptions={{ group: groupForArchive }}
         >
           <strong />
