@@ -29,8 +29,8 @@ code {
   opacity: 0 !important;
 }
 
-.MuiOutlinedInput-input {
-  /* cursor: pointer; */
+.page-wrapper {
+  width: 100%;
 }
 
 .d-flex {
