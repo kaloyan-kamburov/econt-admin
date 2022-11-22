@@ -19,17 +19,18 @@ const PageBegin: React.FC<{}> = () => {
   const contentRef: any = createRef();
 
   const layout = [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, isResizable: false, isBounded: true },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, isResizable: false, isBounded: true },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, isResizable: false, isBounded: true },
-    { i: "d", x: 0, y: 0, w: 1, h: 1, isResizable: false, isBounded: true },
+    { i: "a", x: 0, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true, static: true },
+    { i: "b", x: 1, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
+    { i: "c", x: 2, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
+    { i: "d", x: 3, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
   ];
 
   useEffect(() => {
     if (contentRef.current && windowWidth && windowHeight) {
       setWidth(contentRef.current.offsetWidth);
-      setRowHeight(Math.round(contentRef.current.offsetWidth / 3) - 25);
+      setRowHeight(Math.round(contentRef.current.offsetWidth / 4) - 25);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentRef?.current?.offsetWidth, windowWidth, windowHeight]);
 
   return (
@@ -40,10 +41,12 @@ const PageBegin: React.FC<{}> = () => {
       <GridLayout
         className="layout"
         layout={layout}
-        cols={3}
+        // cols={windowWidth && windowWidth < 1200 ? 3 : 4}
+        cols={4}
         rowHeight={rowHeight}
         width={width}
         onLayoutChange={(newLayout) => console.log(newLayout)}
+        draggableHandle=".drag-handle"
       >
         <div key="a">
           <Category isAdd />

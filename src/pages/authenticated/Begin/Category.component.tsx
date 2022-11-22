@@ -3,19 +3,22 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-//icons
-import { IconPlus } from "../../../Icons/icons";
-import iconMap from "../../../Icons/map.svg";
-
-//MUI component
+//MUI components
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+
+//MUI icons
+import OpenWith from "@mui/icons-material/OpenWith";
 
 //custom components
 import AddCategory from "./Category.add.component";
 import EditCategory from "./Category.edit.component";
 import DeleteCategory from "./Category.delete.component";
 import Modal from "../../../components/common/Modal/Modal.component";
+
+//icons
+import { IconPlus } from "../../../Icons/icons";
+import iconMap from "../../../Icons/map.svg";
 
 //theme
 import { bgSections, btnContainedPrimaryBgColor, linkColor } from "../../../styles/theme";
@@ -56,7 +59,8 @@ const CategoryWrapper = styled.div`
 
     img {
       margin-bottom: calc(1.6 * var(--atom));
-      max-width: calc(28 * var(--atom));
+      // max-width: calc(28 * var(--atom));
+      max-width: 65%;
     }
 
     .title {
@@ -126,6 +130,16 @@ const CategoryWrapper = styled.div`
       justify-content: flex-start;
     }
   }
+
+  .drag-handle {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
+    }
+  }
 `;
 interface Props {
   isAdd?: boolean;
@@ -155,7 +169,9 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
             <>
               <div
                 className="inner-content"
-                onClick={() => navigate("/category/1")}
+                onClick={() => {
+                  navigate("/category/1");
+                }}
               >
                 <img
                   alt="Icon map"
@@ -168,7 +184,9 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
                 </span>
                 <span className="description">Lorem ipsum dolor sit amet</span>
               </div>
-
+              <div className="drag-handle">
+                <OpenWith />
+              </div>
               <IconButton
                 className={`btn-menu${menuOpened ? " active" : ""}`}
                 onClick={() => setMenuOpened(!menuOpened)}

@@ -3,13 +3,12 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-//icons
-import iconMap from "../../../Icons/map.svg";
-import { IconDots, IconPlus, IconFolder, IconAddFolder } from "../../../Icons/icons";
-
-//MUI component
+//MUI components
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+
+//MUI icons
+import OpenWith from "@mui/icons-material/OpenWith";
 
 //custom components
 import AddFolder from "./Folder.add.component";
@@ -19,6 +18,10 @@ import PublishFolder from "./Folder.publish.component";
 import UnpublishFolder from "./Folder.unpublish.component";
 import DeleteFolder from "./Folder.delete.component";
 import Modal from "../../../components/common/Modal/Modal.component";
+
+//icons
+import iconMap from "../../../Icons/map.svg";
+import { IconDots, IconPlus, IconFolder, IconAddFolder } from "../../../Icons/icons";
 
 //theme
 import { bgSections, btnContainedPrimaryBgColor, lightColor } from "../../../styles/theme";
@@ -129,12 +132,22 @@ const FolderWrapper = styled.div`
     }
   }
 
-  &.archived {
+  &.non-published {
     .bg-wrapper {
       > svg,
       .img-wrapper {
         opacity: 0.5;
       }
+    }
+  }
+
+  .drag-handle {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
     }
   }
 `;
@@ -144,11 +157,10 @@ const renderBackground = (isAdd: boolean) => (isAdd ? <IconFolder /> : <IconAddF
 interface Props {
   isAdd?: boolean;
   title?: string;
-  archived?: boolean;
   published?: boolean;
 }
 
-const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) => {
+const Folder: React.FC<Props> = ({ isAdd = false, title, published }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
@@ -163,7 +175,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
 
   return (
     <>
-      <FolderWrapper className={archived ? "archived" : ""}>
+      <FolderWrapper className={published ? "" : "non-published"}>
         {isAdd && (
           <div
             className="add-wrapper"
@@ -185,6 +197,10 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
                   src={iconMap}
                   alt="icon"
                 />
+              </div>
+
+              <div className="drag-handle">
+                <OpenWith />
               </div>
               <div className="menu-wrapper">
                 <IconButton

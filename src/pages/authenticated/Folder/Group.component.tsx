@@ -3,13 +3,12 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-//icons
-import iconMap from "../../../Icons/map.svg";
-import { IconDots, IconPlus } from "../../../Icons/icons";
-
 //MUI component
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+
+//MUI icons
+import OpenWith from "@mui/icons-material/OpenWith";
 
 //custom components
 import AddGroup from "./Group.add.component";
@@ -22,7 +21,8 @@ import DeleteGroup from "./Group.delete.component";
 import Modal from "../../../components/common/Modal/Modal.component";
 
 //icons
-import { IconGroup, IconGroupAdd, IconGroupUnpublished } from "../../../Icons/icons";
+import iconMap from "../../../Icons/map.svg";
+import { IconGroup, IconGroupAdd, IconGroupUnpublished, IconDots, IconPlus } from "../../../Icons/icons";
 
 //theme
 import { bgSections, btnContainedPrimaryBgColor, lightColor } from "../../../styles/theme";
@@ -148,7 +148,7 @@ const GroupWrapper = styled.div`
     }
   }
 
-  &.archived {
+  &.non-published {
     .bg-wrapper {
       > svg,
       .img-wrapper {
@@ -156,19 +156,27 @@ const GroupWrapper = styled.div`
       }
     }
   }
+
+  .drag-handle {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
+    }
+  }
 `;
 
-const renderBackground = (isAdd: boolean, published: boolean) =>
-  isAdd ? <IconGroupAdd /> : published ? <IconGroup /> : <IconGroupUnpublished />;
+const renderBackground = (isAdd: boolean, published: boolean) => (isAdd ? <IconGroupAdd /> : published ? <IconGroup /> : <IconGroupUnpublished />);
 
 interface Props {
   isAdd?: boolean;
   title?: string;
-  archived?: boolean;
   published: boolean;
 }
 
-const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) => {
+const Folder: React.FC<Props> = ({ isAdd = false, title, published }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
@@ -183,7 +191,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
 
   return (
     <>
-      <GroupWrapper className={archived ? "archived" : ""}>
+      <GroupWrapper className={published ? "" : "non-published"}>
         {isAdd && (
           <div
             className="add-wrapper"
@@ -205,6 +213,9 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, archived, published }) 
                   src={iconMap}
                   alt="icon"
                 />
+              </div>
+              <div className="drag-handle">
+                <OpenWith />
               </div>
               <div className="menu-wrapper">
                 <IconButton
