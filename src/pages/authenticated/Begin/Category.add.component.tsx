@@ -14,6 +14,8 @@ import { required } from "../../../utils/validations/validations";
 //custom components
 import Input from "../../../components/form/Input/Input.component";
 import InputFile from "../../../components/form/InputFile/InputFile.component";
+import Modal from "../../../components/common/Modal/Modal.component";
+import ImagePicker from "../../../components/common/ImagePicker/ImagePicker.component";
 
 interface Props {
   closeFn: () => void;
@@ -22,6 +24,7 @@ interface Props {
 const AddCategory: React.FC<Props> = ({ closeFn }) => {
   const { t } = useTranslation();
   const [tab, setTab] = useState<number>(0);
+  const [modalImages, setModalImages] = useState<boolean>(false);
 
   const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
   return (
@@ -55,6 +58,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                   label={t("form.labels.uploadImage")}
                   desc={t("pages.home.uploadFileDesc")}
                   isImage
+                  onImgClick={() => setModalImages(true)}
                 />
               </Grid>
               <Grid
@@ -138,6 +142,17 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
               </Grid>
             </Grid>
             {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
+            {modalImages && (
+              <Modal
+                closeFn={() => {
+                  setModalImages(false);
+                }}
+                title={t("common.images")}
+                xxl
+              >
+                <ImagePicker closeFn={() => setModalImages(false)} />
+              </Modal>
+            )}
           </form>
         )}
       />

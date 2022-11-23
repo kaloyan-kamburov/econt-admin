@@ -10,6 +10,7 @@ import Category from "./Category.component";
 
 //hooks
 import useWindowSize from "../../../hooks/useWindowSize";
+import usePageTitle from "../../../hooks/usePageTitle";
 // import useAuth from "../../../hooks/useAuth";
 
 const PageBegin: React.FC<{}> = () => {
@@ -17,6 +18,7 @@ const PageBegin: React.FC<{}> = () => {
   const [rowHeight, setRowHeight] = useState<number>(180);
   const { width: windowWidth, height: windowHeight } = useWindowSize();
   const contentRef: any = createRef();
+  const { setTitle } = usePageTitle();
 
   const layout = [
     { i: "a", x: 0, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true, static: true },
@@ -32,6 +34,11 @@ const PageBegin: React.FC<{}> = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentRef?.current?.offsetWidth, windowWidth, windowHeight]);
+
+  useEffect(() => {
+    setTitle(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div

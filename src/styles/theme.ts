@@ -178,6 +178,11 @@ export default createTheme({
               padding: "calc(4 * var(--atom)) 0 0",
             },
           },
+          "&.xxl": {
+            width: "calc(244 * var(--atom))",
+            maxWidth: "90%",
+            height: "90vh"
+          },
         },
       },
     },

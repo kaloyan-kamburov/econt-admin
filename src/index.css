@@ -11,6 +11,8 @@ body {
   min-width: 100vw;
   min-height: 100vh;
   overflow-x: hidden;
+  font-size: calc(3 * var(--atom));
+  line-height: calc(5 * var(--atom));
 }
 
 #root {

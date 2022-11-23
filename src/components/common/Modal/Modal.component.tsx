@@ -18,6 +18,8 @@ const ModalContent = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  height: 100%;
+  position: relative;
 
   .icon-delete {
     max-width: calc(18 * var(--atom));
@@ -57,21 +59,16 @@ interface Props {
   children: React.ReactNode;
   small?: boolean;
   large?: boolean;
+  xxl?: boolean;
 }
 
-const Modal: React.FC<Props> = ({
-  title = "",
-  closeFn = () => {},
-  children,
-  small = false,
-  large = false,
-}) => {
+const Modal: React.FC<Props> = ({ title = "", closeFn = () => {}, children, small = false, large = false, xxl = false }) => {
   return (
     <Dialog
       aria-labelledby="customized-dialog-title"
       open
       classes={{
-        paper: large ? "large" : small ? "small" : "big",
+        paper: xxl ? "xxl" : large ? "large" : small ? "small" : "big",
       }}
       transitionDuration={0}
     >

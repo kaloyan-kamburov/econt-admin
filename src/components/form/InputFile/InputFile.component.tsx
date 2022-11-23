@@ -267,6 +267,10 @@ const FilePreview = styled.div`
   img {
     max-width: 100%;
     max-height: 100%;
+
+    &.clickable {
+      cursor: pointer;
+    }
   }
 `;
 
@@ -314,6 +318,7 @@ interface Props {
   // type?: string;
   disabled?: boolean;
   // form?: any;
+  onImgClick?: () => void;
 }
 const InputFile: React.FC<Props> = ({
   name,
@@ -325,6 +330,7 @@ const InputFile: React.FC<Props> = ({
   accept = "*",
   validate = [],
   disabled = false,
+  onImgClick = () => {},
   // form,
 }) => {
   const [file, setFile] = useState<any>(null);
@@ -343,6 +349,8 @@ const InputFile: React.FC<Props> = ({
                   <img
                     src={URL.createObjectURL(file)}
                     alt="file"
+                    className={!!onImgClick ? "clickable" : ""}
+                    onClick={onImgClick}
                   />
                 )}
               </FilePreview>

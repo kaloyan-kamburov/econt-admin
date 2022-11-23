@@ -163,7 +163,7 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
           {isAdd ? (
             <>
               <IconPlus />
-              <span className="text-add">{t("pages.home.add")}</span>
+              <span className="text-add">{t("common.add")}</span>
             </>
           ) : (
             <>

@@ -31,7 +31,7 @@ const PageCategory: React.FC<Props> = () => {
   ];
 
   useEffect(() => {
-    setTitle("Услуги от България");
+    setTitle("Категория");
   }, []);
 
   useEffect(() => {
