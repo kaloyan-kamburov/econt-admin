@@ -6,6 +6,7 @@ import Grid from "@mui/material/Grid";
 
 //custom components
 import Folder from "./Folder.component";
+import Breadcrumb from "../../../components/common/Breadcrumb/Breadcrumb.component";
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
@@ -44,6 +45,7 @@ const PageCategory: React.FC<Props> = () => {
       className="page-wrapper"
       ref={contentRef}
     >
+      <Breadcrumb routePath={["Path1", "Path2", "Path3"]} />
       <GridLayout
         className="layout"
         layout={layout}

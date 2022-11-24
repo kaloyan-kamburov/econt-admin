@@ -182,7 +182,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published }) => {
             onClick={() => setModalCreateFolder(true)}
           >
             <IconPlus />
-            <span className="text-add">{t("pages.home.add")}</span>
+            <span className="text-add">{t("common.add")}</span>
           </div>
         )}
         <div className={`bg-wrapper${!isAdd ? " default" : ""}`}>

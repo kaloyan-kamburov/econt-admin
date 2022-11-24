@@ -40,7 +40,7 @@ const Content = styled.div`
   }
 
   .left-content {
-    width: 37.5%;
+    width: 36.5%;
     display: flex;
     flex-direction: column;
     padding: calc(2 * var(--atom));
@@ -71,7 +71,7 @@ const Content = styled.div`
   }
 
   .right-content {
-    width: 62.5%;
+    width: 63.5%;
     display: flex;
     justify-content: center;
     overflow-y: auto;
@@ -383,6 +383,7 @@ const ImagePicker: React.FC<Props> = ({ closeFn }) => {
                           accept=".png,.jpg"
                           onChange={(e) => {
                             setChosenImage(null);
+                            resetInput();
                             setFile(e.target.files?.[0] || null);
                           }}
                         />
