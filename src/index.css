@@ -33,8 +33,9 @@ code {
 
 .page-wrapper {
   width: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
-
 .d-flex {
   display: flex;
 }

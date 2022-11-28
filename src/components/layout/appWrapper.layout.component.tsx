@@ -36,6 +36,30 @@ const InnerContentWrapper = styled.div`
 const PageWrapper = styled.div`
   flex: 1;
   padding: 20px;
+  .page-wrapper {
+    .grabbable,
+    .btn-add {
+      max-width: 30.3%;
+      min-width: 30.3%;
+      margin: 1.5%;
+    }
+    @media (max-width: 768px) {
+      .grabbable,
+      .btn-add {
+        max-width: 48%;
+        min-width: 48%;
+        margin: 1%;
+      }
+    }
+    @media (max-width: 768px) {
+      .grabbable,
+      .btn-add {
+        max-width: 100%;
+        min-width: 100%;
+        margin: 0 0 3% 0;
+      }
+    }
+  }
 `;
 
 const AppWrapper: React.FC<Props> = ({ children }) => {

@@ -11,7 +11,10 @@ import Category from "./Category.component";
 //hooks
 import useWindowSize from "../../../hooks/useWindowSize";
 import usePageTitle from "../../../hooks/usePageTitle";
+import { AltRoute } from "@mui/icons-material";
 // import useAuth from "../../../hooks/useAuth";
+
+import { Draggable } from "react-drag-reorder";
 
 const PageBegin: React.FC<{}> = () => {
   const [width, setWidth] = useState<number>(100);
@@ -25,15 +28,17 @@ const PageBegin: React.FC<{}> = () => {
     { i: "b", x: 1, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
     { i: "c", x: 2, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
     { i: "d", x: 3, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
+    { i: "e", x: 0, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
+    { i: "f", x: 1, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
   ];
 
-  useEffect(() => {
-    if (contentRef.current && windowWidth && windowHeight) {
-      setWidth(contentRef.current.offsetWidth);
-      setRowHeight(Math.round(contentRef.current.offsetWidth / 4) - 25);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentRef?.current?.offsetWidth, windowWidth, windowHeight]);
+  // useEffect(() => {
+  //   if (contentRef.current && windowWidth && windowHeight) {
+  //     setWidth(contentRef.current.offsetWidth);
+  //     setRowHeight(Math.round(contentRef.current.offsetWidth / 5) - 25);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [contentRef?.current?.offsetWidth, windowWidth, windowHeight]);
 
   useEffect(() => {
     setTitle(null);
@@ -45,7 +50,25 @@ const PageBegin: React.FC<{}> = () => {
       className="page-wrapper"
       ref={contentRef}
     >
-      <GridLayout
+      {/* <Grid
+        container
+        spacing={3}
+      > */}
+      <Category isAdd />
+      <Draggable onPosChange={(currPos, newPos) => console.log(`${currPos} ${newPos}`)}>
+        {layout.map((item, index) => {
+          return <Category index={index} />;
+        })}
+        {/* {this.state.words.map((word, idx) => {
+              return (
+                <div key={idx} className="flex-item">
+                  {word}
+                </div>
+              );
+            })} */}
+      </Draggable>
+      {/* </Grid> */}
+      {/* <GridLayout
         className="layout"
         layout={layout}
         // cols={windowWidth && windowWidth < 1200 ? 3 : 4}
@@ -67,7 +90,13 @@ const PageBegin: React.FC<{}> = () => {
         <div key="d">
           <Category />
         </div>
-      </GridLayout>
+        <div key="e">
+          <Category />
+        </div>
+        <div key="f">
+          <Category />
+        </div>
+      </GridLayout> */}
       {/* <Grid
         container
         spacing={3}

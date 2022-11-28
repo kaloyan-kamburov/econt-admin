@@ -21,7 +21,7 @@ import { IconPlus } from "../../../Icons/icons";
 import iconMap from "../../../Icons/map.svg";
 
 //theme
-import { bgSections, btnContainedPrimaryBgColor, linkColor } from "../../../styles/theme";
+import { bgSections, btnContainedPrimaryBgColor, linkColor, dragActive } from "../../../styles/theme";
 
 const CategoryWrapper = styled.div`
   background: ${bgSections};
@@ -34,6 +34,8 @@ const CategoryWrapper = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
+  transition: none;
+  transition: all 0.2s ease-in;
 
   &.btn-add {
     background: transparent;
@@ -140,14 +142,20 @@ const CategoryWrapper = styled.div`
       cursor: grabbing;
     }
   }
+
+  &.is-dragging {
+    background: ${dragActive};
+  }
 `;
 interface Props {
   isAdd?: boolean;
+  index?: number;
 }
 
-const Item: React.FC<Props> = ({ isAdd = false }) => {
+const Item: React.FC<Props> = ({ isAdd = false, index }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [isDragging, setIsDragging] = useState<boolean>(false);
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
   const [modalCreateCategory, setModalCreateCategory] = useState<boolean>(false);
   const [modalEditCategory, setModalEditCategory] = useState<boolean>(false);
@@ -156,8 +164,15 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
   return (
     <>
       <CategoryWrapper
-        className={isAdd ? "btn-add" : ""}
+        className={`${isAdd ? "btn-add" : ""}${isDragging ? " is-dragging" : ""}`}
         onClick={() => (isAdd ? setModalCreateCategory(true) : undefined)}
+        onDragOver={(e) => {
+          if (!isAdd) {
+            e.preventDefault();
+            setIsDragging(true);
+          }
+        }}
+        onDragLeave={() => !isAdd && setIsDragging(false)}
       >
         <div className="content">
           {isAdd ? (
@@ -178,7 +193,7 @@ const Item: React.FC<Props> = ({ isAdd = false }) => {
                   src={iconMap}
                 />
                 <span className="title">
-                  Услуги от България
+                  Услуги от България {index}
                   <br />
                   (Непубликуван)
                 </span>

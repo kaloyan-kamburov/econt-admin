@@ -20,7 +20,7 @@ import { useWindowSize } from "../../../hooks/hooks";
 
 //styles
 import { dragActive } from "../../../styles/theme";
-import "../../../grid.css";
+// import "../../../grid.css";
 
 import { bgSections, inputBorder, bgForms, footerBg } from "../../../styles/theme";
 
