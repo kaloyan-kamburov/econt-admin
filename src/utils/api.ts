@@ -59,4 +59,21 @@ mock.onGet("logged").reply(200, {
   },
 });
 
+mock.onGet("categories").reply(200, [
+  {
+    name: "Категория 1",
+    id: "123",
+    folders: [
+      {
+        name: "Услуги от България",
+        fileGroups: [
+          {
+            name: "Група 1",
+          },
+        ],
+      },
+    ],
+  },
+]);
+
 export default instance;

@@ -51,8 +51,9 @@ const PageLogin: React.FC<Props> = () => {
 
   useEffect(() => {
     if (user) {
-      // navigate("/home");
+      navigate("/home");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return (
@@ -71,17 +72,6 @@ const PageLogin: React.FC<Props> = () => {
               spacing={2}
               sx={{ marginTop: "24px" }}
             >
-              <Grid
-                item
-                xs={12}
-              >
-                <Input
-                  name="name"
-                  label={t("form.labels.mail")}
-                  validate={[required(t("form.validations.required"))]}
-                  required
-                />
-              </Grid>
               <Grid
                 item
                 xs={12}

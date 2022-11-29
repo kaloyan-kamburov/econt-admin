@@ -2,14 +2,7 @@ import { Suspense } from "react";
 import { QueryClient, QueryClientProvider, QueryCache } from "react-query";
 import toast from "react-hot-toast";
 import "moment/locale/en-gb";
-import {
-  Routes,
-  Route,
-  createBrowserRouter,
-  createRoutesFromElements,
-  RouterProvider,
-  BrowserRouter,
-} from "react-router-dom";
+import { Routes, Route, createBrowserRouter, createRoutesFromElements, RouterProvider, BrowserRouter } from "react-router-dom";
 
 //MUI components
 import CssBaseline from "@mui/material/CssBaseline";
@@ -23,8 +16,7 @@ import Loader from "./components/common/Loader/Loader.component";
 import Toast from "./components/common/Toast/Toast.component";
 
 //pages
-import PageHome from "./pages/common/Home.page";
-import PageLogin from "./pages/common/Login.page";
+import PageLanding from "./pages/common/Landing.page";
 import PageBegin from "./pages/authenticated/Begin/Begin.page";
 import PageCategory from "./pages/authenticated/Category/Category.page";
 import PageFolder from "./pages/authenticated/Folder/Folder.page";
@@ -65,90 +57,55 @@ const queryClient = new QueryClient({
 });
 
 //router
-const router = createBrowserRouter(
-  createRoutesFromElements([
-    <Route
-      path="/login"
-      element={<PageLogin />}
-    />,
-    <Route
-      path="/"
-      element={<PageHome />}
-      errorElement={<div>error</div>}
-    ></Route>,
-    <Route
-      path="/home"
-      element={
-        <ProtectedRoute>
-          <PageBegin />
-        </ProtectedRoute>
-      }
-      errorElement={<div>error</div>}
-    ></Route>,
-  ])
-);
+const routes = createBrowserRouter([
+  {
+    path: "/",
+    element: <PageLanding />,
+    children: [
+      {
+        path: "/",
+        element: (
+          <AppWrapper>
+            <PageBegin />
+          </AppWrapper>
+        ),
+      },
+      {
+        path: "category/:id",
+        element: (
+          // <AuthProvider>
+          <AppWrapper>
+            <PageCategory />
+          </AppWrapper>
+          // </AuthProvider>
+        ),
+      },
+      {
+        path: "category/:id/:folderId",
+        element: (
+          // <AuthProvider>
+          <AppWrapper>
+            <PageFolder />
+          </AppWrapper>
+          // </AuthProvider>
+        ),
+      },
+    ],
+  },
+]);
 
 function App() {
-  const { user, setUser } = useAuth();
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<div>loading</div>}>
+      <Suspense fallback={<Loader />}>
         <LocalizationProvider dateAdapter={AdapterMoment}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <BrowserRouter>
-              <AuthProvider>
-                <PageTitleProvider>
-                  <Routes>
-                    <Route
-                      path="/login"
-                      element={<PageLogin />}
-                    />
-                    <Route
-                      path="/"
-                      element={
-                        <AppWrapper>
-                          <PageHome />
-                        </AppWrapper>
-                      }
-                    />
-                    <Route
-                      path="/home"
-                      element={
-                        <ProtectedRoute>
-                          <AppWrapper>
-                            <PageBegin />
-                          </AppWrapper>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/category/:id"
-                      element={
-                        <ProtectedRoute>
-                          <AppWrapper>
-                            <PageCategory />
-                          </AppWrapper>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/category/:id/:folderId"
-                      element={
-                        <ProtectedRoute>
-                          <AppWrapper>
-                            <PageFolder />
-                          </AppWrapper>
-                        </ProtectedRoute>
-                      }
-                    />
-                  </Routes>
-                </PageTitleProvider>
-              </AuthProvider>
-            </BrowserRouter>
-            {/* <AuthProvider>
-               <RouterProvider router={router} /> 
-              </AuthProvider> */}
+            <AuthProvider>
+              <PageTitleProvider>
+                <RouterProvider router={routes} />
+              </PageTitleProvider>
+            </AuthProvider>
             <Loader />
           </ThemeProvider>
         </LocalizationProvider>
