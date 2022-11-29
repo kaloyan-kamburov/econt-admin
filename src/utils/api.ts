@@ -76,4 +76,6 @@ mock.onGet("categories").reply(200, [
   },
 ]);
 
+// mock.onGet("logged").networkError();
+
 export default instance;

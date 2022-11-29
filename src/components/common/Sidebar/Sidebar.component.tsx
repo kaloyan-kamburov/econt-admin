@@ -12,6 +12,10 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
+//hooks
+import useCategories from "../../../hooks/useCategories";
+
+//styles
 import { bgHeaders } from "../../../styles/theme";
 
 const SidebarWrapper = styled.aside`
@@ -34,6 +38,7 @@ const SidebarWrapper = styled.aside`
 
 const Sidebar: React.FC<{}> = () => {
   const navigate = useNavigate();
+  const { categories } = useCategories();
   return (
     <SidebarWrapper>
       <Link
@@ -43,6 +48,7 @@ const Sidebar: React.FC<{}> = () => {
         <Logo />
       </Link>
       <div className="accordion-wrapper">
+        {JSON.stringify(categories)}
         <Accordion>
           <AccordionSummary
             expandIcon={

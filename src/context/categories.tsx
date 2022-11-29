@@ -25,7 +25,7 @@ export const useProvideCategories = () => {
   };
 };
 
-export const AuthProvider: React.FC<Props> = ({ children }) => {
+export const CategoriesProvider: React.FC<Props> = ({ children }) => {
   const categoriesData = useProvideCategories();
   return <CategoryContext.Provider value={categoriesData}>{children}</CategoryContext.Provider>;
 };

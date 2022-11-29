@@ -1,29 +1,29 @@
-import { useEffect, FC } from "react";
+import { useEffect, FC, useState } from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
 import axiosOrg, { AxiosError, AxiosResponse } from "axios";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Outlet } from "react-router-dom";
 
-import axios from "../../utils/api";
-import useAuth from "../../hooks/useAuth";
+//pages
 import PageLogin from "./Login.page";
+
+//utils
+import axios from "../../utils/api";
+
+//hooks
+import { useAuth, useCategories } from "../../hooks/hooks";
 
 interface Props {}
 
 const PageHome: FC<Props> = () => {
-  const navigate = useNavigate();
+  const [appLoaded, setAppLoaded] = useState<boolean>(false);
+  const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const { user, setUser } = useAuth();
+  const { categories, setCategories } = useCategories();
   const { t } = useTranslation();
 
-  // useEffect(() => {
-  //   if (user) {
-  //     navigate("/home");
-  //   }
-  // }, [user]);
-
-  const { refetch: getUser, isLoading: isLoadingUser } = useQuery(
+  const { refetch: getUser } = useQuery(
     "getUser",
     async () => {
       const data = await axios("logged");
@@ -32,13 +32,12 @@ const PageHome: FC<Props> = () => {
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setTimeout(() => {
-            setUser(data?.data?.user);
-          });
+          setUser(data?.data?.user);
+          getCategories();
         }
-        // navigate("/");
       },
       onError: (error: AxiosError) => {
+        setLoadFailed(true);
         toast.error(error?.message || `${t("pages.login.loginError")}`);
       },
     }
@@ -53,15 +52,13 @@ const PageHome: FC<Props> = () => {
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setTimeout(() => {
-            setUser(data?.data?.user);
-          });
+          setCategories(data?.data || []);
+          setAppLoaded(true);
         }
-        navigate("/home");
       },
       onError: (error: AxiosError) => {
+        setLoadFailed(true);
         toast.error(error?.message || `${t("pages.login.loginError")}`);
-        navigate("/login");
       },
     }
   );
@@ -71,7 +68,9 @@ const PageHome: FC<Props> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return user ? <Outlet /> : isLoadingUser ? null : <PageLogin />;
+  return loadFailed ? <PageLogin /> : appLoaded ? <Outlet /> : null;
+
+  // return appLoaded ? <Outlet /> : loadFailed ? <PageLogin /> : null;
 };
 
 export default PageHome;

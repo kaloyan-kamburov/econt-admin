@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import { QueryClient, QueryClientProvider, QueryCache } from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import toast from "react-hot-toast";
 import "moment/locale/en-gb";
-import { Routes, Route, createBrowserRouter, createRoutesFromElements, RouterProvider, BrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 //MUI components
 import CssBaseline from "@mui/material/CssBaseline";
@@ -27,11 +27,10 @@ import theme from "./styles/theme";
 //context
 import { AuthProvider } from "./context/auth";
 import { PageTitleProvider } from "./context/pageTitle";
+import { CategoriesProvider } from "./context/categories";
 
 //i18n
 import "./utils/i18n";
-import ProtectedRoute from "./pages/authenticated/ProtectedRoute";
-import useAuth from "./hooks/useAuth";
 
 //React query client
 const queryClient = new QueryClient({
@@ -59,6 +58,10 @@ const queryClient = new QueryClient({
 //router
 const routes = createBrowserRouter([
   {
+    path: "*",
+    element: <div>not found</div>,
+  },
+  {
     path: "/",
     element: <PageLanding />,
     children: [
@@ -73,21 +76,17 @@ const routes = createBrowserRouter([
       {
         path: "category/:id",
         element: (
-          // <AuthProvider>
           <AppWrapper>
             <PageCategory />
           </AppWrapper>
-          // </AuthProvider>
         ),
       },
       {
         path: "category/:id/:folderId",
         element: (
-          // <AuthProvider>
           <AppWrapper>
             <PageFolder />
           </AppWrapper>
-          // </AuthProvider>
         ),
       },
     ],
@@ -102,9 +101,11 @@ function App() {
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <AuthProvider>
-              <PageTitleProvider>
-                <RouterProvider router={routes} />
-              </PageTitleProvider>
+              <CategoriesProvider>
+                <PageTitleProvider>
+                  <RouterProvider router={routes} />
+                </PageTitleProvider>
+              </CategoriesProvider>
             </AuthProvider>
             <Loader />
           </ThemeProvider>
