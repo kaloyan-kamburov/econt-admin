@@ -58,11 +58,12 @@ mock.onGet("logged").reply(200, {
     name: "john",
   },
 });
-
+// mock.onGet("categories").reply(200, [])
 mock.onGet("categories").reply(200, [
   {
     name: "Категория 1",
     id: "123",
+    description: "Lorem ipsum dolor sit amet",
     folders: [
       {
         name: "Услуги от България",

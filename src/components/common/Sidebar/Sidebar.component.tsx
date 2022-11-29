@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation, NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 //components
 import Logo from "../Logo/Logo.component";
@@ -9,8 +10,6 @@ import Logo from "../Logo/Logo.component";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 
 //hooks
 import useCategories from "../../../hooks/useCategories";
@@ -39,75 +38,71 @@ const SidebarWrapper = styled.aside`
 const Sidebar: React.FC<{}> = () => {
   const navigate = useNavigate();
   const { categories } = useCategories();
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
+
+  const isExpanded = (item: any) => {
+    if (pathname.includes("category")) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <SidebarWrapper>
       <Link
         className="logo"
-        to="/home"
+        to="/"
       >
         <Logo />
       </Link>
       <div className="accordion-wrapper">
-        {JSON.stringify(categories)}
-        <Accordion>
-          <AccordionSummary
-            expandIcon={
-              <svg
-                width="8"
-                height="5"
-                viewBox="0 0 8 5"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0.5 1.02673L3.9927 4L7.5 1"
-                  stroke="#212121"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            }
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            Услуги от България
-          </AccordionSummary>
-          <AccordionDetails>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={
-                  <svg
-                    width="8"
-                    height="5"
-                    viewBox="0 0 8 5"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M0.5 1.02673L3.9927 4L7.5 1"
-                      stroke="#212121"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                }
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-                onClick={() => navigate("/category/1")}
-              >
-                Услуги от България
-              </AccordionSummary>
-              <AccordionDetails>
-                <Link
-                  className="logo"
-                  to="/home"
+        {/* {JSON.stringify(categories)} */}
+        {categories.length ? (
+          categories.map((cat) =>
+            cat.folders?.length ? (
+              <Accordion defaultExpanded={isExpanded(cat)}>
+                <AccordionSummary
+                  key={cat.id}
+                  expandIcon={
+                    <svg
+                      width="8"
+                      height="5"
+                      viewBox="0 0 8 5"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M0.5 1.02673L3.9927 4L7.5 1"
+                        stroke="#212121"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  }
                 >
-                  тест
-                </Link>
-              </AccordionDetails>
-            </Accordion>
-          </AccordionDetails>
-        </Accordion>
+                  {cat.name}
+                </AccordionSummary>
+                <AccordionDetails className={pathname === `/category/${cat.id}` ? "active" : ""}>
+                  {cat.folders.map((folder: any) => (
+                    <Accordion>
+                      <NavLink
+                        to={`/category/${cat.id}`}
+                        className={() => (pathname === `/category/${cat.id}` ? "active" : "")}
+                      >
+                        <AccordionSummary>{folder.name}</AccordionSummary>
+                      </NavLink>
+                    </Accordion>
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            ) : (
+              <AccordionSummary onClick={() => navigate(`category/${cat.id}`)}>{cat.name}</AccordionSummary>
+            )
+          )
+        ) : (
+          <span>{t("common.noCategories")}</span>
+        )}
       </div>
     </SidebarWrapper>
   );

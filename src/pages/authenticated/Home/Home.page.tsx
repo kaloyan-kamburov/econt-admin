@@ -5,15 +5,16 @@ import Category from "./Category.component";
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
-// import useAuth from "../../../hooks/useAuth";
+import useCategories from "../../../hooks/useCategories";
 
 import { Draggable } from "react-drag-reorder";
 
 const PageBegin: React.FC<{}> = () => {
   const contentRef: any = createRef();
   const { setTitle } = usePageTitle();
+  const { categories, setCategories } = useCategories();
 
-  const layout = [{}, {}, {}, {}, {}, {}];
+  // const layout = [{}, {}, {}, {}, {}, {}];
 
   useEffect(() => {
     setTitle(null);
@@ -25,11 +26,15 @@ const PageBegin: React.FC<{}> = () => {
       className="page-wrapper"
       ref={contentRef}
     >
+      {/* {JSON.stringify(categories)} */}
       <Category isAdd />
       <Draggable onPosChange={(currPos, newPos) => console.log(`${currPos} ${newPos}`)}>
-        {layout.map((item, index) => {
-          return <Category index={index} />;
-        })}
+        {categories.map((item) => (
+          <Category
+            key={item.id}
+            data={item}
+          />
+        ))}
       </Draggable>
     </div>
   );

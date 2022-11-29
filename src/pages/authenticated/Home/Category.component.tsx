@@ -149,10 +149,10 @@ const CategoryWrapper = styled.div`
 `;
 interface Props {
   isAdd?: boolean;
-  index?: number;
+  data?: any;
 }
 
-const Item: React.FC<Props> = ({ isAdd = false, index }) => {
+const Item: React.FC<Props> = ({ isAdd = false, data }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -185,7 +185,7 @@ const Item: React.FC<Props> = ({ isAdd = false, index }) => {
               <div
                 className="inner-content"
                 onClick={() => {
-                  navigate("/category/1");
+                  navigate(`/category/${data.id}`);
                 }}
               >
                 <img
@@ -193,11 +193,11 @@ const Item: React.FC<Props> = ({ isAdd = false, index }) => {
                   src={iconMap}
                 />
                 <span className="title">
-                  Услуги от България {index}
-                  <br />
-                  (Непубликуван)
+                  {data.name}
+                  {/* <br />
+                  (Непубликуван) */}
                 </span>
-                <span className="description">Lorem ipsum dolor sit amet</span>
+                <span className="description">{data.description}</span>
               </div>
               <div className="drag-handle">
                 <OpenWith />

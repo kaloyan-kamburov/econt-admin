@@ -181,7 +181,7 @@ export default createTheme({
           "&.xxl": {
             width: "calc(244 * var(--atom))",
             maxWidth: "90%",
-            height: "90vh"
+            height: "90vh",
           },
         },
       },
@@ -286,13 +286,21 @@ export default createTheme({
             fontSize: "calc(2.6 * var(--atom))",
             lineHeight: "calc(3.4 * var(--atom))",
             textDecoration: "none",
+            transiton: "none !important",
             width: "100%",
-            padding: "calc(1.6 * var(--atom)) calc(3.2 * var(--atom))",
+            padding: 0,
+            // padding: "calc(1.6 * var(--atom)) calc(3.2 * var(--atom))",
             color: mainColor,
             display: "flex",
-            "&:hover": {
+            ".MuiButtonBase-root": {
+              marginBottom: "0 !important",
+            },
+            "&.active": {
               background: linkMenuHoverBg,
             },
+            // "&:hover": {
+            //   background: linkMenuHoverBg,
+            // },
           },
         },
       },
@@ -327,6 +335,16 @@ export default createTheme({
       styleOverrides: {
         root: {
           padding: 0,
+          "&.active": {
+            ".MuiPaper-root": {
+              background: linkMenuHoverBg,
+            },
+          },
+          "&:hover": {
+            ".MuiPaper-root": {
+              background: linkMenuHoverBg,
+            },
+          },
         },
       },
     },
