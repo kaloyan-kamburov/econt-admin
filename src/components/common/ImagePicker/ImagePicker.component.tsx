@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
+import axiosOrg, { AxiosError, AxiosResponse } from "axios";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useMutation } from "react-query";
 
 //MUI components
 import Grid from "@mui/material/Grid";
@@ -17,8 +21,11 @@ import Input from "../../../components/form/Input/Input.component";
 import testImg from "../../../Icons/img.png";
 import { IconPlus } from "../../../Icons/icons";
 
+//utils
+import axios from "../../../utils/api";
+
 //styles
-import { inputBorder, lightColor, btnContainedPrimaryBgColor } from "../../../styles/theme";
+import { inputBorder, lightColor, btnContainedPrimaryBgColor, errorColor } from "../../../styles/theme";
 
 const Content = styled.div`
   display: flex;
@@ -36,6 +43,7 @@ const Content = styled.div`
     display: flex;
     position: relative;
     flex: 1;
+    height: 100%;
     max-height: 100%;
   }
 
@@ -56,6 +64,10 @@ const Content = styled.div`
       display: flex;
       align-items: center;
       justify-content: center;
+
+      &.error {
+        border-color: ${errorColor};
+      }
 
       img {
         max-width: 100%;
@@ -170,6 +182,7 @@ const Content = styled.div`
 
 interface Props {
   closeFn: () => void;
+  onImgPick: (values: any) => void;
 }
 
 type Image = {
@@ -177,71 +190,54 @@ type Image = {
   url: string;
 };
 
-const ImagePicker: React.FC<Props> = ({ closeFn }) => {
+const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
   const { t } = useTranslation();
   const [images, setImages] = useState<any>([]);
   const [file, setFile] = useState<any>(null);
   const [chosenImage, setChosenImage] = useState<Image | null>(null);
   const [inputRendered, setInputRendered] = useState<boolean>(true);
 
+  //get images
+  const { refetch: getImages } = useQuery(
+    "getImages",
+    async () => {
+      const data = await axios("images");
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosResponse<any>) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          setImages(data.data);
+        }
+      },
+      onError: (error: AxiosError) => {
+        console.log(error);
+      },
+    }
+  );
+
+  //upload image
+  const uploadImage = useMutation(
+    async (values: any) => {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("description", values.description);
+      formData.append("fileId", values.fileId);
+      const data = await axios.post("upload-image", values);
+      return data;
+    },
+    {
+      retry: false,
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          onImgPick(data?.data);
+        }
+      },
+    }
+  );
+
   useEffect(() => {
-    setImages([
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-    ]);
+    getImages();
   }, []);
 
   const resetInput = () => {
@@ -252,12 +248,32 @@ const ImagePicker: React.FC<Props> = ({ closeFn }) => {
   return (
     <Content>
       <Form
-        onSubmit={() => {
-          // setLoading(true);
-          // setTimeout(() => {
-          //   setLoading(false);
-          //   closeFn();
-          // }, 1000);
+        onSubmit={(values: any) => {
+          if (typeof values.file === "string") {
+            onImgPick(values);
+          } else {
+            uploadImage.mutate(values);
+          }
+        }}
+        mutators={{
+          setFormValue: ([fieldName, fieldVal], state, form) => {
+            form.changeValue(state, fieldName, () => fieldVal);
+          },
+          setFieldTouched: ([fieldName, touched], state) => {
+            const field = state.fields[fieldName];
+            if (field) {
+              field.touched = !!touched;
+            }
+          },
+        }}
+        validate={(values) => {
+          const errors: any = {};
+
+          if (!values.file) {
+            errors.fileRequired = t("form.validations.required");
+          }
+
+          return errors;
         }}
         render={({ handleSubmit, invalid, errors, values, form }) => (
           <form
@@ -265,9 +281,10 @@ const ImagePicker: React.FC<Props> = ({ closeFn }) => {
             onSubmit={handleSubmit}
             style={{ width: "100%" }}
           >
+            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
             <div className="inner-content">
               <div className="left-content">
-                <div className="img-wrapper">
+                <div className={`img-wrapper${!values.file && form.getFieldState("file")?.touched ? " error" : ""}`}>
                   {(chosenImage || file) && (
                     <img
                       src={chosenImage ? chosenImage.url : URL.createObjectURL(file)}
@@ -338,7 +355,6 @@ const ImagePicker: React.FC<Props> = ({ closeFn }) => {
                         color="primary"
                         type="submit"
                         size="large"
-                        onClick={() => {}}
                         sx={{
                           width: "auto",
                         }}
@@ -385,27 +401,41 @@ const ImagePicker: React.FC<Props> = ({ closeFn }) => {
                             setChosenImage(null);
                             resetInput();
                             setFile(e.target.files?.[0] || null);
+
+                            form.mutators.setFormValue("name", null);
+                            form.mutators.setFormValue("description", null);
+                            form.mutators.setFormValue("file", e.target.files?.[0] || null);
+                            form.mutators.setFieldTouched("file", true);
                           }}
                         />
                       )}
                     </div>
                   </div>
+
                   {images.map((img: any) => (
                     <div
                       className="img-wrapper"
+                      key={img.id}
                       onClick={() => {
                         setFile(null);
                         resetInput();
                         setChosenImage({
-                          id: "123",
-                          url: "/static/media/img.aad8975d75fb896139ae.png",
+                          id: img.id,
+                          url: img.src,
                         });
+                        form.mutators.setFormValue("name", img.name);
+                        form.mutators.setFormValue("description", img.description);
+                        form.mutators.setFormValue("fileUrl", img.src || null);
+                        form.mutators.setFormValue("fileId", img.id || null);
+                        form.mutators.setFormValue("file", img.id || null);
+                        form.mutators.setFieldTouched("file", true);
                       }}
                     >
                       <div className="inner">
-                        <img
-                          src={testImg}
-                          alt="img"
+                        <LazyLoadImage
+                          alt={img.alt}
+                          src={img.thumbnail}
+                          effect="opacity"
                         />
                       </div>
                     </div>

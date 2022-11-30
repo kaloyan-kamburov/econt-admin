@@ -2,6 +2,7 @@ import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import { createBrowserHistory } from "history";
 import MockAdapter from "axios-mock-adapter";
 import toast from "react-hot-toast";
+import { images } from "./mockData";
 // import { useRoutes } from "react-router-dom";
 
 const baseURL = process.env.REACT_APP_API_URL;
@@ -64,6 +65,39 @@ mock.onGet("categories").reply(200, [
     name: "Категория 1",
     id: "123",
     description: "Lorem ipsum dolor sit amet",
+    published: true,
+    folders: [
+      {
+        name: "Услуги от България",
+        fileGroups: [
+          {
+            name: "Група 1",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Категория 2",
+    id: "1233",
+    description: "Lorem ipsum dolor sit amet",
+    published: true,
+    folders: [
+      {
+        name: "Услуги от България",
+        fileGroups: [
+          {
+            name: "Група 1",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Категория 3",
+    id: "433443",
+    description: "Lorem ipsum dolor sit amet",
+    published: false,
     folders: [
       {
         name: "Услуги от България",
@@ -76,6 +110,15 @@ mock.onGet("categories").reply(200, [
     ],
   },
 ]);
+
+mock.onGet("images").reply(200, images);
+
+mock.onPost("upload-image").reply(200, {
+  id: "31431",
+  fileUrl: "http://localhost:3000/img/img.png",
+});
+
+// mock.onPost("upload-image").networkError();
 
 // mock.onGet("logged").networkError();
 

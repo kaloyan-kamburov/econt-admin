@@ -8,6 +8,7 @@ const BreadcrumbWrapper = styled.div`
   display: flex;
   width: 100%;
   margin-bottom: calc(2 * var(--atom));
+  height: calc(5 * var(--atom));
 
   .text {
     margin-right: calc(2.4 * var(--atom));

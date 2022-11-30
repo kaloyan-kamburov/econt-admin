@@ -33,6 +33,7 @@ const PageBegin: React.FC<{}> = () => {
           <Category
             key={item.id}
             data={item}
+            published={item.published}
           />
         ))}
       </Draggable>

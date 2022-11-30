@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { Field } from "react-final-form";
+import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import IconFile from "@mui/icons-material/AttachFileOutlined";
@@ -8,6 +9,9 @@ import IconFile from "@mui/icons-material/AttachFileOutlined";
 import DescriptionIcon from "@mui/icons-material/Description";
 import IconClose from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+
+import Modal from "../../common/Modal/Modal.component";
+import ImagePicker from "../../common/ImagePicker/ImagePicker.component";
 
 //theme
 import { errorColor, inputBorder } from "../../../styles/theme";
@@ -214,6 +218,7 @@ const InputFileWrapper = styled.div`
   border: 1px dashed ${inputBorder};
   border-radius: calc(2.4 * var(--atom));
   position: relative;
+  cursor: pointer;
 
   input {
     position: absolute;
@@ -222,7 +227,6 @@ const InputFileWrapper = styled.div`
     top: 0;
     width: 100%;
     height: 100%;
-    cursor: pointer;
   }
 
   .input-file-content {
@@ -230,11 +234,13 @@ const InputFileWrapper = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 
-    label {
+    .label {
       font-size: calc(3 * var(--atom));
       line-height: calc(5 * var(--atom));
       margin-top: calc(1.2 * var(--atom));
+      cursor: pointer;
     }
 
     .desc {
@@ -267,10 +273,6 @@ const FilePreview = styled.div`
   img {
     max-width: 100%;
     max-height: 100%;
-
-    &.clickable {
-      cursor: pointer;
-    }
   }
 `;
 
@@ -318,66 +320,87 @@ interface Props {
   // type?: string;
   disabled?: boolean;
   // form?: any;
-  onImgClick?: () => void;
+  onImgPick?: (values: any) => void;
 }
 const InputFile: React.FC<Props> = ({
   name,
   isImage = false,
   label = "",
   desc = "",
+  onImgPick = () => {},
 
   required = false,
   accept = "*",
   validate = [],
   disabled = false,
-  onImgClick = () => {},
   // form,
 }) => {
   const [file, setFile] = useState<any>(null);
+  const [modalImages, setModalImages] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   return (
-    <Field
-      name={name}
-      // validate={composeValidators(...(validate || []))}
-    >
-      {(props: any) => {
-        return (
-          <>
-            {file && (
-              <FilePreview>
-                {isImage && (
+    <>
+      <Field
+        name={name}
+        // validate={composeValidators(...(validate || []))}
+      >
+        {(props: any) => {
+          return (
+            <>
+              {file && (
+                <FilePreview>
                   <img
-                    src={URL.createObjectURL(file)}
+                    src={file}
                     alt="file"
-                    className={!!onImgClick ? "clickable" : ""}
-                    onClick={onImgClick}
                   />
-                )}
-              </FilePreview>
-            )}
+                </FilePreview>
+              )}
 
-            <InputFileWrapper className={props.meta.touched && props.meta.error ? "error" : ""}>
-              <input
-                type="file"
-                name={name}
-                accept={accept}
-                // {...props.input}
-                onChange={(e: any) => {
-                  props.input.onChange(e.target.files?.[0]);
-                  setFile(e.target.files?.[0] || null);
-                }}
-              />
-              <div className="input-file-content">
-                {renderIcon(isImage)}
-                {label && <label htmlFor={name}>{label}</label>}
-                {desc && <span className="desc">{desc}</span>}
-              </div>
-            </InputFileWrapper>
-            <ErrorWrapper>{props.meta.touched && props.meta.error && props.meta.error}</ErrorWrapper>
-          </>
-        );
-      }}
-    </Field>
+              <InputFileWrapper className={props.meta.touched && props.meta.error ? "error" : ""}>
+                {/* <input
+                  type="file"
+                  name={name}
+                  accept={accept}
+                  // {...props.input}
+                  onChange={(e: any) => {
+                    props.input.onChange(e.target.files?.[0]);
+                    setFile(e.target.files?.[0] || null);
+                  }}
+                /> */}
+                <div
+                  className="input-file-content"
+                  onClick={() => setModalImages(true)}
+                >
+                  {renderIcon(isImage)}
+                  {label && <span className="label">{label}</span>}
+                  {desc && <span className="desc">{desc}</span>}
+                </div>
+              </InputFileWrapper>
+              <ErrorWrapper>{props.meta.touched && props.meta.error && props.meta.error}</ErrorWrapper>
+              {modalImages && (
+                <Modal
+                  closeFn={() => {
+                    setModalImages(false);
+                  }}
+                  title={t("common.images")}
+                  xxl
+                >
+                  <ImagePicker
+                    onImgPick={(values) => {
+                      setModalImages(false);
+                      setFile(values.fileUrl);
+                      onImgPick(values);
+                    }}
+                    closeFn={() => setModalImages(false)}
+                  />
+                </Modal>
+              )}
+            </>
+          );
+        }}
+      </Field>
+    </>
   );
 };
 

@@ -78,6 +78,16 @@ code {
   --atom: 5px;
 }
 
+.lazy-load-image-loaded {
+
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 @media (max-width: 1200px) {
   :root {
     --atom: 4px;

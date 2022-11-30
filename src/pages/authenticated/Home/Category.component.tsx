@@ -57,6 +57,10 @@ const CategoryWrapper = styled.div`
       flex-direction: column;
       align-items: center;
       cursor: pointer;
+
+      &.unpublished {
+        opacity: 0.5;
+      }
     }
 
     img {
@@ -150,9 +154,10 @@ const CategoryWrapper = styled.div`
 interface Props {
   isAdd?: boolean;
   data?: any;
+  published?: boolean;
 }
 
-const Item: React.FC<Props> = ({ isAdd = false, data }) => {
+const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -183,7 +188,7 @@ const Item: React.FC<Props> = ({ isAdd = false, data }) => {
           ) : (
             <>
               <div
-                className="inner-content"
+                className={`inner-content${!published ? " unpublished" : ""}`}
                 onClick={() => {
                   navigate(`/category/${data.id}`);
                 }}

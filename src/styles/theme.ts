@@ -275,10 +275,15 @@ export default createTheme({
           boxShadow: "none",
           ".MuiButtonBase-root": {
             padding: "0 calc(3.2 * var(--atom))",
-            margin: "0 0 calc(1.2 * var(--atom)) 0",
           },
           ".MuiAccordion-rounded": {
             paddingLeft: "calc(3.2 * var(--atom))",
+          },
+          "&.Mui-expanded": {
+            margin: 0,
+          },
+          "&:before": {
+            display: "none",
           },
         },
         region: {

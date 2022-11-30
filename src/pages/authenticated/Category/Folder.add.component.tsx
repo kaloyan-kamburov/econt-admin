@@ -13,7 +13,7 @@ import { required } from "../../../utils/validations/validations";
 
 //custom components
 import Input from "../../../components/form/Input/Input.component";
-import InputFile from "../../../components/form/InputFile/InputFile.component";
+import InputFile from "../../../components/form/InputImage/InputImage.component";
 
 interface Props {
   closeFn: () => void;

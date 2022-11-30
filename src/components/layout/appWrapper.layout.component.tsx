@@ -43,7 +43,7 @@ const PageWrapper = styled.div`
       min-width: 30.3%;
       margin: 1.5%;
     }
-    @media (max-width: 768px) {
+    @media (max-width: 991px) {
       .grabbable,
       .btn-add {
         max-width: 48%;

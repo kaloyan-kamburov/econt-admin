@@ -13,7 +13,7 @@ import { required } from "../../../utils/validations/validations";
 
 //custom components
 import Input from "../../../components/form/Input/Input.component";
-import InputFile from "../../../components/form/InputFile/InputFile.component";
+import InputImage from "../../../components/form/InputImage/InputImage.component";
 import Modal from "../../../components/common/Modal/Modal.component";
 import ImagePicker from "../../../components/common/ImagePicker/ImagePicker.component";
 
@@ -24,7 +24,6 @@ interface Props {
 const AddCategory: React.FC<Props> = ({ closeFn }) => {
   const { t } = useTranslation();
   const [tab, setTab] = useState<number>(0);
-  const [modalImages, setModalImages] = useState<boolean>(false);
 
   const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
   return (
@@ -37,6 +36,11 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
             errors.file = t("form.validations.required");
           }
           return errors;
+        }}
+        mutators={{
+          setFormValue: ([fieldName, fieldVal], state, form) => {
+            form.changeValue(state, fieldName, () => fieldVal);
+          },
         }}
         render={({ handleSubmit, invalid, errors, values, form }) => (
           <form
@@ -53,12 +57,13 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                 item
                 xs={12}
               >
-                <InputFile
+                <InputImage
                   name="file"
                   label={t("form.labels.uploadImage")}
                   desc={t("pages.home.uploadFileDesc")}
-                  isImage
-                  onImgClick={() => setModalImages(true)}
+                  onImgPick={(values) => {
+                    form.mutators.setFormValue("file", values.file || values.id);
+                  }}
                 />
               </Grid>
               <Grid
@@ -73,6 +78,11 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                   <Tab label="Български" />
                   <Tab label="English" />
                 </Tabs>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+              >
                 <Input
                   name="name"
                   label={t("form.labels.categoryName")}
@@ -142,17 +152,6 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
               </Grid>
             </Grid>
             {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
-            {modalImages && (
-              <Modal
-                closeFn={() => {
-                  setModalImages(false);
-                }}
-                title={t("common.images")}
-                xxl
-              >
-                <ImagePicker closeFn={() => setModalImages(false)} />
-              </Modal>
-            )}
           </form>
         )}
       />
