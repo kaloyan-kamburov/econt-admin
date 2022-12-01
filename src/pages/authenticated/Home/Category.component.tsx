@@ -274,7 +274,10 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
           closeFn={() => setModalEditCategory(false)}
         >
           <>
-            <EditCategory closeFn={() => setModalEditCategory(false)} />
+            <EditCategory
+              id={data.id}
+              closeFn={() => setModalEditCategory(false)}
+            />
             {/* <Loader showExplicit inModal /> */}
           </>
         </Modal>

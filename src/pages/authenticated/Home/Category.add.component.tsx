@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import axiosOrg, { AxiosError } from "axios";
+import axiosOrg, { AxiosError, AxiosResponse } from "axios";
 import toast from "react-hot-toast";
 
 //MUI components
@@ -33,10 +33,10 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
   const { t } = useTranslation();
   const [tab, setTab] = useState<number>(0);
 
-  const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
-
   const { user } = useAuth();
   const { categories, setCategories } = useCategories();
+
+  const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
 
   //save and publish category
   const saveAndPublishCategory = useMutation(
@@ -45,7 +45,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
       return data;
     },
     {
-      onSuccess: (data: AxiosError | any) => {
+      onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
           setCategories([...categories, data?.data]);
           toast.success(`${t("pages.home.categorySavedAndPublished")}`);
@@ -85,7 +85,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
           if (
             Array.isArray(user?.languages) &&
             !user?.languages.every((lang) => {
-              return values?.[lang]?.name && values?.[lang]?.description;
+              return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
             })
           ) {
             errors.notFilled = t("form.validations.required");
@@ -142,7 +142,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                           xs={12}
                         >
                           <Input
-                            name={`${lang}.name`}
+                            name={`languages.${lang}.name`}
                             label={t("form.labels.categoryName")}
                             validate={[required(t("form.validations.required"))]}
                             required
@@ -153,7 +153,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                           xs={12}
                         >
                           <Input
-                            name={`${lang}.description`}
+                            name={`languages.${lang}.description`}
                             label={t("form.labels.description")}
                             validate={[required(t("form.validations.required"))]}
                             required
