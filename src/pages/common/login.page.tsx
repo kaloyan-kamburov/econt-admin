@@ -50,9 +50,9 @@ const PageLogin: React.FC<Props> = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate("/home");
-    }
+    // if (user) {
+    //   navigate("/home");
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

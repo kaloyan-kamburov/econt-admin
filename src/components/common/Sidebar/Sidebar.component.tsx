@@ -54,7 +54,7 @@ const Sidebar: React.FC<{}> = () => {
         {categories.length ? (
           categories.map((cat) =>
             cat.folders?.length ? (
-              <Accordion defaultExpanded={pathname.includes(`/category/${cat.id}`)}>
+              <Accordion defaultExpanded={pathname.indexOf(`/category/${cat.id}`) > -1}>
                 <AccordionSummary
                   key={cat.id}
                   expandIcon={

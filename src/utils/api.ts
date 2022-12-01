@@ -48,18 +48,17 @@ const history = createBrowserHistory();
 
 const mock = new MockAdapter(instance, { delayResponse: 1000 });
 
-// mock.onGet("logged").reply(500, {
-//   message: "Login failed",
-// });
-
-// mock.onGet("logged").networkError();
-
 mock.onGet("logged").reply(200, {
   user: {
     name: "john",
   },
   languages: ["bg", "en"],
 });
+// mock.onGet("logged").reply(401, {
+//   message: "Login failed",
+// });
+// mock.onGet("logged").networkError();
+
 // mock.onGet("categories").reply(200, [])
 mock.onGet("categories").reply(200, [
   {
@@ -170,7 +169,5 @@ mock.onPost("upload-image").reply(200, {
 });
 
 // mock.onPost("upload-image").networkError();
-
-// mock.onGet("logged").networkError();
 
 export default instance;
