@@ -5,7 +5,10 @@
       "deleteCategory": "Изтриване на категория",
       "deleteCategoryQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{category}}\"</0>?",
       "uploadFileDesc": "Максималния размер е N/A, позволените разширения са .svg, .jpg, .png и .gif",
-      "changeCategory": "Промени категория"
+      "changeCategory": "Промени категория",
+      "categorySaved": "Категорията е създадена",
+      "categorySavedAndPublished": "Категорията е създадена и публикувана",
+      "categoriesUpdated": "Позициите са променени"
     },
     "category": {
       "addFolder": "Създай папка",
@@ -52,6 +55,7 @@
     "delete": "Изтрий",
     "cancel": "Отказ",
     "changeAndPublish": "Промени и публикувай",
+    "saveAndPublish": "Запази и публикувай",
     "save": "Запази",
     "publish": "Публикувай",
     "removeFromPublish": "Премахни от публикувани",
@@ -67,5 +71,9 @@
     "location": "Локация",
     "add": "Добави",
     "noCategories": "Няма категории"
+  },
+  "languages": {
+    "bg": "Български",
+    "en": "English"
   }
 }

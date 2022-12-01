@@ -223,6 +223,9 @@ export default createTheme({
             borderColor: errorColor,
             background: bgHeaders,
           },
+          "&.Mui-focused": {
+            background: bgHeaders,
+          },
           "&:after": {
             display: "none",
           },
@@ -274,10 +277,23 @@ export default createTheme({
         root: {
           boxShadow: "none",
           ".MuiButtonBase-root": {
+            cursor: "default !important",
             padding: "0 calc(3.2 * var(--atom))",
           },
           ".MuiAccordion-rounded": {
-            paddingLeft: "calc(3.2 * var(--atom))",
+            paddingLeft: 0,
+            a: {
+              paddingLeft: "calc(3.2 * var(--atom))",
+            },
+          },
+          ".MuiAccordionSummary-expandIconWrapper": {
+            cursor: "pointer",
+            width: "calc(4 * var(--atom))",
+            display: "flex",
+            justifyContent: "center",
+          },
+          span: {
+            cursor: "pointer",
           },
           "&.Mui-expanded": {
             margin: 0,
@@ -322,6 +338,9 @@ export default createTheme({
             "&:first-of-type": {
               minHeight: "calc(5 * var(--atom)) 0",
             },
+          },
+          span: {
+            cursor: "ponter",
           },
 
           "&:hover": {

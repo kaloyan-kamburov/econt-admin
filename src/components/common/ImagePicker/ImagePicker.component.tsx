@@ -227,7 +227,6 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
       return data;
     },
     {
-      retry: false,
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
           onImgPick(data?.data);

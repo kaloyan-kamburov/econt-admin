@@ -32,7 +32,10 @@ const PageHome: FC<Props> = () => {
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setUser(data?.data?.user);
+          setUser({
+            user: data?.data?.user,
+            languages: data?.data?.languages
+          });
           getCategories();
         }
       },

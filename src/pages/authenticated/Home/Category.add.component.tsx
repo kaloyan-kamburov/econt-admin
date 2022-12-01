@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import axiosOrg, { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 //MUI components
 import Grid from "@mui/material/Grid";
@@ -14,8 +17,13 @@ import { required } from "../../../utils/validations/validations";
 //custom components
 import Input from "../../../components/form/Input/Input.component";
 import InputImage from "../../../components/form/InputImage/InputImage.component";
-import Modal from "../../../components/common/Modal/Modal.component";
-import ImagePicker from "../../../components/common/ImagePicker/ImagePicker.component";
+
+//utils
+import axios from "../../../utils/api";
+
+//hooks
+import useAuth from "../../../hooks/useAuth";
+import useCategories from "../../../hooks/useCategories";
 
 interface Props {
   closeFn: () => void;
@@ -26,14 +34,61 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
   const [tab, setTab] = useState<number>(0);
 
   const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
+
+  const { user } = useAuth();
+  const { categories, setCategories } = useCategories();
+
+  //save and publish category
+  const saveAndPublishCategory = useMutation(
+    async (values: any) => {
+      const data = await axios.post("categories/save-publish", values);
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          setCategories([...categories, data?.data]);
+          toast.success(`${t("pages.home.categorySavedAndPublished")}`);
+          closeFn();
+        }
+      },
+    }
+  );
+
+  //save category
+  const saveCategory = useMutation(
+    async (values: any) => {
+      const data = await axios.post("categories/save", values);
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          setCategories([...categories, data?.data]);
+          toast.success(`${t("pages.home.categorySaved")}`);
+          closeFn();
+        }
+      },
+    }
+  );
+
   return (
     <>
       <Form
-        onSubmit={() => {}}
+        onSubmit={(values) => saveAndPublishCategory.mutate(values)}
         validate={(values) => {
           const errors: any = {};
           if (!values.file) {
             errors.file = t("form.validations.required");
+          }
+
+          if (
+            Array.isArray(user?.languages) &&
+            !user?.languages.every((lang) => {
+              return values?.[lang]?.name && values?.[lang]?.description;
+            })
+          ) {
+            errors.notFilled = t("form.validations.required");
           }
           return errors;
         }}
@@ -75,35 +130,43 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  <Tab label="Български" />
-                  <Tab label="English" />
+                  {Array.isArray(user?.languages) ? user?.languages.map((lang) => <Tab label={t(`languages.${lang}`)} />) : null}
                 </Tabs>
               </Grid>
-              <Grid
-                item
-                xs={12}
-              >
-                <Input
-                  name="name"
-                  label={t("form.labels.categoryName")}
-                  validate={[required(t("form.validations.required"))]}
-                  required
-                />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-              >
-                <Input
-                  name="description"
-                  label={t("form.labels.description")}
-                  validate={[required(t("form.validations.required"))]}
-                  required
-                  rows={3}
-                  maxRows={3}
-                  multiline
-                />
-              </Grid>
+              {Array.isArray(user?.languages)
+                ? user?.languages.map((lang, i) =>
+                    tab === i ? (
+                      <React.Fragment key={lang}>
+                        <Grid
+                          item
+                          xs={12}
+                        >
+                          <Input
+                            name={`${lang}.name`}
+                            label={t("form.labels.categoryName")}
+                            validate={[required(t("form.validations.required"))]}
+                            required
+                          />
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                        >
+                          <Input
+                            name={`${lang}.description`}
+                            label={t("form.labels.description")}
+                            validate={[required(t("form.validations.required"))]}
+                            required
+                            rows={3}
+                            maxRows={3}
+                            multiline
+                          />
+                        </Grid>
+                      </React.Fragment>
+                    ) : null
+                  )
+                : null}
+
               <Grid
                 item
                 xs={12}
@@ -120,14 +183,13 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                   }}
                   disabled={invalid}
                 >
-                  {t("common.changeAndPublish")}
+                  {t("common.saveAndPublish")}
                 </Button>
                 <Button
                   variant="contained"
                   color="info"
-                  type="submit"
                   size="large"
-                  onClick={() => {}}
+                  onClick={() => saveCategory.mutate(values)}
                   sx={{
                     width: "auto",
                     marginLeft: "auto",

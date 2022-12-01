@@ -58,6 +58,7 @@ mock.onGet("logged").reply(200, {
   user: {
     name: "john",
   },
+  languages: ["bg", "en"],
 });
 // mock.onGet("categories").reply(200, [])
 mock.onGet("categories").reply(200, [
@@ -69,6 +70,7 @@ mock.onGet("categories").reply(200, [
     folders: [
       {
         name: "Услуги от България",
+        id: "33213",
         fileGroups: [
           {
             name: "Група 1",
@@ -85,6 +87,7 @@ mock.onGet("categories").reply(200, [
     folders: [
       {
         name: "Услуги от България",
+        id: "33244413",
         fileGroups: [
           {
             name: "Група 1",
@@ -101,6 +104,7 @@ mock.onGet("categories").reply(200, [
     folders: [
       {
         name: "Услуги от България",
+        id: "555",
         fileGroups: [
           {
             name: "Група 1",
@@ -110,6 +114,25 @@ mock.onGet("categories").reply(200, [
     ],
   },
 ]);
+
+mock.onPost("categories/save").reply(200, {
+  name: "Категория 1",
+  id: "123",
+  description: "Lorem ipsum dolor sit amet",
+  published: false,
+  folders: [],
+});
+
+mock.onPost("categories/save-publish").reply(200, {
+  name: "Категория 1",
+  id: "123",
+  description: "Lorem ipsum dolor sit amet",
+  published: true,
+  folders: [],
+});
+
+mock.onPut("categories/update").reply(200);
+// mock.onPut("categories/update").reply(500);
 
 mock.onGet("images").reply(200, images);
 

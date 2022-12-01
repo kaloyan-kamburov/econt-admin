@@ -41,13 +41,6 @@ const Sidebar: React.FC<{}> = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
 
-  const isExpanded = (item: any) => {
-    if (pathname.includes("category")) {
-      return true;
-    }
-    return false;
-  };
-
   return (
     <SidebarWrapper>
       <Link
@@ -61,7 +54,7 @@ const Sidebar: React.FC<{}> = () => {
         {categories.length ? (
           categories.map((cat) =>
             cat.folders?.length ? (
-              <Accordion defaultExpanded={isExpanded(cat)}>
+              <Accordion defaultExpanded={pathname.includes(`/category/${cat.id}`)}>
                 <AccordionSummary
                   key={cat.id}
                   expandIcon={
@@ -81,23 +74,27 @@ const Sidebar: React.FC<{}> = () => {
                     </svg>
                   }
                 >
-                  {cat.name}
+                  <span onClick={() => navigate(`/category/${cat.id}`)}>{cat.name}</span>
                 </AccordionSummary>
-                <AccordionDetails className={pathname === `/category/${cat.id}` ? "active" : ""}>
+                <AccordionDetails>
                   {cat.folders.map((folder: any) => (
                     <Accordion>
                       <NavLink
-                        to={`/category/${cat.id}`}
-                        className={() => (pathname === `/category/${cat.id}` ? "active" : "")}
+                        to={`/category/${cat.id}/${folder.id}`}
+                        className={() => (pathname === `/category/${cat.id}/${folder.id}` ? "active" : "")}
                       >
-                        <AccordionSummary>{folder.name}</AccordionSummary>
+                        <AccordionSummary>
+                          <span>{folder.name}</span>
+                        </AccordionSummary>
                       </NavLink>
                     </Accordion>
                   ))}
                 </AccordionDetails>
               </Accordion>
             ) : (
-              <AccordionSummary onClick={() => navigate(`category/${cat.id}`)}>{cat.name}</AccordionSummary>
+              <AccordionSummary>
+                <span onClick={() => navigate(`/category/${cat.id}`)}>{cat.name}</span>
+              </AccordionSummary>
             )
           )
         ) : (

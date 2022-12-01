@@ -2,6 +2,7 @@ import React, { createContext, useState } from "react";
 
 type User = {
   name: string;
+  languages: string[];
 };
 
 type AuthContextType = {
