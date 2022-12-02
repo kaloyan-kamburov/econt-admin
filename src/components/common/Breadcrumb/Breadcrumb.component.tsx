@@ -7,7 +7,7 @@ import ChevronRight from "@mui/icons-material/ChevronRight";
 const BreadcrumbWrapper = styled.div`
   display: flex;
   width: 100%;
-  margin-bottom: calc(2 * var(--atom));
+  margin-bottom: calc(6 * var(--atom));
   height: calc(5 * var(--atom));
 
   .text {
@@ -35,14 +35,14 @@ const Breadcrumb: React.FC<Props> = ({ routePath }) => {
   return (
     <BreadcrumbWrapper>
       {routePath.map((path, i) => (
-        <>
+        <React.Fragment key={i}>
           <div className="text">{path}</div>
           {i < routePath.length - 1 && (
             <div className="separator">
               <ChevronRight />
             </div>
           )}
-        </>
+        </React.Fragment>
       ))}
     </BreadcrumbWrapper>
   );

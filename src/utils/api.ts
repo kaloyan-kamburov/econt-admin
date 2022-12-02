@@ -46,7 +46,7 @@ const history = createBrowserHistory();
 //   }
 // );
 
-const mock = new MockAdapter(instance, { delayResponse: 1000 });
+const mock = new MockAdapter(instance, { delayResponse: 100 });
 
 mock.onGet("logged").reply(200, {
   user: {
@@ -63,13 +63,22 @@ mock.onGet("logged").reply(200, {
 mock.onGet("categories").reply(200, [
   {
     name: "Категория 1",
-    id: "123",
+    id: "12s3",
     description: "Lorem ipsum dolor sit amet",
     published: true,
     folders: [
       {
         name: "Услуги от България",
-        id: "33213",
+        id: "332ss13",
+        fileGroups: [
+          {
+            name: "Група 1",
+          },
+        ],
+      },
+      {
+        name: "Услуги от Italiq",
+        id: "33s2213",
         fileGroups: [
           {
             name: "Група 1",
@@ -80,13 +89,13 @@ mock.onGet("categories").reply(200, [
   },
   {
     name: "Категория 2",
-    id: "1233",
+    id: "123s3",
     description: "Lorem ipsum dolor sit amet",
     published: true,
     folders: [
       {
         name: "Услуги от България",
-        id: "33244413",
+        id: "332444dsa13",
         fileGroups: [
           {
             name: "Група 1",
@@ -97,13 +106,13 @@ mock.onGet("categories").reply(200, [
   },
   {
     name: "Категория 3",
-    id: "433443",
+    id: "fds",
     description: "Lorem ipsum dolor sit amet",
     published: false,
     folders: [
       {
         name: "Услуги от България",
-        id: "555",
+        id: "dsa",
         fileGroups: [
           {
             name: "Група 1",
@@ -134,31 +143,39 @@ mock.onPut("categories/update").reply(200);
 // mock.onPut("categories/update").reply(500);
 
 mock.onGet("categories/123").reply(200, {
-  name: "Категория 3",
-  id: "433443",
-  description: "Lorem ipsum dolor sit amet",
-  published: false,
-  languages: {
-    bg: {
-      name: "Категория 3",
-      description: "Lorem ipsum dolor sit amet",
+  data: {
+    name: "Категория 3",
+    id: "433443",
+    description: "Lorem ipsum dolor sit amet",
+    published: false,
+    languages: {
+      bg: {
+        name: "Категория 3",
+        description: "Lorem ipsum dolor sit amet",
+      },
+      en: {
+        name: "Category 3",
+        description: "Lorem fiesta test yeah so beat it",
+      },
     },
-    en: {
-      name: "Category 3",
-      description: "Lorem fiesta test yeah so beat it",
-    },
+    folders: [
+      {
+        name: "Услуги от България",
+        id: "555",
+        published: false,
+      },
+      {
+        name: "Документи и файлове",
+        id: "6666",
+        published: true,
+      },
+      {
+        name: "Глоби от продукции",
+        id: "3421",
+        published: true,
+      },
+    ],
   },
-  folders: [
-    {
-      name: "Услуги от България",
-      id: "555",
-      fileGroups: [
-        {
-          name: "Група 1",
-        },
-      ],
-    },
-  ],
 });
 
 mock.onGet("images").reply(200, images);
@@ -169,5 +186,13 @@ mock.onPost("upload-image").reply(200, {
 });
 
 // mock.onPost("upload-image").networkError();
+
+mock.onGet("page/1").reply(200, {
+  data: {
+    name: "Услуги от Италия",
+    isFolders: true,
+    records: [],
+  },
+});
 
 export default instance;

@@ -1,4 +1,4 @@
-import React, { useEffect, createRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import axiosOrg, { AxiosError } from "axios";
 import toast from "react-hot-toast";
@@ -15,8 +15,7 @@ import useCategories from "../../../hooks/useCategories";
 //utils
 import axios from "../../../utils/api";
 
-const PageBegin: React.FC<{}> = () => {
-  const contentRef: any = createRef();
+const PageHome: React.FC<{}> = () => {
   const { t } = useTranslation();
   const { setTitle } = usePageTitle();
   const { categories, setCategories } = useCategories();
@@ -32,7 +31,7 @@ const PageBegin: React.FC<{}> = () => {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
           setCategories(data);
-          toast.success(`${t("pages.home.categoriesUpdated")}`);
+          toast.success(`${t("common.categoriesUpdated")}`);
         }
       },
       onError: (error: AxiosError) => {
@@ -57,10 +56,7 @@ const PageBegin: React.FC<{}> = () => {
   }, [categories]);
 
   return (
-    <div
-      className="page-wrapper"
-      ref={contentRef}
-    >
+    <div className="page-wrapper">
       {/* {JSON.stringify(categories)} */}
       <Category isAdd />
       {categoriesRendered && (
@@ -87,4 +83,4 @@ const PageBegin: React.FC<{}> = () => {
   );
 };
 
-export default PageBegin;
+export default PageHome;

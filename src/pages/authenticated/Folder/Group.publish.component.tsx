@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect, useLayoutEffect, createRef } from "react";
 import styled from "styled-components";
-import GridLayout from "react-grid-layout";
 import { useTranslation } from "react-i18next";
 
 //MUI components
@@ -181,13 +180,6 @@ const GroupDelete: React.FC<Props> = ({ closeFn }) => {
 
   const { i18n, t } = useTranslation();
 
-  const layout = [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, isResizable: false, isBounded: true },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, isResizable: false, isBounded: true },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, isResizable: false, isBounded: true },
-    { i: "d", x: 0, y: 0, w: 1, h: 1, isResizable: false, isBounded: true },
-  ];
-
   useEffect(() => {
     if (contentRef.current && windowWidth && windowHeight) {
       setWidth(contentRef.current.offsetWidth - 25);
@@ -221,83 +213,74 @@ const GroupDelete: React.FC<Props> = ({ closeFn }) => {
           className="content"
           ref={contentRef}
         >
-          <GridLayout
-            className="layout"
-            layout={layout}
-            cols={3}
-            rowHeight={rowHeight}
-            width={width}
-            onLayoutChange={(newLayout) => console.log(newLayout)}
+          <div
+            key="a"
+            className="category"
           >
-            <div
-              key="a"
-              className="category"
-            >
-              <div className="category-content">
-                <img
-                  alt="Icon map"
-                  src={iconMap}
-                />
-                <span className="title">
-                  Услуги от България
-                  <br />
-                  (Непубликуван)
-                </span>
-                <span className="description">Lorem ipsum dolor sit amet</span>
-              </div>
+            <div className="category-content">
+              <img
+                alt="Icon map"
+                src={iconMap}
+              />
+              <span className="title">
+                Услуги от България
+                <br />
+                (Непубликуван)
+              </span>
+              <span className="description">Lorem ipsum dolor sit amet</span>
             </div>
-            <div
-              key="b"
-              className="category"
-            >
-              <div className="category-content">
-                <img
-                  alt="Icon map"
-                  src={iconMap}
-                />
-                <span className="title">
-                  Услуги от България
-                  <br />
-                  (Непубликуван)
-                </span>
-                <span className="description">Lorem ipsum dolor sit amet</span>
-              </div>
+          </div>
+          <div
+            key="b"
+            className="category"
+          >
+            <div className="category-content">
+              <img
+                alt="Icon map"
+                src={iconMap}
+              />
+              <span className="title">
+                Услуги от България
+                <br />
+                (Непубликуван)
+              </span>
+              <span className="description">Lorem ipsum dolor sit amet</span>
             </div>
-            <div
-              key="c"
-              className="category"
-            >
-              <div className="category-content">
-                <img
-                  alt="Icon map"
-                  src={iconMap}
-                />
-                <span className="title">
-                  Услуги от България
-                  <br />
-                  (Непубликуван)
-                </span>
-                <span className="description">Lorem ipsum dolor sit amet</span>
-              </div>
+          </div>
+          <div
+            key="c"
+            className="category"
+          >
+            <div className="category-content">
+              <img
+                alt="Icon map"
+                src={iconMap}
+              />
+              <span className="title">
+                Услуги от България
+                <br />
+                (Непубликуван)
+              </span>
+              <span className="description">Lorem ipsum dolor sit amet</span>
             </div>
-            <div
-              key="d"
-              className="category"
-            >
-              <div className="category-content">
-                <img
-                  alt="Icon map"
-                  src={iconMap}
-                />
-                <span className="title">
-                  Услуги от България
-                  <br />
-                  (Непубликуван)
-                </span>
-                <span className="description">Lorem ipsum dolor sit amet</span>
-              </div>
+          </div>
+          <div
+            key="d"
+            className="category"
+          >
+            <div className="category-content">
+              <img
+                alt="Icon map"
+                src={iconMap}
+              />
+              <span className="title">
+                Услуги от България
+                <br />
+                (Непубликуван)
+              </span>
+              <span className="description">Lorem ipsum dolor sit amet</span>
             </div>
-          </GridLayout>
+          </div>
         </div>
         <footer>
           <EcontLogo2 />

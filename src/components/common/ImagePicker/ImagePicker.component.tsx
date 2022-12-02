@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Form } from "react-final-form";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { useQuery } from "react-query";
 import axiosOrg, { AxiosError, AxiosResponse } from "axios";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -11,21 +11,23 @@ import { useMutation } from "react-query";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 
+//custom components
+import Input from "../../../components/form/Input/Input.component";
+import Modal from "../../../components/common/Modal/Modal.component";
+
 //validations
 import { required } from "../../../utils/validations/validations";
 
-//custom components
-import Input from "../../../components/form/Input/Input.component";
-
-//temp img
-import testImg from "../../../Icons/img.png";
+//icons
+import { IconTrash } from "../../../Icons/icons";
 import { IconPlus } from "../../../Icons/icons";
 
 //utils
 import axios from "../../../utils/api";
 
 //styles
-import { inputBorder, lightColor, btnContainedPrimaryBgColor, errorColor } from "../../../styles/theme";
+import { inputBorder, btnContainedPrimaryBgColor, errorColor } from "../../../styles/theme";
+import toast from "react-hot-toast";
 
 const Content = styled.div`
   display: flex;
@@ -188,6 +190,7 @@ interface Props {
 type Image = {
   id: string;
   url: string;
+  name: string;
 };
 
 const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
@@ -196,6 +199,7 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
   const [file, setFile] = useState<any>(null);
   const [chosenImage, setChosenImage] = useState<Image | null>(null);
   const [inputRendered, setInputRendered] = useState<boolean>(true);
+  const [imageDelete, setImageDelete] = useState<boolean>(false);
 
   //get images
   const { refetch: getImages } = useQuery(
@@ -235,6 +239,21 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
     }
   );
 
+  //delete image
+  const deleteImage = useMutation(
+    async (values: any) => {
+      const data = await axios.delete("image", values);
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          toast.success("common.deleteImageSuccess");
+        }
+      },
+    }
+  );
+
   useEffect(() => {
     getImages();
   }, []);
@@ -245,207 +264,252 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
   };
 
   return (
-    <Content>
-      <Form
-        onSubmit={(values: any) => {
-          if (typeof values.file === "string") {
-            onImgPick(values);
-          } else {
-            uploadImage.mutate(values);
-          }
-        }}
-        mutators={{
-          setFormValue: ([fieldName, fieldVal], state, form) => {
-            form.changeValue(state, fieldName, () => fieldVal);
-          },
-          setFieldTouched: ([fieldName, touched], state) => {
-            const field = state.fields[fieldName];
-            if (field) {
-              field.touched = !!touched;
+    <>
+      <Content>
+        <Form
+          onSubmit={(values: any) => {
+            if (typeof values.file === "string") {
+              onImgPick(values);
+            } else {
+              uploadImage.mutate(values);
             }
-          },
-        }}
-        validate={(values) => {
-          const errors: any = {};
+          }}
+          mutators={{
+            setFormValue: ([fieldName, fieldVal], state, form) => {
+              form.changeValue(state, fieldName, () => fieldVal);
+            },
+            setFieldTouched: ([fieldName, touched], state) => {
+              const field = state.fields[fieldName];
+              if (field) {
+                field.touched = !!touched;
+              }
+            },
+          }}
+          validate={(values) => {
+            const errors: any = {};
 
-          if (!values.file) {
-            errors.fileRequired = t("form.validations.required");
-          }
+            if (!values.file) {
+              errors.fileRequired = t("form.validations.required");
+            }
 
-          return errors;
-        }}
-        render={({ handleSubmit, invalid, errors, values, form }) => (
-          <form
-            autoComplete="off"
-            onSubmit={handleSubmit}
-            style={{ width: "100%" }}
-          >
-            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
-            <div className="inner-content">
-              <div className="left-content">
-                <div className={`img-wrapper${!values.file && form.getFieldState("file")?.touched ? " error" : ""}`}>
-                  {(chosenImage || file) && (
-                    <img
-                      src={chosenImage ? chosenImage.url : URL.createObjectURL(file)}
-                      alt="Chosen thumbnail"
-                    />
-                  )}
-                </div>
-
-                <Grid
-                  container
-                  spacing={2}
-                  sx={{ marginTop: "24px", flex: 1 }}
-                >
-                  <Grid
-                    item
-                    xs={12}
-                  >
-                    <Input
-                      name="name"
-                      label={t("form.labels.title")}
-                      validate={[required(t("form.validations.required"))]}
-                      required
-                      rows={3}
-                      maxRows={3}
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                  >
-                    <Input
-                      name="description"
-                      label={t("form.labels.altText")}
-                      // validate={[required(t("form.validations.required"))]}
-                      // required
-                      rows={3}
-                      maxRows={3}
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                  >
-                    <div className="details-section">
-                      <h5>{t("common.details")}</h5>
-                      <div className="spec">
-                        <span className="type">{t("common.version")}</span>
-                        <span className="value"></span>
-                      </div>
-                      <div className="spec">
-                        <span className="type">{t("common.size")}</span>
-                        <span className="value"></span>
-                      </div>
-                      <div className="spec">
-                        <span className="type">{t("common.location")}</span>
-                        <span className="value"></span>
-                      </div>
-                    </div>
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    sx={{ marginTop: "auto" }}
-                  >
-                    <div className="form-btns-wrapper">
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        size="large"
-                        sx={{
-                          width: "auto",
-                        }}
-                        disabled={invalid}
-                      >
-                        {t("common.save")}
-                      </Button>
-                      <Button
-                        variant="text"
-                        color="error"
-                        size="large"
-                        sx={{
-                          width: "auto",
-                        }}
-                      >
-                        {t("common.delete")}
-                      </Button>
-                      <Button
-                        variant="text"
-                        color="primary"
-                        size="large"
-                        sx={{
-                          width: "auto",
-                        }}
-                        onClick={closeFn}
-                      >
-                        {t("common.cancel")}
-                      </Button>
-                    </div>
-                  </Grid>
-                </Grid>
-              </div>
-              <div className="right-content">
-                <div className="inner-content">
-                  <div className="img-wrapper select">
-                    <div className="inner">
-                      <IconPlus />
-                      <span className="text-add">{t("common.add")}</span>
-                      {inputRendered && (
-                        <input
-                          type="file"
-                          accept=".png,.jpg"
-                          onChange={(e) => {
-                            setChosenImage(null);
-                            resetInput();
-                            setFile(e.target.files?.[0] || null);
-
-                            form.mutators.setFormValue("name", null);
-                            form.mutators.setFormValue("description", null);
-                            form.mutators.setFormValue("file", e.target.files?.[0] || null);
-                            form.mutators.setFieldTouched("file", true);
-                          }}
-                        />
-                      )}
-                    </div>
+            return errors;
+          }}
+          render={({ handleSubmit, invalid, errors, values, form }) => (
+            <form
+              autoComplete="off"
+              onSubmit={handleSubmit}
+              style={{ width: "100%" }}
+            >
+              {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
+              <div className="inner-content">
+                <div className="left-content">
+                  <div className={`img-wrapper${!values.file && form.getFieldState("file")?.touched ? " error" : ""}`}>
+                    {(chosenImage || file) && (
+                      <img
+                        src={chosenImage ? chosenImage.url : URL.createObjectURL(file)}
+                        alt="Chosen thumbnail"
+                      />
+                    )}
                   </div>
 
-                  {images.map((img: any) => (
-                    <div
-                      className="img-wrapper"
-                      key={img.id}
-                      onClick={() => {
-                        setFile(null);
-                        resetInput();
-                        setChosenImage({
-                          id: img.id,
-                          url: img.src,
-                        });
-                        form.mutators.setFormValue("name", img.name);
-                        form.mutators.setFormValue("description", img.description);
-                        form.mutators.setFormValue("fileUrl", img.src || null);
-                        form.mutators.setFormValue("fileId", img.id || null);
-                        form.mutators.setFormValue("file", img.id || null);
-                        form.mutators.setFieldTouched("file", true);
-                      }}
+                  <Grid
+                    container
+                    spacing={2}
+                    sx={{ marginTop: "24px", flex: 1 }}
+                  >
+                    <Grid
+                      item
+                      xs={12}
                     >
+                      <Input
+                        name="name"
+                        label={t("form.labels.title")}
+                        validate={[required(t("form.validations.required"))]}
+                        required
+                        rows={3}
+                        maxRows={3}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                    >
+                      <Input
+                        name="description"
+                        label={t("form.labels.altText")}
+                        // validate={[required(t("form.validations.required"))]}
+                        // required
+                        rows={3}
+                        maxRows={3}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                    >
+                      <div className="details-section">
+                        <h5>{t("common.details")}</h5>
+                        <div className="spec">
+                          <span className="type">{t("common.version")}</span>
+                          <span className="value"></span>
+                        </div>
+                        <div className="spec">
+                          <span className="type">{t("common.size")}</span>
+                          <span className="value"></span>
+                        </div>
+                        <div className="spec">
+                          <span className="type">{t("common.location")}</span>
+                          <span className="value"></span>
+                        </div>
+                      </div>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                      sx={{ marginTop: "auto" }}
+                    >
+                      <div className="form-btns-wrapper">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                          size="large"
+                          sx={{
+                            width: "auto",
+                            mr: 1,
+                          }}
+                          disabled={invalid}
+                        >
+                          {t("common.save")}
+                        </Button>
+                        <Button
+                          variant="text"
+                          color="error"
+                          size="large"
+                          sx={{
+                            width: "auto",
+                            mr: 1,
+                          }}
+                          disabled={(file && !chosenImage) || (!file && !chosenImage)}
+                          onClick={() => setImageDelete(true)}
+                        >
+                          {t("common.delete")}
+                        </Button>
+                        <Button
+                          variant="text"
+                          color="primary"
+                          size="large"
+                          sx={{
+                            width: "auto",
+                          }}
+                          onClick={closeFn}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                      </div>
+                    </Grid>
+                  </Grid>
+                </div>
+                <div className="right-content">
+                  <div className="inner-content">
+                    <div className="img-wrapper select">
                       <div className="inner">
-                        <LazyLoadImage
-                          alt={img.alt}
-                          src={img.thumbnail}
-                          effect="opacity"
-                        />
+                        <IconPlus />
+                        <span className="text-add">{t("common.add")}</span>
+                        {inputRendered && (
+                          <input
+                            type="file"
+                            accept=".png,.jpg"
+                            onChange={(e) => {
+                              setChosenImage(null);
+                              resetInput();
+                              setFile(e.target.files?.[0] || null);
+
+                              form.mutators.setFormValue("name", null);
+                              form.mutators.setFormValue("description", null);
+                              form.mutators.setFormValue("file", e.target.files?.[0] || null);
+                              form.mutators.setFieldTouched("file", true);
+                            }}
+                          />
+                        )}
                       </div>
                     </div>
-                  ))}
+
+                    {images.map((img: any) => (
+                      <div
+                        className="img-wrapper"
+                        key={img.id}
+                        onClick={() => {
+                          setFile(null);
+                          resetInput();
+                          setChosenImage({
+                            id: img.id,
+                            url: img.src,
+                            name: img.name,
+                          });
+                          form.mutators.setFormValue("name", img.name);
+                          form.mutators.setFormValue("description", img.description);
+                          form.mutators.setFormValue("fileUrl", img.src || null);
+                          form.mutators.setFormValue("fileId", img.id || null);
+                          form.mutators.setFormValue("file", img.id || null);
+                          form.mutators.setFieldTouched("file", true);
+                        }}
+                      >
+                        <div className="inner">
+                          <LazyLoadImage
+                            alt={img.alt}
+                            src={img.thumbnail}
+                            effect="opacity"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
+            </form>
+          )}
+        />
+      </Content>
+      {imageDelete && (
+        <Modal closeFn={() => setImageDelete(false)}>
+          <>
+            <IconTrash />
+            <h6>{t("common.deleteImage")}</h6>
+            <span>
+              <Trans
+                i18nKey="common.deleteImageQuestion"
+                tOptions={{ image: chosenImage?.name }}
+              >
+                <strong />
+              </Trans>
+            </span>
+            <div className="btns-wrapper">
+              <Button
+                variant="contained"
+                color="error"
+                type="submit"
+                size="large"
+                onClick={() => {
+                  deleteImage.mutate(true);
+                }}
+              >
+                {t("common.delete")}
+              </Button>
+              <Button
+                variant="contained"
+                color="info"
+                type="submit"
+                size="large"
+                onClick={() => setImageDelete(false)}
+              >
+                {t("common.cancel")}
+              </Button>
             </div>
-          </form>
-        )}
-      />
-    </Content>
+          </>
+        </Modal>
+      )}
+    </>
   );
 };
 

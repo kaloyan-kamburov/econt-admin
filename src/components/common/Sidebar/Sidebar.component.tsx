@@ -54,7 +54,10 @@ const Sidebar: React.FC<{}> = () => {
         {categories.length ? (
           categories.map((cat) =>
             cat.folders?.length ? (
-              <Accordion defaultExpanded={pathname.indexOf(`/category/${cat.id}`) > -1}>
+              <Accordion
+                key={cat.id}
+                defaultExpanded={pathname.indexOf(`/category/${cat.id}`) > -1}
+              >
                 <AccordionSummary
                   key={cat.id}
                   expandIcon={
@@ -78,7 +81,7 @@ const Sidebar: React.FC<{}> = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                   {cat.folders.map((folder: any) => (
-                    <Accordion>
+                    <Accordion key={folder.id}>
                       <NavLink
                         to={`/category/${cat.id}/${folder.id}`}
                         className={() => (pathname === `/category/${cat.id}/${folder.id}` ? "active" : "")}
@@ -92,7 +95,7 @@ const Sidebar: React.FC<{}> = () => {
                 </AccordionDetails>
               </Accordion>
             ) : (
-              <AccordionSummary>
+              <AccordionSummary key={cat.id}>
                 <span onClick={() => navigate(`/category/${cat.id}`)}>{cat.name}</span>
               </AccordionSummary>
             )

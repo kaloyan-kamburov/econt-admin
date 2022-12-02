@@ -82,7 +82,7 @@ const routes = createBrowserRouter([
         ),
       },
       {
-        path: "category/:id/:folderId",
+        path: "category/:id/*",
         element: (
           <AppWrapper>
             <PageFolder />

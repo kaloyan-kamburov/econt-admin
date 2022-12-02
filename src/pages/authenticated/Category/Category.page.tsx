@@ -1,8 +1,10 @@
-import React, { useEffect, useState, createRef } from "react";
-import GridLayout from "react-grid-layout";
-
-//MUI components
-import Grid from "@mui/material/Grid";
+import React, { useEffect, useState } from "react";
+import { Draggable } from "react-drag-reorder";
+import { useQuery, useMutation } from "react-query";
+import { useParams } from "react-router-dom";
+import axiosOrg, { AxiosError, AxiosResponse } from "axios";
+import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 //custom components
 import Folder from "./Folder.component";
@@ -10,74 +12,90 @@ import Breadcrumb from "../../../components/common/Breadcrumb/Breadcrumb.compone
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
-import useWindowSize from "../../../hooks/useWindowSize";
+
+//utils
+import axios from "../../../utils/api";
 
 interface Props {}
 
 const PageCategory: React.FC<Props> = () => {
-  const [width, setWidth] = useState<number>(100);
-  const [rowHeight, setRowHeight] = useState<number>(180);
-  const { width: windowWidth, height: windowHeight } = useWindowSize();
-  const contentRef: any = createRef();
+  const { t } = useTranslation();
   const { setTitle } = usePageTitle();
+  const { id } = useParams();
+  const [folders, setFolders] = useState<any[]>([]);
+  const [foldersRendered, setfoldersRendered] = useState<boolean>(true);
 
-  const layout = [
-    { i: "a", x: 0, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true, static: true },
-    { i: "b", x: 1, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
-    { i: "c", x: 2, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
-    { i: "d", x: 3, y: 0, w: 1, h: 1, isResizable: false, draggableHandle: ".drag-handle", isBounded: true },
-  ];
+  //save positions
+  const updatePositions = useMutation(
+    async (values: any) => {
+      await axios.put("categories/update", values);
+      return values;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          toast.success(`${t("common.positionsUpdated")}`);
+        }
+      },
+      onError: (error: AxiosError) => {
+        toast.error(error?.message || `${t("pages.login.loginError")}`);
+      },
+    }
+  );
+
+  //get category data
+  const { refetch: getCategoryData } = useQuery(
+    "getCategoryData",
+    async () => {
+      const data = await axios(`categories/${id}`);
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosResponse<any>) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          setTitle(data?.data?.data?.name);
+          setFolders(data?.data?.data?.folders);
+        }
+      },
+      onError: (error: AxiosError) => {
+        console.log(error);
+      },
+    }
+  );
 
   useEffect(() => {
-    setTitle("Услуги от България");
+    getCategoryData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (contentRef.current && windowWidth && windowHeight) {
-      setWidth(contentRef.current.offsetWidth);
-      setRowHeight(Math.round(contentRef.current.offsetWidth / 5));
+    if (folders.length) {
+      setfoldersRendered(false);
+      setTimeout(() => {
+        setfoldersRendered(true);
+      }, 10);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentRef?.current?.offsetWidth, windowWidth, windowHeight]);
+  }, [folders]);
 
   return (
-    <div
-      className="page-wrapper"
-      ref={contentRef}
-    >
+    <div className="page-wrapper xxl">
       <Breadcrumb routePath={["Path1", "Path2", "Path3"]} />
-      <GridLayout
-        className="layout"
-        layout={layout}
-        // cols={windowWidth && windowWidth < 1200 ? 3 : 4}
-        cols={5}
-        rowHeight={rowHeight}
-        width={width}
-        onLayoutChange={(newLayout) => console.log(newLayout)}
-        draggableHandle=".drag-handle"
-      >
-        <div key="a">
-          <Folder isAdd />
-        </div>
-        <div key="b">
-          <Folder
-            title="Куриерски пратки"
-            published
-          />
-        </div>
-        <div key="c">
-          <Folder
-            title="Куриерски пратки"
-            published={false}
-          />
-        </div>
-        <div key="d">
-          <Folder
-            title="Куриерски пратки"
-            published
-          />
-        </div>
-      </GridLayout>
+      <Folder isAdd />
+      {foldersRendered && (
+        <Draggable
+          onPosChange={(currPos, newPos) => {
+            updatePositions.mutate(true);
+          }}
+        >
+          {folders.map((folder: any) => (
+            <Folder
+              key={folder.id}
+              published={folder.published}
+              data={folder}
+            />
+          ))}
+        </Draggable>
+      )}
     </div>
   );
 };

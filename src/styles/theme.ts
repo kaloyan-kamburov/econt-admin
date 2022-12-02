@@ -362,11 +362,20 @@ export default createTheme({
           "&.active": {
             ".MuiPaper-root": {
               background: linkMenuHoverBg,
+              a: {
+                background: linkMenuHoverBg,
+              },
             },
           },
-          "&:hover": {
-            ".MuiPaper-root": {
-              background: linkMenuHoverBg,
+          ".MuiPaper-root": {
+            a: {
+              width: "100%",
+              "&:hover": {
+                background: linkMenuHoverBg,
+              },
+            },
+            ".MuiButtonBase-root": {
+              width: "100%",
             },
           },
         },

@@ -24,13 +24,19 @@ import iconMap from "../../../Icons/map.svg";
 import { IconDots, IconPlus, IconFolder, IconAddFolder } from "../../../Icons/icons";
 
 //theme
-import { bgSections, btnContainedPrimaryBgColor, lightColor } from "../../../styles/theme";
+import { bgSections, btnContainedPrimaryBgColor, lightColor, dragActive } from "../../../styles/theme";
 
 const FolderWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  margin-bottom: calc(4 * var(--atom));
+
+  &.btn-add {
+    cursor: pointer;
+  }
 
   .bg-wrapper {
     width: 218px;
@@ -72,10 +78,12 @@ const FolderWrapper = styled.div`
     position: relative;
     z-intex: 1;
     span {
-      //   font-size: calc(3 * var(--atom));
-      //   line-height: calc(5 * var(--atom));
-      font-size: 15px;
-      line-height: 25px;
+      font-size: calc(3 * var(--atom));
+      line-height: calc(5 * var(--atom));
+      // font-size: 15px;
+      // line-height: 25px;
+      text-align: center;
+      margin: calc(2 * var(--atom)) calc(5 * var(--atom));
     }
   }
 
@@ -150,19 +158,29 @@ const FolderWrapper = styled.div`
       cursor: grabbing;
     }
   }
+
+  &.is-dragging {
+    svg {
+      path {
+        fill: ${dragActive};
+      }
+    }
+  }
 `;
 
 const renderBackground = (isAdd: boolean) => (isAdd ? <IconFolder /> : <IconAddFolder />);
 
 interface Props {
   isAdd?: boolean;
-  title?: string;
+  data?: any;
   published?: boolean;
 }
 
-const Folder: React.FC<Props> = ({ isAdd = false, title, published }) => {
+const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const [isDragging, setIsDragging] = useState<boolean>(false);
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
 
   const [modalCreateFolder, setModalCreateFolder] = useState<boolean>(false);
@@ -175,14 +193,21 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published }) => {
 
   return (
     <>
-      <FolderWrapper className={published ? "" : "non-published"}>
+      <FolderWrapper
+        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${isDragging ? " is-dragging" : ""}`}
+        onDragOver={(e) => {
+          if (!isAdd) {
+            e.preventDefault();
+            setIsDragging(true);
+          }
+        }}
+        onDragLeave={() => !isAdd && setIsDragging(false)}
+        onClick={() => isAdd && setModalCreateFolder(true)}
+      >
         {isAdd && (
-          <div
-            className="add-wrapper"
-            onClick={() => setModalCreateFolder(true)}
-          >
+          <div className="add-wrapper">
             <IconPlus />
-            <span className="text-add">{t("common.add")}</span>
+            <span className="text-add">{t("common.addFolder")}</span>
           </div>
         )}
         <div className={`bg-wrapper${!isAdd ? " default" : ""}`}>
@@ -265,7 +290,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published }) => {
             </>
           )}
         </div>
-        <div className="content">{!isAdd && <span>Услуги от България</span>}</div>
+        <div className="content">{!isAdd && <span>{data?.name}</span>}</div>
       </FolderWrapper>
 
       {modalCreateFolder && (
@@ -284,7 +309,10 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published }) => {
           closeFn={() => setModalEditFolder(false)}
         >
           <>
-            <EditFolder closeFn={() => setModalEditFolder(false)} />
+            <EditFolder
+              id={data.id}
+              closeFn={() => setModalEditFolder(false)}
+            />
             {/* <Loader showExplicit inModal /> */}
           </>
         </Modal>
