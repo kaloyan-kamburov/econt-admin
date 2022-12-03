@@ -191,7 +191,14 @@ mock.onGet("page/1").reply(200, {
   data: {
     name: "Услуги от Италия",
     isFolders: true,
-    records: [],
+    records: [
+      {
+        name: "Категория 1",
+        id: "12s3",
+        description: "Lorem ipsum dolor sit amet",
+        published: true,
+      },
+    ],
   },
 });
 

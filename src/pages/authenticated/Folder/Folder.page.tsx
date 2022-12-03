@@ -44,7 +44,7 @@ const PageFolder: React.FC<Props> = () => {
         if (!axiosOrg.isAxiosError(data)) {
           setTitle(data?.data?.data?.name);
           setPageData(data?.data?.data);
-          setRecords(data?.data?.records || []);
+          setRecords(data?.data?.data?.records || []);
         }
       },
       onError: (error: AxiosError) => {
@@ -76,12 +76,28 @@ const PageFolder: React.FC<Props> = () => {
           published
         />
       )}
-      {pageData?.records?.length > 0 && (
+      {records.length > 0 && (
         <Draggable
           onPosChange={(currPos, newPos) => {
             // updatePositions.mutate(true);
           }}
-        ></Draggable>
+        >
+          {pageData.isFolders
+            ? records.map((folder: any) => (
+                <Folder
+                  key={folder.id}
+                  published={folder.published}
+                  data={folder}
+                />
+              ))
+            : records.map((folder: any) => (
+                <Group
+                  key={folder.id}
+                  published={folder.published}
+                  data={folder}
+                />
+              ))}
+        </Draggable>
       )}
     </div>
   );

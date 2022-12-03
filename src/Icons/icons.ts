@@ -9,17 +9,6 @@ import IconFolder from "./folder.icon";
 import IconGroup from "./group.icon";
 import IconGroupAdd from "./groupAdd.icon";
 import IconGroupUnpublished from "./groupUnpublished.icon";
+import Icon404 from "./404.icon";
 
-export {
-  IconDots,
-  IconPlus,
-  IconClose,
-  IconTrash,
-  IconArchive,
-  IconUnpublish,
-  IconFolder,
-  IconAddFolder,
-  IconGroup,
-  IconGroupAdd,
-  IconGroupUnpublished,
-};
+export { IconDots, IconPlus, IconClose, IconTrash, IconArchive, IconUnpublish, IconFolder, IconAddFolder, IconGroup, IconGroupAdd, IconGroupUnpublished, Icon404 };

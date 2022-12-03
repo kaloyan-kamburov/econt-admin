@@ -178,9 +178,10 @@ interface Props {
   isAdd?: boolean;
   title?: string;
   published: boolean;
+  data?: any;
 }
 
-const Folder: React.FC<Props> = ({ isAdd = false, title, published }) => {
+const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [menuOpened, setMenuOpened] = useState<boolean>(false);

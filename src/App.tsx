@@ -17,6 +17,7 @@ import Toast from "./components/common/Toast/Toast.component";
 
 //pages
 import PageLanding from "./pages/common/Landing.page";
+import PageNotFound from "./pages/common/NotFound.page";
 import PageBegin from "./pages/authenticated/Home/Home.page";
 import PageCategory from "./pages/authenticated/Category/Category.page";
 import PageFolder from "./pages/authenticated/Folder/Folder.page";
@@ -59,7 +60,7 @@ const queryClient = new QueryClient({
 const routes = createBrowserRouter([
   {
     path: "*",
-    element: <div>not found</div>,
+    element: <PageNotFound />,
   },
   {
     path: "/",
