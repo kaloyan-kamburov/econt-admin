@@ -190,7 +190,7 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
               <div
                 className={`inner-content${!published ? " unpublished" : ""}`}
                 onClick={() => {
-                  navigate(`/category/${data.id}`);
+                  navigate(`/categories/${data.id}`);
                 }}
               >
                 <img

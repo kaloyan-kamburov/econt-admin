@@ -63,7 +63,7 @@ mock.onGet("logged").reply(200, {
 mock.onGet("categories").reply(200, [
   {
     name: "Категория 1",
-    id: "12s3",
+    id: "123",
     description: "Lorem ipsum dolor sit amet",
     published: true,
     folders: [
@@ -139,44 +139,46 @@ mock.onPost("categories/save-publish").reply(200, {
   folders: [],
 });
 
-mock.onPut("categories/update").reply(200);
-// mock.onPut("categories/update").reply(500);
+// mock.onPut("categories/update").reply(200);
+mock.onPut("categories/update").reply(500);
 
-mock.onGet("categories/123").reply(200, {
-  data: {
-    name: "Категория 3",
-    id: "433443",
-    description: "Lorem ipsum dolor sit amet",
-    published: false,
-    languages: {
-      bg: {
-        name: "Категория 3",
-        description: "Lorem ipsum dolor sit amet",
-      },
-      en: {
-        name: "Category 3",
-        description: "Lorem fiesta test yeah so beat it",
-      },
-    },
-    folders: [
-      {
-        name: "Услуги от България",
-        id: "555",
-        published: false,
-      },
-      {
-        name: "Документи и файлове",
-        id: "6666",
-        published: true,
-      },
-      {
-        name: "Глоби от продукции",
-        id: "3421",
-        published: true,
-      },
-    ],
-  },
-});
+// mock.onGet("categories/123").reply(200, {
+//   data: {
+//     name: "Категория 3",
+//     id: "433443",
+//     description: "Lorem ipsum dolor sit amet",
+//     published: false,
+//     languages: {
+//       bg: {
+//         name: "Категория 3",
+//         description: "Lorem ipsum dolor sit amet",
+//       },
+//       en: {
+//         name: "Category 3",
+//         description: "Lorem fiesta test yeah so beat it",
+//       },
+//     },
+//     folders: [
+//       {
+//         name: "Услуги от България",
+//         id: "555",
+//         published: false,
+//       },
+//       {
+//         name: "Документи и файлове",
+//         id: "6666",
+//         published: true,
+//       },
+//       {
+//         name: "Глоби от продукции",
+//         id: "3421",
+//         published: true,
+//       },
+//     ],
+//   },
+// });
+
+mock.onGet("categories/123").networkError();
 
 mock.onGet("images").reply(200, images);
 

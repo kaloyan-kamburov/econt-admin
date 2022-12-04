@@ -7,10 +7,12 @@ import { useTranslation } from "react-i18next";
 
 //custom components
 import Category from "./Category.component";
+import PageError from "../../../components/common/PageError/pageError.component";
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
 import useCategories from "../../../hooks/useCategories";
+import usePageError from "../../../hooks/usePageError";
 
 //utils
 import axios from "../../../utils/api";
@@ -18,6 +20,7 @@ import axios from "../../../utils/api";
 const PageHome: React.FC<{}> = () => {
   const { t } = useTranslation();
   const { setTitle } = usePageTitle();
+  const { setVisibleError, setRetryFn } = usePageError();
   const { categories, setCategories } = useCategories();
   const [categoriesRendered, setCategoriesRendered] = useState<boolean>(true);
 
@@ -36,7 +39,8 @@ const PageHome: React.FC<{}> = () => {
       },
       onError: (error: AxiosError) => {
         setCategories([...categories]);
-        toast.error(error?.message || `${t("pages.login.loginError")}`);
+        toast.error(error?.message || `${t("common.errorGettingData")}`);
+        setVisibleError(true);
       },
     }
   );
@@ -56,30 +60,34 @@ const PageHome: React.FC<{}> = () => {
   }, [categories]);
 
   return (
-    <div className="page-wrapper">
-      {/* {JSON.stringify(categories)} */}
-      <Category isAdd />
-      {categoriesRendered && (
-        <Draggable
-          onPosChange={(currPos, newPos) => {
-            const newCategories = [...categories];
-            const tempCategory = categories[currPos];
-            newCategories[currPos] = newCategories[newPos];
-            newCategories[newPos] = tempCategory;
-            updatePositions.mutate(newCategories);
-            // console.log(`${currPos} ${newPos}`);
-          }}
-        >
-          {categories.map((item) => (
-            <Category
-              key={item.id}
-              data={item}
-              published={item.published}
-            />
-          ))}
-        </Draggable>
-      )}
-    </div>
+    <>
+      <div className="page-wrapper">
+        {/* {JSON.stringify(categories)} */}
+        <Category isAdd />
+        {categoriesRendered && (
+          <Draggable
+            onPosChange={(currPos, newPos) => {
+              const newCategories = [...categories];
+              const tempCategory = categories[currPos];
+              newCategories[currPos] = newCategories[newPos];
+              newCategories[newPos] = tempCategory;
+              updatePositions.mutate(newCategories);
+              setRetryFn({
+                execute: () => updatePositions.mutate(newCategories),
+              });
+            }}
+          >
+            {categories.map((item) => (
+              <Category
+                key={item.id}
+                data={item}
+                published={item.published}
+              />
+            ))}
+          </Draggable>
+        )}
+      </div>
+    </>
   );
 };
 

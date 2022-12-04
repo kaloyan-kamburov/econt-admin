@@ -4,9 +4,11 @@ import styled from "styled-components";
 //components
 import Header from "../common/Header/Header.component";
 import Sidebar from "../common/Sidebar/Sidebar.component";
+import PageError from "../common/PageError/pageError.component";
 
 //hooks
 import useAuth from "../../hooks/useAuth";
+import usePageError from "../../hooks/usePageError";
 
 interface Props {
   children: JSX.Element;
@@ -104,9 +106,11 @@ const PageWrapper = styled.div`
 
 const AppWrapper: React.FC<Props> = ({ children }) => {
   const { user } = useAuth();
+  const { visibleError } = usePageError();
 
   return (
     <OuterContainer>
+      {visibleError && <PageError />}
       <ContentWrapper>
         {user && <Sidebar />}
         <InnerContentWrapper>

@@ -77,14 +77,14 @@ const Sidebar: React.FC<{}> = () => {
                     </svg>
                   }
                 >
-                  <span onClick={() => navigate(`/category/${cat.id}`)}>{cat.name}</span>
+                  <span onClick={() => navigate(`/categories/${cat.id}`)}>{cat.name}</span>
                 </AccordionSummary>
                 <AccordionDetails>
                   {cat.folders.map((folder: any) => (
                     <Accordion key={folder.id}>
                       <NavLink
-                        to={`/category/${cat.id}/${folder.id}`}
-                        className={() => (pathname === `/category/${cat.id}/${folder.id}` ? "active" : "")}
+                        to={`/categories/${cat.id}/${folder.id}`}
+                        className={() => (pathname === `/categories/${cat.id}/${folder.id}` ? "active" : "")}
                       >
                         <AccordionSummary>
                           <span>{folder.name}</span>

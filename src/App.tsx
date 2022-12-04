@@ -28,6 +28,7 @@ import theme from "./styles/theme";
 //context
 import { AuthProvider } from "./context/auth";
 import { PageTitleProvider } from "./context/pageTitle";
+import { PageErrorProvider } from "./context/pageError";
 import { CategoriesProvider } from "./context/categories";
 
 //i18n
@@ -75,7 +76,7 @@ const routes = createBrowserRouter([
         ),
       },
       {
-        path: "category/:id",
+        path: "categories/:id",
         element: (
           <AppWrapper>
             <PageCategory />
@@ -83,7 +84,7 @@ const routes = createBrowserRouter([
         ),
       },
       {
-        path: "category/:id/*",
+        path: "categories/:id/*",
         element: (
           <AppWrapper>
             <PageFolder />
@@ -103,9 +104,11 @@ function App() {
             <CssBaseline />
             <AuthProvider>
               <CategoriesProvider>
-                <PageTitleProvider>
-                  <RouterProvider router={routes} />
-                </PageTitleProvider>
+                <PageErrorProvider>
+                  <PageTitleProvider>
+                    <RouterProvider router={routes} />
+                  </PageTitleProvider>
+                </PageErrorProvider>
               </CategoriesProvider>
             </AuthProvider>
             <Loader />

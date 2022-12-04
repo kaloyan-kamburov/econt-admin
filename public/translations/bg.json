@@ -57,6 +57,7 @@
     "change": "Промени",
     "delete": "Изтрий",
     "cancel": "Отказ",
+    "close": "Затвори",
     "changeAndPublish": "Промени и публикувай",
     "saveAndPublish": "Запази и публикувай",
     "save": "Запази",
@@ -78,7 +79,9 @@
     "deleteImage": "Изтриване на изображение",
     "deleteImageQuestion": "Сигурен ли си, че искаш да изтриеш <0>{{image}}</0> ?",
     "deleteImageSuccess": "Изображението е изтрито",
-    "positionsUpdated": "Позициите са променени"
+    "positionsUpdated": "Позициите са променени",
+    "errorGettingData": "Възникна грешка при взимането на данните",
+    "tryAgain": "Опитай пак"
   },
   "languages": {
     "bg": "Български",

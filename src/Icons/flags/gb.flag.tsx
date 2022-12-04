@@ -17,7 +17,7 @@ const FlagGB: React.FC<any> = () => {
         height="15.699"
         fill="url(#pattern1)"
         stroke="#C4C4C4"
-        stroke-width="0.64872"
+        strokeWidth="0.64872"
       />
       <defs>
         <pattern

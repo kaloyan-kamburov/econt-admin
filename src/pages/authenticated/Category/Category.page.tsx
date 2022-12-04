@@ -12,6 +12,7 @@ import Breadcrumb from "../../../components/common/Breadcrumb/Breadcrumb.compone
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
+import usePageError from "../../../hooks/usePageError";
 
 //utils
 import axios from "../../../utils/api";
@@ -22,6 +23,7 @@ const PageCategory: React.FC<Props> = () => {
   const { t } = useTranslation();
   const { setTitle } = usePageTitle();
   const { id } = useParams();
+  const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
   const [folders, setFolders] = useState<any[]>([]);
   const [foldersRendered, setfoldersRendered] = useState<boolean>(true);
 
@@ -47,6 +49,7 @@ const PageCategory: React.FC<Props> = () => {
   const { refetch: getCategoryData } = useQuery(
     "getCategoryData",
     async () => {
+      // setVisible(false);
       const data = await axios(`categories/${id}`);
       return data;
     },
@@ -58,13 +61,17 @@ const PageCategory: React.FC<Props> = () => {
         }
       },
       onError: (error: AxiosError) => {
-        console.log(error);
+        toast.error(error?.message || `${t("common.errorGettingData")}`);
+        setVisibleError(true);
       },
     }
   );
 
   useEffect(() => {
     getCategoryData();
+    setRetryFn({
+      execute: getCategoryData,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

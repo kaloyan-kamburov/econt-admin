@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 
 const PageNotFoundWrapper = styled.div`
   min-width: 100vw;
+  max-width: 100vw;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -33,6 +34,10 @@ const PageNotFoundWrapper = styled.div`
     button {
       width: auto;
     }
+  }
+
+  > svg {
+    width: 100%;
   }
 `;
 

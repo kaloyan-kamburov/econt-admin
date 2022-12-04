@@ -18,7 +18,7 @@ const FlagBG: React.FC<any> = () => {
         rx="1.94616"
         fill="url(#pattern0)"
         stroke="#F0F0F0"
-        stroke-width="2.59488"
+        strokeWidth="2.59488"
       />
       <defs>
         <pattern
