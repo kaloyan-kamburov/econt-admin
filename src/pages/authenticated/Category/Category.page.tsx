@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Draggable } from "react-drag-reorder";
 import { useQuery, useMutation } from "react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import axiosOrg, { AxiosError, AxiosResponse } from "axios";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
@@ -23,6 +23,7 @@ const PageCategory: React.FC<Props> = () => {
   const { t } = useTranslation();
   const { setTitle } = usePageTitle();
   const { id } = useParams();
+  const { pathname } = useLocation();
   const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
   const [folders, setFolders] = useState<any[]>([]);
   const [foldersRendered, setfoldersRendered] = useState<boolean>(true);
@@ -63,17 +64,19 @@ const PageCategory: React.FC<Props> = () => {
       onError: (error: AxiosError) => {
         toast.error(error?.message || `${t("common.errorGettingData")}`);
         setVisibleError(true);
+        setRetryFn({
+          execute: getCategoryData,
+        });
       },
     }
   );
 
   useEffect(() => {
+    setFolders([]);
     getCategoryData();
-    setRetryFn({
-      execute: getCategoryData,
-    });
+    return () => setErrorMsg("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (folders.length) {

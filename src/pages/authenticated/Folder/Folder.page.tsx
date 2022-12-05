@@ -16,6 +16,7 @@ import Breadcrumb from "../../../components/common/Breadcrumb/Breadcrumb.compone
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
+import usePageError from "../../../hooks/usePageError";
 
 //utils
 import axios from "../../../utils/api";
@@ -25,6 +26,8 @@ interface Props {}
 const PageFolder: React.FC<Props> = () => {
   const { setTitle } = usePageTitle();
   const { pathname } = useLocation();
+  const { t } = useTranslation();
+  const { setVisibleError, setErrorMsg, setRetryFn } = usePageError();
 
   const [pageData, setPageData] = useState<any>({});
   const [records, setRecords] = useState<any>([]);
@@ -48,14 +51,22 @@ const PageFolder: React.FC<Props> = () => {
         }
       },
       onError: (error: AxiosError) => {
-        console.log(error);
+        setVisibleError(true);
+        setErrorMsg("Error happened");
+        toast.error(error?.message || `${t("common.errorGettingData")}`);
+        setRetryFn({
+          execute: getPageData,
+        });
       },
     }
   );
 
   useEffect(() => {
+    setRecords([]);
     getPageData();
-  }, []);
+    return () => setErrorMsg("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   useEffect(() => {
     if (records.length) {

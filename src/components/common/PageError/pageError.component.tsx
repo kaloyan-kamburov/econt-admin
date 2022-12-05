@@ -65,7 +65,7 @@ const PageError: React.FC<Props> = () => {
     <PageErrorWrapper>
       <div className="content">
         <Icon404 />
-        <span>{t("common.errorGettingData")}</span>
+        <span>{errorMsg || t("common.errorGettingData")}</span>
         <div className="btns-wrapper">
           <Button
             variant="contained"

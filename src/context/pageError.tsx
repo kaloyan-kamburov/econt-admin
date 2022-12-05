@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 
 type PageErrorContextType = {
   errorMsg?: string | undefined;
-  setErrorMsg?: (newMsg: string) => void;
+  setErrorMsg: (newMsg: string) => void;
   visibleError: boolean;
   setVisibleError: (visible: boolean) => void;
   retryFn: { execute: () => void };

@@ -25,7 +25,7 @@ import iconMap from "../../../Icons/map.svg";
 import { IconGroup, IconGroupAdd, IconGroupUnpublished, IconDots, IconPlus } from "../../../Icons/icons";
 
 //theme
-import { bgSections, btnContainedPrimaryBgColor, lightColor } from "../../../styles/theme";
+import { bgSections, btnContainedPrimaryBgColor, lightColor, dragActive } from "../../../styles/theme";
 
 const GroupWrapper = styled.div`
   position: relative;
@@ -170,6 +170,15 @@ const GroupWrapper = styled.div`
       cursor: grabbing;
     }
   }
+
+  &.is-dragging {
+    opacity: 0.5;
+    // svg {
+    //   path {
+    //     fill: ${dragActive};
+    //   }
+    // }
+  }
 `;
 
 const renderBackground = (isAdd: boolean, published: boolean) => (isAdd ? <IconGroupAdd /> : published ? <IconGroup /> : <IconGroupUnpublished />);
@@ -185,6 +194,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const [modalAddGroup, setModalAddGroup] = useState<boolean>(false);
   const [modalEditGroup, setModalEditGroup] = useState<boolean>(false);
@@ -196,7 +206,16 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
 
   return (
     <>
-      <GroupWrapper className={published ? "" : "non-published"}>
+      <GroupWrapper
+        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${isDragging ? " is-dragging" : ""}`}
+        onDragOver={(e) => {
+          if (!isAdd) {
+            e.preventDefault();
+            setIsDragging(true);
+          }
+        }}
+        onDragLeave={() => !isAdd && setIsDragging(false)}
+      >
         {isAdd && (
           <div
             className="add-wrapper"

@@ -19,23 +19,41 @@ interface Props {}
 const PageHome: FC<Props> = () => {
   const [appLoaded, setAppLoaded] = useState<boolean>(false);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
-  const { user, setUser } = useAuth();
+  const { user, setUser, setLanguages } = useAuth();
   const { categories, setCategories } = useCategories();
   const { t } = useTranslation();
 
   const { refetch: getUser } = useQuery(
     "getUser",
     async () => {
-      const data = await axios("logged");
+      const data = await axios("user");
       return data;
     },
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
           setUser({
-            user: data?.data?.user,
-            languages: data?.data?.languages
+            ...(data?.data?.user || {}),
           });
+        }
+      },
+      onError: (error: AxiosError) => {
+        setLoadFailed(true);
+        toast.error(error?.message || `${t("pages.login.loginError")}`);
+      },
+    }
+  );
+
+  const { refetch: getLanguages } = useQuery(
+    "getLanguages",
+    async (userId) => {
+      const data = await axios("languages");
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosResponse<any>) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          setLanguages(data.data);
           getCategories();
         }
       },
@@ -65,6 +83,12 @@ const PageHome: FC<Props> = () => {
       },
     }
   );
+
+  useEffect(() => {
+    if (user) {
+      getLanguages();
+    }
+  }, [user]);
 
   useEffect(() => {
     getUser();

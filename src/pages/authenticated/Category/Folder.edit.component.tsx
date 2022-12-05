@@ -34,7 +34,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
   const [tab, setTab] = useState<number>(0);
   const [initialValues, setInitialValues] = useState<any>({});
 
-  const { user } = useAuth();
+  const { user, languages } = useAuth();
   const { t } = useTranslation();
   const { categories, setCategories } = useCategories();
 
@@ -110,8 +110,8 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
           }
 
           if (
-            Array.isArray(user?.languages) &&
-            !user?.languages.every((lang) => {
+            Array.isArray(languages) &&
+            !languages.every((lang) => {
               return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
             })
           ) {
@@ -157,11 +157,11 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  {Array.isArray(user?.languages) ? user?.languages.map((lang) => <Tab label={t(`languages.${lang}`)} />) : null}
+                  {Array.isArray(languages) ? languages.map((lang) => <Tab label={t(`languages.${lang}`)} />) : null}
                 </Tabs>
               </Grid>
-              {Array.isArray(user?.languages)
-                ? user?.languages.map((lang, i) =>
+              {Array.isArray(languages)
+                ? languages.map((lang, i) =>
                     tab === i ? (
                       <React.Fragment key={lang}>
                         <Grid

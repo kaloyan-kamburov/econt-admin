@@ -33,7 +33,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
   const { t } = useTranslation();
   const [tab, setTab] = useState<number>(0);
 
-  const { user } = useAuth();
+  const { languages } = useAuth();
   const { categories, setCategories } = useCategories();
 
   const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
@@ -83,8 +83,8 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
           }
 
           if (
-            Array.isArray(user?.languages) &&
-            !user?.languages.every((lang) => {
+            Array.isArray(languages) &&
+            !languages.every((lang) => {
               return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
             })
           ) {
@@ -131,11 +131,11 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  {Array.isArray(user?.languages) ? user?.languages.map((lang) => <Tab label={t(`languages.${lang}`)} />) : null}
+                  {Array.isArray(languages) ? languages.map((lang) => <Tab label={t(`languages.${lang}`)} />) : null}
                 </Tabs>
               </Grid>
-              {Array.isArray(user?.languages)
-                ? user?.languages.map((lang, i) =>
+              {Array.isArray(languages)
+                ? languages.map((lang, i) =>
                     tab === i ? (
                       <React.Fragment key={lang}>
                         <Grid

@@ -160,11 +160,12 @@ const FolderWrapper = styled.div`
   }
 
   &.is-dragging {
-    svg {
-      path {
-        fill: ${dragActive};
-      }
-    }
+    opacity: 0.5;
+    // svg {
+    //   path {
+    //     fill: ${dragActive};
+    //   }
+    // }
   }
 `;
 
@@ -188,7 +189,6 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
   const [modalPublishFolder, setModalPublishFolder] = useState<boolean>(false);
   const [modalUnublishFolder, setModalUnublishFolder] = useState<boolean>(false);
   const [modalArchiveFolder, setModalArchiveFolder] = useState<boolean>(false);
-
   const [modalDeleteFolder, setModalDeleteFolder] = useState<boolean>(false);
 
   return (
@@ -216,7 +216,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
             <>
               <div
                 className="img-wrapper"
-                onClick={() => navigate("/category/1/1")}
+                onClick={() => navigate("/categories/1/1")}
               >
                 <img
                   src={iconMap}

@@ -277,7 +277,7 @@ export default createTheme({
         root: {
           boxShadow: "none",
           ".MuiButtonBase-root": {
-            cursor: "default !important",
+            // cursor: "default !important",
             padding: "0 calc(3.2 * var(--atom))",
           },
           ".MuiAccordion-rounded": {
@@ -303,7 +303,9 @@ export default createTheme({
           },
         },
         region: {
+          cursor: "pointer",
           a: {
+            cursor: "pointer",
             fontSize: "calc(2.6 * var(--atom))",
             lineHeight: "calc(3.4 * var(--atom))",
             textDecoration: "none",
@@ -317,6 +319,7 @@ export default createTheme({
               marginBottom: "0 !important",
             },
             "&.active": {
+              cursor: "pointer",
               background: linkMenuHoverBg,
             },
             // "&:hover": {

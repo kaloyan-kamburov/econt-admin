@@ -137,6 +137,15 @@ const CategoryWrapper = styled.div`
     }
   }
 
+  &.non-published {
+    .bg-wrapper {
+      > svg,
+      .img-wrapper {
+        opacity: 0.5;
+      }
+    }
+  }
+
   .drag-handle {
     position: absolute;
     top: 8px;
@@ -148,7 +157,8 @@ const CategoryWrapper = styled.div`
   }
 
   &.is-dragging {
-    background: ${dragActive};
+    opacity: 0.5;
+    // background: ${dragActive};
   }
 `;
 interface Props {
@@ -169,7 +179,7 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
   return (
     <>
       <CategoryWrapper
-        className={`${isAdd ? "btn-add" : ""}${isDragging ? " is-dragging" : ""}`}
+        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${isDragging ? " is-dragging" : ""}`}
         onClick={() => (isAdd ? setModalCreateCategory(true) : undefined)}
         onDragOver={(e) => {
           if (!isAdd) {

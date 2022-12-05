@@ -2,17 +2,20 @@ import React, { createContext, useState } from "react";
 
 type User = {
   name: string;
-  languages: string[];
 };
 
 type AuthContextType = {
   user: User | null;
   setUser: (user?: any) => void;
+  languages: any[];
+  setLanguages: (langs?: any) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
+  languages: [],
+  setLanguages: () => {},
 });
 
 interface Props {
@@ -21,10 +24,13 @@ interface Props {
 
 export const useProvideAuth = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [languages, setLanguages] = useState<any[]>([]);
 
   return {
-    setUser,
     user,
+    setUser,
+    languages,
+    setLanguages,
   };
 };
 
