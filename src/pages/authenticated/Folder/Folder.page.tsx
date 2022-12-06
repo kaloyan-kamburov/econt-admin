@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import Group from "./Group.component";
 import Folder from "../Category/Folder.component";
 import Breadcrumb from "../../../components/common/Breadcrumb/Breadcrumb.component";
+import PageGroup from "../Group/Group.page";
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
@@ -80,35 +81,41 @@ const PageFolder: React.FC<Props> = () => {
   return (
     <div className="page-wrapper xxl">
       <Breadcrumb routePath={["Path1", "Path2", "Path3"]} />
-      {((Array.isArray(records) && records.length === 0) || pageData.isFolders) && <Folder isAdd />}
-      {((Array.isArray(records) && records.length === 0) || !pageData.isFolders) && (
-        <Group
-          isAdd
-          published
-        />
-      )}
-      {records.length > 0 && (
-        <Draggable
-          onPosChange={(currPos, newPos) => {
-            // updatePositions.mutate(true);
-          }}
-        >
-          {pageData.isFolders
-            ? records.map((folder: any) => (
-                <Folder
-                  key={folder.id}
-                  published={folder.published}
-                  data={folder}
-                />
-              ))
-            : records.map((folder: any) => (
-                <Group
-                  key={folder.id}
-                  published={folder.published}
-                  data={folder}
-                />
-              ))}
-        </Draggable>
+      {pageData.isGroup ? (
+        <PageGroup data={pageData} />
+      ) : (
+        <>
+          {((Array.isArray(records) && records.length === 0) || pageData.isFolders) && <Folder isAdd />}
+          {((Array.isArray(records) && records.length === 0) || !pageData.isFolders) && (
+            <Group
+              isAdd
+              published
+            />
+          )}
+          {records.length > 0 && (
+            <Draggable
+              onPosChange={(currPos, newPos) => {
+                // updatePositions.mutate(true);
+              }}
+            >
+              {pageData.isFolders
+                ? records.map((folder: any) => (
+                    <Folder
+                      key={folder.id}
+                      published={folder.published}
+                      data={folder}
+                    />
+                  ))
+                : records.map((folder: any) => (
+                    <Group
+                      key={folder.id}
+                      published={folder.published}
+                      data={folder}
+                    />
+                  ))}
+            </Draggable>
+          )}
+        </>
       )}
     </div>
   );

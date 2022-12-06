@@ -26,7 +26,7 @@ import { IconPlus } from "../../../Icons/icons";
 import axios from "../../../utils/api";
 
 //styles
-import { inputBorder, btnContainedPrimaryBgColor, errorColor } from "../../../styles/theme";
+import { inputBorder, btnContainedPrimaryBgColor, errorColor, bgHeaders } from "../../../styles/theme";
 import toast from "react-hot-toast";
 
 const Content = styled.div`
@@ -66,6 +66,7 @@ const Content = styled.div`
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: ${bgHeaders};
 
       &.error {
         border-color: ${errorColor};

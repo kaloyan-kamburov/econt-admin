@@ -245,4 +245,25 @@ mock.onGet("page/1").reply(200, {
   },
 });
 
+mock.onGet("page/2").reply(200, {
+  data: {
+    name: "Услуги от Италия",
+    isFolders: true,
+    records: [
+      {
+        name: "Категория 1",
+        id: "12s3",
+        description: "Lorem ipsum dolor sit amet",
+        published: true,
+      },
+    ],
+  },
+});
+mock.onGet("page/3").reply(200, {
+  data: {
+    name: "Услуги от Италия",
+    isFolders: false,
+    isGroup: true,
+  },
+});
 export default instance;

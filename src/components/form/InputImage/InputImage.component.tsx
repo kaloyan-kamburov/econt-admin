@@ -14,7 +14,7 @@ import Modal from "../../common/Modal/Modal.component";
 import ImagePicker from "../../common/ImagePicker/ImagePicker.component";
 
 //theme
-import { errorColor, inputBorder } from "../../../styles/theme";
+import { errorColor, inputBorder, bgHeaders } from "../../../styles/theme";
 
 import composeValidators from "../composeValidators";
 
@@ -219,6 +219,7 @@ const InputFileWrapper = styled.div`
   border-radius: calc(2.4 * var(--atom));
   position: relative;
   cursor: pointer;
+  background: ${bgHeaders};
 
   input {
     position: absolute;
