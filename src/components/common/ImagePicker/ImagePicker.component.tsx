@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { Form } from "react-final-form";
 import { useTranslation, Trans } from "react-i18next";
@@ -174,7 +174,8 @@ const Content = styled.div`
       align-items: flex-start;
       margin-top: var(--atom);
 
-      .type {
+      .type,
+      .value {
         font-size: calc(3 * var(--atom));
         line-height: calc(5 * var(--atom));
         width: calc(25 * var(--atom));
@@ -190,29 +191,33 @@ interface Props {
 
 type Image = {
   id: string;
-  url: string;
+  path: string;
   name: string;
+  alt: string;
+  size?: string;
 };
 
 const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
   const { t } = useTranslation();
-  const [images, setImages] = useState<any>([]);
+  const formRef = useRef();
+  const [images, setImages] = useState<Image[]>([]);
   const [file, setFile] = useState<any>(null);
   const [chosenImage, setChosenImage] = useState<Image | null>(null);
   const [inputRendered, setInputRendered] = useState<boolean>(true);
   const [imageDelete, setImageDelete] = useState<boolean>(false);
+  const [form, setForm] = useState<any>(null);
 
   //get images
   const { refetch: getImages } = useQuery(
     "getImages",
     async () => {
-      const data = await axios("images");
+      const data = await axios("galleries?page[size]=100000");
       return data;
     },
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setImages(data.data);
+          setImages(data.data?.data);
         }
       },
       onError: (error: AxiosError) => {
@@ -226,15 +231,19 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
     async (values: any) => {
       const formData = new FormData();
       formData.append("name", values.name);
-      formData.append("description", values.description);
-      formData.append("fileId", values.fileId);
-      const data = await axios.post("upload-image", values);
+      formData.append("alt", values.alt);
+      formData.append("image", values.image);
+      const data = await axios.post("galleries", formData);
       return data;
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          onImgPick(data?.data);
+          const uploadImageData: any = {
+            image: data?.data?.data?.id,
+            imgPath: data?.data?.data?.path,
+          };
+          onImgPick(uploadImageData);
         }
       },
     }
@@ -242,14 +251,18 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
 
   //delete image
   const deleteImage = useMutation(
-    async (values: any) => {
-      const data = await axios.delete("image", values);
-      return data;
+    async (callback: any) => {
+      const data = await axios.delete(`galleries/${chosenImage?.id}`);
+      return { ...data, data: { ...data?.data, callback } };
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          toast.success("common.deleteImageSuccess");
+          setImages(images.filter((img) => img.id !== chosenImage?.id));
+          setChosenImage(null);
+          setImageDelete(false);
+          data.callback && data.callback();
+          toast.success(`${t("common.deleteImageSuccess")}`);
         }
       },
     }
@@ -257,7 +270,10 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
 
   useEffect(() => {
     getImages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const convertToSize = (size: number) => (size === 0 ? null : size < 1000000 ? (size / 1000).toFixed(2) + " KB" : (size / 1000000).toFixed(2) + " MB");
 
   const resetInput = () => {
     setInputRendered(false);
@@ -268,8 +284,9 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
     <>
       <Content>
         <Form
+          ref={formRef}
           onSubmit={(values: any) => {
-            if (typeof values.file === "string") {
+            if (["number", "string"].includes(typeof values.image)) {
               onImgPick(values);
             } else {
               uploadImage.mutate(values);
@@ -289,7 +306,7 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
           validate={(values) => {
             const errors: any = {};
 
-            if (!values.file) {
+            if (!values.image) {
               errors.fileRequired = t("form.validations.required");
             }
 
@@ -301,13 +318,12 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
               onSubmit={handleSubmit}
               style={{ width: "100%" }}
             >
-              {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
               <div className="inner-content">
                 <div className="left-content">
-                  <div className={`img-wrapper${!values.file && form.getFieldState("file")?.touched ? " error" : ""}`}>
+                  <div className={`img-wrapper${!values.image && form.getFieldState("image")?.touched ? " error" : ""}`}>
                     {(chosenImage || file) && (
                       <img
-                        src={chosenImage ? chosenImage.url : URL.createObjectURL(file)}
+                        src={chosenImage ? chosenImage.path : URL.createObjectURL(file)}
                         alt="Chosen thumbnail"
                       />
                     )}
@@ -329,6 +345,7 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
                         required
                         rows={3}
                         maxRows={3}
+                        disabled={!!chosenImage}
                       />
                     </Grid>
                     <Grid
@@ -336,12 +353,13 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
                       xs={12}
                     >
                       <Input
-                        name="description"
+                        name="alt"
                         label={t("form.labels.altText")}
-                        // validate={[required(t("form.validations.required"))]}
-                        // required
+                        validate={[required(t("form.validations.required"))]}
+                        required
                         rows={3}
                         maxRows={3}
+                        disabled={!!chosenImage}
                       />
                     </Grid>
                     <Grid
@@ -350,18 +368,18 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
                     >
                       <div className="details-section">
                         <h5>{t("common.details")}</h5>
-                        <div className="spec">
+                        {/* <div className="spec">
                           <span className="type">{t("common.version")}</span>
                           <span className="value"></span>
-                        </div>
+                        </div> */}
                         <div className="spec">
                           <span className="type">{t("common.size")}</span>
-                          <span className="value"></span>
+                          <span className="value">{chosenImage?.size || convertToSize(file?.size || 0)}</span>
                         </div>
-                        <div className="spec">
+                        {/* <div className="spec">
                           <span className="type">{t("common.location")}</span>
                           <span className="value"></span>
-                        </div>
+                        </div> */}
                       </div>
                     </Grid>
                     <Grid
@@ -425,18 +443,19 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
                               setChosenImage(null);
                               resetInput();
                               setFile(e.target.files?.[0] || null);
-
+                              form.mutators.setFormValue("image", e.target.files?.[0] || null);
+                              form.mutators.setFieldTouched("image", true);
                               form.mutators.setFormValue("name", null);
-                              form.mutators.setFormValue("description", null);
-                              form.mutators.setFormValue("file", e.target.files?.[0] || null);
-                              form.mutators.setFieldTouched("file", true);
+                              form.mutators.setFormValue("alt", null);
+                              form.mutators.setFieldTouched("name", false);
+                              form.mutators.setFieldTouched("alt", false);
                             }}
                           />
                         )}
                       </div>
                     </div>
 
-                    {images.map((img: any) => (
+                    {images.map((img: Image) => (
                       <div
                         className="img-wrapper"
                         key={img.id}
@@ -445,21 +464,22 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
                           resetInput();
                           setChosenImage({
                             id: img.id,
-                            url: img.src,
+                            path: img.path,
                             name: img.name,
+                            alt: img.alt,
+                            size: img.size,
                           });
-                          form.mutators.setFormValue("name", img.name);
-                          form.mutators.setFormValue("description", img.description);
-                          form.mutators.setFormValue("fileUrl", img.src || null);
-                          form.mutators.setFormValue("fileId", img.id || null);
-                          form.mutators.setFormValue("file", img.id || null);
-                          form.mutators.setFieldTouched("file", true);
+                          form.mutators.setFormValue("image", img.id || null);
+                          form.mutators.setFormValue("imgPath", img.path || null);
+                          form.mutators.setFormValue("name", img.name || null);
+                          form.mutators.setFormValue("alt", img.id || null);
+                          form.mutators.setFieldTouched("image", true);
                         }}
                       >
                         <div className="inner">
                           <LazyLoadImage
                             alt={img.alt}
-                            src={img.thumbnail}
+                            src={img.path}
                             effect="opacity"
                           />
                         </div>
@@ -468,48 +488,54 @@ const ImagePicker: React.FC<Props> = ({ closeFn, onImgPick }) => {
                   </div>
                 </div>
               </div>
+              {imageDelete && (
+                <Modal closeFn={() => setImageDelete(false)}>
+                  <>
+                    <IconTrash />
+                    <h6>{t("common.deleteImage")}</h6>
+                    <span>
+                      <Trans
+                        i18nKey="common.deleteImageQuestion"
+                        tOptions={{ image: chosenImage?.name }}
+                      >
+                        <strong />
+                      </Trans>
+                    </span>
+                    <div className="btns-wrapper">
+                      <Button
+                        variant="contained"
+                        color="error"
+                        type="submit"
+                        size="large"
+                        onClick={() => {
+                          deleteImage.mutate(() => {
+                            form.restart();
+                            form.mutators.setFormValue("name", null);
+                            form.mutators.setFormValue("alt", null);
+                            form.mutators.setFieldTouched("name", false);
+                            form.mutators.setFieldTouched("alt", false);
+                          });
+                        }}
+                      >
+                        {t("common.delete")}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="info"
+                        type="submit"
+                        size="large"
+                        onClick={() => setImageDelete(false)}
+                      >
+                        {t("common.cancel")}
+                      </Button>
+                    </div>
+                  </>
+                </Modal>
+              )}
             </form>
           )}
         />
       </Content>
-      {imageDelete && (
-        <Modal closeFn={() => setImageDelete(false)}>
-          <>
-            <IconTrash />
-            <h6>{t("common.deleteImage")}</h6>
-            <span>
-              <Trans
-                i18nKey="common.deleteImageQuestion"
-                tOptions={{ image: chosenImage?.name }}
-              >
-                <strong />
-              </Trans>
-            </span>
-            <div className="btns-wrapper">
-              <Button
-                variant="contained"
-                color="error"
-                type="submit"
-                size="large"
-                onClick={() => {
-                  deleteImage.mutate(true);
-                }}
-              >
-                {t("common.delete")}
-              </Button>
-              <Button
-                variant="contained"
-                color="info"
-                type="submit"
-                size="large"
-                onClick={() => setImageDelete(false)}
-              >
-                {t("common.cancel")}
-              </Button>
-            </div>
-          </>
-        </Modal>
-      )}
     </>
   );
 };

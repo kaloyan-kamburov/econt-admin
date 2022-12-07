@@ -25,6 +25,9 @@ import axios from "../../../utils/api";
 import useAuth from "../../../hooks/useAuth";
 import useCategories from "../../../hooks/useCategories";
 
+//types
+import { TLanguage } from "../../../context/auth";
+
 interface Props {
   closeFn: () => void;
 }
@@ -82,14 +85,14 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
             errors.file = t("form.validations.required");
           }
 
-          if (
-            Array.isArray(languages) &&
-            languages.every((lang) => {
-              return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
-            })
-          ) {
-            errors.notFilled = t("form.validations.required");
-          }
+          // if (
+          //   Array.isArray(languages) &&
+          //   languages.every((lang) => {
+          //     return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
+          //   })
+          // ) {
+          //   errors.notFilled = t("form.validations.required");
+          // }
           return errors;
         }}
         mutators={{
@@ -131,19 +134,19 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  {Array.isArray(languages) ? languages.map((lang) => <Tab label={t(`languages.${lang}`)} />) : null}
+                  {Array.isArray(languages) ? languages.map((lang: TLanguage) => <Tab label={t(`languages.${lang}`)} />) : null}
                 </Tabs>
               </Grid>
               {Array.isArray(languages)
                 ? languages.map((lang, i) =>
                     tab === i ? (
-                      <React.Fragment key={lang}>
+                      <React.Fragment key={lang.code}>
                         <Grid
                           item
                           xs={12}
                         >
                           <Input
-                            name={`languages.${lang}.name`}
+                            name={`name:${lang.code}`}
                             label={t("form.labels.categoryName")}
                             validate={[required(t("form.validations.required"))]}
                             required
@@ -154,7 +157,7 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
                           xs={12}
                         >
                           <Input
-                            name={`languages.${lang}.description`}
+                            name={`description:${lang.code}`}
                             label={t("form.labels.description")}
                             validate={[required(t("form.validations.required"))]}
                             required

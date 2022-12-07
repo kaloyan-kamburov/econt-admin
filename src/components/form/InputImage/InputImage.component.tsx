@@ -323,7 +323,7 @@ interface Props {
   // form?: any;
   onImgPick?: (values: any) => void;
 }
-const InputFile: React.FC<Props> = ({
+const InputImage: React.FC<Props> = ({
   name,
   isImage = false,
   label = "",
@@ -349,14 +349,21 @@ const InputFile: React.FC<Props> = ({
         {(props: any) => {
           return (
             <>
-              {file && (
+              {file ? (
                 <FilePreview>
                   <img
                     src={file}
                     alt="file"
                   />
                 </FilePreview>
-              )}
+              ) : props.input.value ? (
+                <FilePreview>
+                  <img
+                    src={props?.input?.value?.path}
+                    alt={props?.input?.value?.alt}
+                  />
+                </FilePreview>
+              ) : null}
 
               <InputFileWrapper className={props.meta.touched && props.meta.error ? "error" : ""}>
                 {/* <input
@@ -390,7 +397,7 @@ const InputFile: React.FC<Props> = ({
                   <ImagePicker
                     onImgPick={(values) => {
                       setModalImages(false);
-                      setFile(values.fileUrl);
+                      setFile(values.imgPath);
                       onImgPick(values);
                     }}
                     closeFn={() => setModalImages(false)}
@@ -405,4 +412,4 @@ const InputFile: React.FC<Props> = ({
   );
 };
 
-export default InputFile;
+export default InputImage;

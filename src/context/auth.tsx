@@ -5,10 +5,16 @@ type User = {
   id: string;
 };
 
+export type TLanguage = {
+  code: string;
+  icon: string;
+  name: string;
+};
+
 type AuthContextType = {
   user: User | null;
   setUser: (user?: any) => void;
-  languages: any[];
+  languages: TLanguage[];
   setLanguages: (langs?: any) => void;
 };
 
@@ -28,7 +34,7 @@ export const useProvideAuth = () => {
     name: "john",
     id: "123",
   });
-  const [languages, setLanguages] = useState<any[]>([]);
+  const [languages, setLanguages] = useState<TLanguage[]>([]);
 
   return {
     user,

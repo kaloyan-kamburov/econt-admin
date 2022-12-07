@@ -51,7 +51,7 @@ const queryClient = new QueryClient({
       retry: false,
       // cacheTime: 0,
       onError: (error: any) => {
-        toast.error(error?.message || "Something went wrong.");
+        // toast.error(error?.message || "Something went wrong.");
       },
     },
   },

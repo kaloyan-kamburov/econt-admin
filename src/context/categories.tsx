@@ -1,10 +1,25 @@
 import React, { createContext, useState } from "react";
 
+
+
+export type TFolder = {
+  id: string | number;
+  "name:bg": string;
+  "description:bg": string;
+  image_id: string | number;
+  category_id: string | number;
+  parent_id:  string | number | null;
+  published: boolean;
+  order: number;
+  created_at: string
+}
+
 export type TCategory = {
   "name:bg": string;
   "description:bg": string;
   created_at: string;
   id: string | number;
+  folders: TFolder[],
   image: {
     alt: string;
     extension: string;

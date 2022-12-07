@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 //MUI components
 import Button from "@mui/material/Button";
@@ -204,9 +205,10 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
                   data && navigate(`/categories/${data.id}`);
                 }}
               >
-                <img
+                <LazyLoadImage
                   alt={data?.image?.alt}
                   src={data?.image?.path}
+                  effect="opacity"
                 />
                 <span className="title">
                   {data && data["name:bg"]}
@@ -303,7 +305,7 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
             closeFn={() => {
               setModalDeleteCategory(false);
             }}
-            category={"test"}
+            category={data?.["name:bg"] || ""}
           />
         </Modal>
       )}

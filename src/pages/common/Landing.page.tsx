@@ -53,7 +53,7 @@ const PageHome: FC<Props> = () => {
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
-          const newLangs = Array.isArray(data?.data) ? data?.data.map((lang) => lang.code) : [];
+          const newLangs = Array.isArray(data?.data?.data) ? data?.data?.data : [];
           setLanguages(newLangs);
           getCategories();
         }
@@ -68,7 +68,7 @@ const PageHome: FC<Props> = () => {
   const { refetch: getCategories } = useQuery(
     "getCategories",
     async () => {
-      const data = await axios("categories?sort=order");
+      const data = await axios("categories?sort=order&include=folders");
       return data;
     },
     {

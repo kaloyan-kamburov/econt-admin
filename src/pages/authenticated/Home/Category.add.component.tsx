@@ -25,6 +25,9 @@ import axios from "../../../utils/api";
 import useAuth from "../../../hooks/useAuth";
 import useCategories from "../../../hooks/useCategories";
 
+//types
+import { TLanguage } from "../../../context/auth";
+
 interface Props {
   closeFn: () => void;
 }
@@ -84,8 +87,8 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
 
           if (
             Array.isArray(languages) &&
-            !languages.every((lang) => {
-              return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
+            !languages.every((lang: TLanguage) => {
+              return values?.[`name:${lang.code}`] && values?.[`description:${lang.code}`];
             })
           ) {
             errors.notFilled = t("form.validations.required");
@@ -114,11 +117,12 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                 xs={12}
               >
                 <InputImage
-                  name="file"
+                  name="image"
                   label={t("form.labels.uploadImage")}
                   desc={t("pages.home.uploadFileDesc")}
                   onImgPick={(values) => {
-                    form.mutators.setFormValue("file", values.file || values.id);
+                    form.mutators.setFormValue("image", values.image);
+                    form.mutators.setFormValue("imgPath", values.imgPath || values.path);
                   }}
                 />
               </Grid>
@@ -131,19 +135,19 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  {Array.isArray(languages) ? languages.map((lang) => <Tab label={t(`languages.${lang}`)} />) : null}
+                  {Array.isArray(languages) ? languages.map((lang: TLanguage) => <Tab label={t(`languages.${lang.code}`)} />) : null}
                 </Tabs>
               </Grid>
               {Array.isArray(languages)
                 ? languages.map((lang, i) =>
                     tab === i ? (
-                      <React.Fragment key={lang}>
+                      <React.Fragment key={lang.code}>
                         <Grid
                           item
                           xs={12}
                         >
                           <Input
-                            name={`languages.${lang}.name`}
+                            name={`name:${lang.code}`}
                             label={t("form.labels.categoryName")}
                             validate={[required(t("form.validations.required"))]}
                             required
@@ -154,7 +158,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                           xs={12}
                         >
                           <Input
-                            name={`languages.${lang}.description`}
+                            name={`description:${lang.code}`}
                             label={t("form.labels.description")}
                             validate={[required(t("form.validations.required"))]}
                             required
@@ -214,7 +218,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                 </Button>
               </Grid>
             </Grid>
-            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
+            <pre>{JSON.stringify(values, null, 4)}</pre>
           </form>
         )}
       />

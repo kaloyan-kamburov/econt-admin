@@ -25,6 +25,9 @@ import axios from "../../../utils/api";
 import useAuth from "../../../hooks/useAuth";
 import useCategories from "../../../hooks/useCategories";
 
+//types
+import { TLanguage } from "../../../context/auth";
+
 interface Props {
   closeFn: () => void;
   id: number | string;
@@ -43,14 +46,15 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
   const { refetch: getCategoryData } = useQuery(
     "getCategoryData",
     async () => {
-      const data = await axios(`categories/${id}`);
+      const data = await axios(`categories/${id}/edit`);
       return data;
     },
     {
       onSuccess: (data: AxiosResponse<any>) => {
+        console.log(data);
         if (!axiosOrg.isAxiosError(data)) {
           // setCategories(data?.data || []);
-          setInitialValues(data?.data);
+          setInitialValues(data?.data?.data);
         }
       },
       onError: (error: AxiosError) => {
@@ -78,16 +82,24 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
   );
 
   //save category
-  const saveCategory = useMutation(
+  const updateCategory = useMutation(
     async (values: any) => {
-      const data = await axios.post("categories/save", values);
+      const valuesForSend: any = {
+        image_id: values.image?.id,
+      };
+      Array.isArray(languages) &&
+        languages.forEach((lang: TLanguage) => {
+          valuesForSend[`name:${lang.code}`] = values?.[`name:${lang.code}`];
+          valuesForSend[`description:${lang.code}`] = values?.[`description:${lang.code}`];
+        });
+      const data = await axios.put(`categories/${id}`, valuesForSend);
       return data;
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setCategories([...categories, data?.data]);
-          toast.success(`${t("pages.home.categorySaved")}`);
+          // setCategories([...categories, data?.data]);
+          toast.success(`${t("pages.home.categoryUpdated")}`);
           closeFn();
         }
       },
@@ -101,18 +113,18 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
   return (
     <>
       <Form
-        onSubmit={(values) => saveAndPublishCategory.mutate(values)}
+        onSubmit={(values) => updateCategory.mutate(values)}
         initialValues={initialValues}
         validate={(values) => {
           const errors: any = {};
-          if (!values.file) {
-            errors.file = t("form.validations.required");
+          if (!values.image) {
+            errors.image = t("form.validations.required");
           }
 
           if (
             Array.isArray(languages) &&
-            !languages.every((lang) => {
-              return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
+            !languages.every((lang: TLanguage) => {
+              return values?.[`name:${lang.code}`] && values?.[`description:${lang.code}`];
             })
           ) {
             errors.notFilled = t("form.validations.required");
@@ -140,11 +152,11 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                 xs={12}
               >
                 <InputImage
-                  name="file"
+                  name="image"
                   label={t("form.labels.uploadImage")}
                   desc={t("pages.home.uploadFileDesc")}
                   onImgPick={(values) => {
-                    form.mutators.setFormValue("file", values.file || values.id);
+                    form.mutators.setFormValue("image", values.file || values.id);
                   }}
                 />
               </Grid>
@@ -157,19 +169,19 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  {Array.isArray(languages) ? languages.map((lang) => <Tab label={t(`languages.${lang}`)} />) : null}
+                  {Array.isArray(languages) ? languages.map((lang: TLanguage) => <Tab label={t(`languages.${lang.code}`)} />) : null}
                 </Tabs>
               </Grid>
               {Array.isArray(languages)
                 ? languages.map((lang, i) =>
                     tab === i ? (
-                      <React.Fragment key={lang}>
+                      <React.Fragment key={lang.code}>
                         <Grid
                           item
                           xs={12}
                         >
                           <Input
-                            name={`languages.${lang}.name`}
+                            name={`name:${lang.code}`}
                             label={t("form.labels.categoryName")}
                             validate={[required(t("form.validations.required"))]}
                             required
@@ -180,7 +192,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                           xs={12}
                         >
                           <Input
-                            name={`languages.${lang}.description`}
+                            name={`description:${lang.code}`}
                             label={t("form.labels.description")}
                             validate={[required(t("form.validations.required"))]}
                             required
@@ -216,7 +228,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                   variant="contained"
                   color="info"
                   size="large"
-                  onClick={() => saveCategory.mutate(values)}
+                  onClick={() => updateCategory.mutate(values)}
                   sx={{
                     width: "auto",
                     marginLeft: "auto",
@@ -240,7 +252,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                 </Button>
               </Grid>
             </Grid>
-            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
+            {/* <pre>{JSON.stringify(errors, null, 4)}</pre> */}
           </form>
         )}
       />

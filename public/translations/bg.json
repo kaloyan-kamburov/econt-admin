@@ -7,6 +7,7 @@
       "uploadFileDesc": "Максималния размер е N/A, позволените разширения са .svg, .jpg, .png и .gif",
       "changeCategory": "Промени категория",
       "categorySaved": "Категорията е създадена",
+      "categoryUpdated": "Категорията е обновена",
       "categorySavedAndPublished": "Категорията е създадена и публикувана"
     },
     "category": {
