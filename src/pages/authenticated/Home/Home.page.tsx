@@ -67,6 +67,7 @@ const PageHome: React.FC<{}> = () => {
         {categoriesRendered && (
           <Draggable
             onPosChange={(currPos, newPos) => {
+              console.log(newPos, currPos);
               const newCategories = [...categories];
               const tempCategory = categories[currPos];
               newCategories[currPos] = newCategories[newPos];

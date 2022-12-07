@@ -2,6 +2,7 @@ import React, { createContext, useState } from "react";
 
 type User = {
   name: string;
+  id: string;
 };
 
 type AuthContextType = {
@@ -23,7 +24,10 @@ interface Props {
 }
 
 export const useProvideAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({
+    name: "john",
+    id: "123",
+  });
   const [languages, setLanguages] = useState<any[]>([]);
 
   return {

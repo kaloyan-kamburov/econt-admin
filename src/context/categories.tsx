@@ -1,10 +1,25 @@
 import React, { createContext, useState } from "react";
 
-type Category = any;
+export type TCategory = {
+  "name:bg": string;
+  "description:bg": string;
+  created_at: string;
+  id: string | number;
+  image: {
+    alt: string;
+    extension: string;
+    id: string | number;
+    path: string;
+    size: string;
+  };
+  image_id: string | number;
+  order: number;
+  published: boolean;
+};
 
 type CategoryContextType = {
-  categories: Category[];
-  setCategories: (category?: Category) => void;
+  categories: TCategory[];
+  setCategories: React.Dispatch<React.SetStateAction<TCategory[]>>;
 };
 
 export const CategoryContext = createContext<CategoryContextType>({
@@ -17,7 +32,7 @@ interface Props {
 }
 
 export const useProvideCategories = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<TCategory[]>([]);
 
   return {
     categories,

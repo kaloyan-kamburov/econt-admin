@@ -27,7 +27,7 @@ import useCategories from "../../../hooks/useCategories";
 
 interface Props {
   closeFn: () => void;
-  id: string;
+  id: number | string;
 }
 
 const EditCategory: React.FC<Props> = ({ closeFn, id }) => {

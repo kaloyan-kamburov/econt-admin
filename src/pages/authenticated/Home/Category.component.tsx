@@ -15,6 +15,7 @@ import AddCategory from "./Category.add.component";
 import EditCategory from "./Category.edit.component";
 import DeleteCategory from "./Category.delete.component";
 import Modal from "../../../components/common/Modal/Modal.component";
+import { TCategory } from "../../../context/categories";
 
 //icons
 import { IconPlus } from "../../../Icons/icons";
@@ -163,7 +164,7 @@ const CategoryWrapper = styled.div`
 `;
 interface Props {
   isAdd?: boolean;
-  data?: any;
+  data?: TCategory;
   published?: boolean;
 }
 
@@ -200,19 +201,19 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
               <div
                 className={`inner-content${!published ? " unpublished" : ""}`}
                 onClick={() => {
-                  navigate(`/categories/${data.id}`);
+                  data && navigate(`/categories/${data.id}`);
                 }}
               >
                 <img
-                  alt="Icon map"
-                  src={iconMap}
+                  alt={data?.image?.alt}
+                  src={data?.image?.path}
                 />
                 <span className="title">
-                  {data.name}
+                  {data && data["name:bg"]}
                   {/* <br />
                   (Непубликуван) */}
                 </span>
-                <span className="description">{data.description}</span>
+                <span className="description">{data && data["description:bg"]}</span>
               </div>
               <div className="drag-handle">
                 <OpenWith />
@@ -285,7 +286,7 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
         >
           <>
             <EditCategory
-              id={data.id}
+              id={(data && data.id) || 0}
               closeFn={() => setModalEditCategory(false)}
             />
             {/* <Loader showExplicit inModal /> */}

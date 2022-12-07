@@ -47,13 +47,14 @@ const PageHome: FC<Props> = () => {
   const { refetch: getLanguages } = useQuery(
     "getLanguages",
     async (userId) => {
-      const data = await axios("languages");
+      const data = await axios("locales");
       return data;
     },
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setLanguages(data.data);
+          const newLangs = Array.isArray(data?.data) ? data?.data.map((lang) => lang.code) : [];
+          setLanguages(newLangs);
           getCategories();
         }
       },
@@ -67,13 +68,13 @@ const PageHome: FC<Props> = () => {
   const { refetch: getCategories } = useQuery(
     "getCategories",
     async () => {
-      const data = await axios("categories");
+      const data = await axios("categories?sort=order");
       return data;
     },
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setCategories(data?.data || []);
+          setCategories(data?.data?.data || []);
           setAppLoaded(true);
         }
       },
@@ -90,10 +91,10 @@ const PageHome: FC<Props> = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    getUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   getUser();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return loadFailed ? <PageLogin /> : appLoaded ? <Outlet /> : null;
 

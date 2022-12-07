@@ -3,6 +3,7 @@ import { CKEditor } from "ckeditor4-react";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
+import { Editor } from "@tinymce/tinymce-react";
 
 //MUI components
 import Grid from "@mui/material/Grid";
@@ -69,6 +70,17 @@ const PageGroup: React.FC<Props> = ({ data }) => {
               </InnerFieldWrapper>
             </Grid>
           </Grid>
+          <Editor
+            // onInit={(evt, editor) => (editorRef.current = editor)}
+            initialValue="<p>This is the initial content of the editor.</p>"
+            init={{
+              height: 500,
+              menubar: false,
+              plugins: ["advlist autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen", "insertdatetime media table paste code help wordcount"],
+              toolbar: "undo redo | formatselect | " + "bold italic backcolor | alignleft aligncenter " + "alignright alignjustify | bullist numlist outdent indent | " + "removeformat | help",
+              content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+            }}
+          />
           {/* <CKEditor
             style={{ width: "100%" }}
             initData="<p>Hello from CKEditor 4!</p>"
