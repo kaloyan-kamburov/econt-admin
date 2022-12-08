@@ -30,7 +30,7 @@ import { TLanguage } from "../../../context/auth";
 
 interface Props {
   closeFn: () => void;
-  id: string;
+  id: string | number;
 }
 
 const EditFolder: React.FC<Props> = ({ closeFn, id }) => {

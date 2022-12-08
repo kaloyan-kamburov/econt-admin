@@ -80,7 +80,7 @@ const PageFolder: React.FC<Props> = () => {
 
   return (
     <div className="page-wrapper xxl">
-      <Breadcrumb routePath={["Path1", "Path2", "Path3"]} />
+      {/* <Breadcrumb routePath={["Path1", "Path2", "Path3"]} /> */}
       {pageData.isGroup ? (
         <PageGroup data={pageData} />
       ) : (

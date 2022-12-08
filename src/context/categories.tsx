@@ -6,12 +6,19 @@ export type TFolder = {
   id: string | number;
   "name:bg": string;
   "description:bg": string;
-  image_id: string | number;
   category_id: string | number;
   parent_id:  string | number | null;
   published: boolean;
   order: number;
   created_at: string
+  image: {
+    alt: string;
+    extension: string;
+    id: string | number;
+    path: string;
+    size: string;
+  };
+  image_id: string | number;
 }
 
 export type TCategory = {

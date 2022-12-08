@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 //MUI components
 import Button from "@mui/material/Button";
@@ -25,6 +26,9 @@ import { IconDots, IconPlus, IconFolder, IconAddFolder } from "../../../Icons/ic
 
 //theme
 import { bgSections, btnContainedPrimaryBgColor, lightColor, dragActive } from "../../../styles/theme";
+
+//type
+import { TFolder } from "../../../context/categories";
 
 const FolderWrapper = styled.div`
   position: relative;
@@ -173,7 +177,7 @@ const renderBackground = (isAdd: boolean) => (isAdd ? <IconFolder /> : <IconAddF
 
 interface Props {
   isAdd?: boolean;
-  data?: any;
+  data?: TFolder;
   published?: boolean;
 }
 
@@ -190,6 +194,8 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
   const [modalUnublishFolder, setModalUnublishFolder] = useState<boolean>(false);
   const [modalArchiveFolder, setModalArchiveFolder] = useState<boolean>(false);
   const [modalDeleteFolder, setModalDeleteFolder] = useState<boolean>(false);
+
+  console.log(data);
 
   return (
     <>
@@ -218,10 +224,12 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
                 className="img-wrapper"
                 onClick={() => navigate("/categories/1/1")}
               >
-                <img
-                  src={iconMap}
-                  alt="icon"
-                />
+                <LazyLoadImage
+                    alt={data?.image?.alt}
+                    src={data?.image?.path}
+                    effect="opacity"
+                  />
+                
               </div>
 
               <div className="drag-handle">
@@ -290,7 +298,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
             </>
           )}
         </div>
-        <div className="content">{!isAdd && <span>{data?.name}</span>}</div>
+        <div className="content">{!isAdd && <span>{data?.["name:bg"]}</span>}</div>
       </FolderWrapper>
 
       {modalCreateFolder && (
@@ -310,7 +318,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
         >
           <>
             <EditFolder
-              id={data.id}
+              id={data?.id || ""}
               closeFn={() => setModalEditFolder(false)}
             />
             {/* <Loader showExplicit inModal /> */}

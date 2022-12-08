@@ -17,6 +17,10 @@ import usePageError from "../../../hooks/usePageError";
 //utils
 import axios from "../../../utils/api";
 
+//types
+import { TFolder } from "../../../context/categories";
+import { Path } from "../../../components/common/Breadcrumb/Breadcrumb.component";
+
 interface Props {}
 
 const PageCategory: React.FC<Props> = () => {
@@ -25,8 +29,9 @@ const PageCategory: React.FC<Props> = () => {
   const { id } = useParams();
   const { pathname } = useLocation();
   const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
-  const [folders, setFolders] = useState<any[]>([]);
+  const [folders, setFolders] = useState<TFolder[]>([]);
   const [foldersRendered, setfoldersRendered] = useState<boolean>(true);
+  const [path, setPath] = useState<Path[]>([])
 
   //save positions
   const updatePositions = useMutation(
@@ -51,14 +56,17 @@ const PageCategory: React.FC<Props> = () => {
     "getCategoryData",
     async () => {
       // setVisible(false);
-      const data = await axios(`categories/${id}`);
+      const data = await axios(`folders?include=category.image&filter[folder_id]=${id}`);
       return data;
     },
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setTitle(data?.data?.data?.name);
-          setFolders(data?.data?.data?.folders);
+          setFolders(data?.data?.data || []);
+          setTitle(data?.data?.path?.[0]?.name || "");
+          setPath(data?.data?.path || [])
+          // setTitle(data?.data?.data?.name);
+          // setFolders(data?.data?.data?.folders);
         }
       },
       onError: (error: AxiosError) => {
@@ -76,7 +84,7 @@ const PageCategory: React.FC<Props> = () => {
     getCategoryData();
     return () => setErrorMsg("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [pathname]); 
 
   useEffect(() => {
     if (folders.length) {
@@ -89,7 +97,7 @@ const PageCategory: React.FC<Props> = () => {
 
   return (
     <div className="page-wrapper xxl">
-      <Breadcrumb routePath={["Path1", "Path2", "Path3"]} />
+      <Breadcrumb routePath={path} />
       <Folder isAdd />
       {foldersRendered && (
         <Draggable
