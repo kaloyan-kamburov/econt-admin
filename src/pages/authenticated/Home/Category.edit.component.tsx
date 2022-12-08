@@ -27,6 +27,7 @@ import useCategories from "../../../hooks/useCategories";
 
 //types
 import { TLanguage } from "../../../context/auth";
+import { TCategory } from "../../../context/categories";
 
 interface Props {
   closeFn: () => void;
@@ -34,12 +35,13 @@ interface Props {
 }
 
 const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
-  const [tab, setTab] = useState<number>(0);
-  const [initialValues, setInitialValues] = useState<any>({});
-
   const { languages } = useAuth();
   const { t } = useTranslation();
   const { categories, setCategories } = useCategories();
+
+  const [initialValues, setInitialValues] = useState<any>({});
+  const [tab, setTab] = useState<number>(0);
+  const [shouldPublish, setShouldPublish] = useState<boolean>(false);
 
   const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
 
@@ -51,7 +53,6 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
     },
     {
       onSuccess: (data: AxiosResponse<any>) => {
-        console.log(data);
         if (!axiosOrg.isAxiosError(data)) {
           // setCategories(data?.data || []);
           setInitialValues(data?.data?.data);
@@ -64,28 +65,13 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
     }
   );
 
-  //save and publish category
-  const saveAndPublishCategory = useMutation(
-    async (values: any) => {
-      const data = await axios.post("categories/save-publish", values);
-      return data;
-    },
-    {
-      onSuccess: (data: AxiosError | any) => {
-        if (!axiosOrg.isAxiosError(data)) {
-          setCategories([...categories, data?.data]);
-          toast.success(`${t("pages.home.categorySavedAndPublished")}`);
-          closeFn();
-        }
-      },
-    }
-  );
-
-  //save category
+  //update category
   const updateCategory = useMutation(
     async (values: any) => {
       const valuesForSend: any = {
-        image_id: values.image?.id,
+        image_id: values?.image?.id || values.image,
+        path: values?.imgPath || values?.image.path || null,
+        published: false,
       };
       Array.isArray(languages) &&
         languages.forEach((lang: TLanguage) => {
@@ -93,13 +79,54 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
           valuesForSend[`description:${lang.code}`] = values?.[`description:${lang.code}`];
         });
       const data = await axios.put(`categories/${id}`, valuesForSend);
+      return { ...data, newValues: valuesForSend };
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          let updatedCategoryIndex = categories.findIndex((cat: TCategory) => cat.id === id);
+          if (updatedCategoryIndex) {
+            const newValues = data?.newValues || {};
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const newCategories = [...categories];
+            newCategories[updatedCategoryIndex] = {
+              ...newCategories[updatedCategoryIndex],
+              image: { ...(newCategories?.[updatedCategoryIndex]?.image || {}), path: newValues.path },
+              ...newValues,
+            };
+            setCategories(newCategories);
+          }
+          toast.success(`${t("pages.home.categoryUpdated")}`);
+
+          if (shouldPublish) {
+            setTimeout(() => publishCategory.mutate());
+          } else {
+            closeFn();
+          }
+        }
+      },
+    }
+  );
+
+  //publish category
+  const publishCategory = useMutation(
+    async () => {
+      const data = await axios.patch(`categories/${id}/publish`, {
+        published: true,
+      });
       return data;
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          // setCategories([...categories, data?.data]);
-          toast.success(`${t("pages.home.categoryUpdated")}`);
+          const updatedCategoryIndex = categories.findIndex((cat: TCategory) => cat.id === id);
+          if (updatedCategoryIndex) {
+            const newCategories = [...categories];
+            newCategories[updatedCategoryIndex].published = true;
+            setCategories(newCategories);
+          }
+          toast.success(`${t("pages.home.categoryPublished")}`);
+          setShouldPublish(false);
           closeFn();
         }
       },
@@ -157,6 +184,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                   desc={t("pages.home.uploadFileDesc")}
                   onImgPick={(values) => {
                     form.mutators.setFormValue("image", values.image);
+                    form.mutators.setFormValue("imgPath", values.imgPath);
                   }}
                 />
               </Grid>
@@ -214,9 +242,14 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                 <Button
                   variant="contained"
                   color="primary"
-                  type="submit"
                   size="large"
-                  onClick={() => {}}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShouldPublish(true);
+                    setTimeout(() => {
+                      updateCategory.mutate(values);
+                    });
+                  }}
                   sx={{
                     width: "auto",
                   }}
@@ -228,7 +261,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                   variant="contained"
                   color="info"
                   size="large"
-                  onClick={() => updateCategory.mutate(values)}
+                  type="submit"
                   sx={{
                     width: "auto",
                     marginLeft: "auto",
@@ -252,7 +285,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                 </Button>
               </Grid>
             </Grid>
-            <pre>{JSON.stringify(errors, null, 4)}</pre>
+            {/* <pre>{JSON.stringify(errors, null, 4)}</pre> */}
           </form>
         )}
       />

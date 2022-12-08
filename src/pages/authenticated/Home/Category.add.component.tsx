@@ -129,7 +129,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
             onSubmit={handleSubmit}
             style={{ width: "100%" }}
           >
-            <pre>{JSON.stringify(values, null, 4)}</pre>
+            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
             <Grid
               container
               spacing={2}
