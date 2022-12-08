@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import axiosOrg, { AxiosError, AxiosResponse } from "axios";
+import axiosOrg, { AxiosError } from "axios";
 import toast from "react-hot-toast";
 
 //MUI components
@@ -27,6 +27,7 @@ import useCategories from "../../../hooks/useCategories";
 
 //types
 import { TLanguage } from "../../../context/auth";
+import { TCategory } from "../../../context/categories";
 
 interface Props {
   closeFn: () => void;
@@ -34,41 +35,63 @@ interface Props {
 
 const AddCategory: React.FC<Props> = ({ closeFn }) => {
   const { t } = useTranslation();
-  const [tab, setTab] = useState<number>(0);
-
   const { languages } = useAuth();
   const { categories, setCategories } = useCategories();
 
-  const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
+  const [tab, setTab] = useState<number>(0);
+  const [shouldPublish, setShouldPublish] = useState<boolean>(false);
 
-  //save and publish category
-  const saveAndPublishCategory = useMutation(
-    async (values: any) => {
-      const data = await axios.post("categories/save-publish", values);
-      return data;
-    },
-    {
-      onSuccess: (data: AxiosResponse<any>) => {
-        if (!axiosOrg.isAxiosError(data)) {
-          setCategories([...categories, data?.data]);
-          toast.success(`${t("pages.home.categorySavedAndPublished")}`);
-          closeFn();
-        }
-      },
-    }
-  );
+  const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
 
   //save category
   const saveCategory = useMutation(
     async (values: any) => {
-      const data = await axios.post("categories/save", values);
+      const valuesForSend: any = {
+        image_id: values.image,
+      };
+      Array.isArray(languages) &&
+        languages.forEach((lang: TLanguage) => {
+          valuesForSend[`name:${lang.code}`] = values?.[`name:${lang.code}`];
+          valuesForSend[`description:${lang.code}`] = values?.[`description:${lang.code}`];
+        });
+      const data = await axios.post("categories", valuesForSend);
       return data;
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setCategories([...categories, data?.data]);
+          const newCategory = data?.data?.data || {};
           toast.success(`${t("pages.home.categorySaved")}`);
+          setCategories([...categories, { ...newCategory }]);
+          if (shouldPublish) {
+            setTimeout(() => publishCategory.mutate(newCategory.id));
+          } else {
+            closeFn();
+          }
+        }
+      },
+    }
+  );
+
+  //publish category
+  const publishCategory = useMutation(
+    async (catId: number | string) => {
+      const data = await axios.patch(`categories/${catId}/publish`, {
+        published: true,
+      });
+      return { ...data, catId };
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          const updatedCategoryIndex = categories.findIndex((cat: TCategory) => cat.id === data?.catId);
+          if (updatedCategoryIndex) {
+            const newCategories = [...categories];
+            newCategories[updatedCategoryIndex].published = true;
+            setCategories(newCategories);
+          }
+          toast.success(`${t("pages.home.categoryPublished")}`);
+          setShouldPublish(false);
           closeFn();
         }
       },
@@ -78,11 +101,11 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
   return (
     <>
       <Form
-        onSubmit={(values) => saveAndPublishCategory.mutate(values)}
+        onSubmit={(values) => saveCategory.mutate(values)}
         validate={(values) => {
           const errors: any = {};
-          if (!values.file) {
-            errors.file = t("form.validations.required");
+          if (!values.image) {
+            errors.image = t("form.validations.required");
           }
 
           if (
@@ -106,7 +129,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
             onSubmit={handleSubmit}
             style={{ width: "100%" }}
           >
-            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
+            <pre>{JSON.stringify(values, null, 4)}</pre>
             <Grid
               container
               spacing={2}
@@ -180,9 +203,14 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                 <Button
                   variant="contained"
                   color="primary"
-                  type="submit"
                   size="large"
-                  onClick={() => {}}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShouldPublish(true);
+                    setTimeout(() => {
+                      saveCategory.mutate(values);
+                    });
+                  }}
                   sx={{
                     width: "auto",
                   }}
@@ -194,7 +222,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                   variant="contained"
                   color="info"
                   size="large"
-                  onClick={() => saveCategory.mutate(values)}
+                  type="submit"
                   sx={{
                     width: "auto",
                     marginLeft: "auto",
@@ -218,7 +246,6 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
                 </Button>
               </Grid>
             </Grid>
-            <pre>{JSON.stringify(values, null, 4)}</pre>
           </form>
         )}
       />

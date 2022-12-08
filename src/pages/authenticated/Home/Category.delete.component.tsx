@@ -1,23 +1,48 @@
 import React, { useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
+import { useMutation } from "react-query";
+import axiosOrg, { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 //MUI components
 import Button from "@mui/material/Button";
 
-//custom components
-import Loader from "../../../components/common/Loader/Loader.component";
-
 //icons
 import { IconTrash } from "../../../Icons/icons";
 
+//hooks
+import useCategories from "../../../hooks/useCategories";
+
+//utils
+import axios from "../../../utils/api";
+
+//types
+import { TCategory } from "../../../context/categories";
 interface Props {
-  category: string;
+  category: TCategory | null;
   closeFn: () => void;
 }
 
 const DeleteCategory: React.FC<Props> = ({ category, closeFn }) => {
-  const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
+  const { categories, setCategories } = useCategories();
+
+  //save category
+  const deleteCategory = useMutation(
+    async () => {
+      const data = await axios.delete(`categories/${category?.id}`);
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          toast.success(`${t("pages.home.categoryDeleted")}`);
+          setCategories(categories.filter((cat: TCategory) => cat.id !== category?.id));
+          closeFn();
+        }
+      },
+    }
+  );
   return (
     <>
       <IconTrash />
@@ -25,7 +50,7 @@ const DeleteCategory: React.FC<Props> = ({ category, closeFn }) => {
       <span>
         <Trans
           i18nKey="pages.home.deleteCategoryQuestion"
-          tOptions={{ category }}
+          tOptions={{ category: category?.["name:bg"] }}
         >
           <strong />
         </Trans>
@@ -36,13 +61,7 @@ const DeleteCategory: React.FC<Props> = ({ category, closeFn }) => {
           color="error"
           type="submit"
           size="large"
-          onClick={() => {
-            setLoading(true);
-            setTimeout(() => {
-              setLoading(false);
-              closeFn();
-            }, 1000);
-          }}
+          onClick={() => deleteCategory.mutate()}
         >
           {t("common.delete")}
         </Button>
@@ -56,12 +75,6 @@ const DeleteCategory: React.FC<Props> = ({ category, closeFn }) => {
           {t("common.cancel")}
         </Button>
       </div>
-      {loading && (
-        <Loader
-          showExplicit
-          inModal
-        />
-      )}
     </>
   );
 };

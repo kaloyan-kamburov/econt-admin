@@ -69,6 +69,7 @@ const CategoryWrapper = styled.div`
       margin-bottom: calc(1.6 * var(--atom));
       // max-width: calc(28 * var(--atom));
       max-width: 65%;
+      max-height: calc(46 * var(--atom));
     }
 
     .title {
@@ -305,7 +306,7 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
             closeFn={() => {
               setModalDeleteCategory(false);
             }}
-            category={data?.["name:bg"] || ""}
+            category={data || null}
           />
         </Modal>
       )}

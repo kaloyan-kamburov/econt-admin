@@ -156,7 +156,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                   label={t("form.labels.uploadImage")}
                   desc={t("pages.home.uploadFileDesc")}
                   onImgPick={(values) => {
-                    form.mutators.setFormValue("image", values.file || values.id);
+                    form.mutators.setFormValue("image", values.image);
                   }}
                 />
               </Grid>
@@ -252,7 +252,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                 </Button>
               </Grid>
             </Grid>
-            {/* <pre>{JSON.stringify(errors, null, 4)}</pre> */}
+            <pre>{JSON.stringify(errors, null, 4)}</pre>
           </form>
         )}
       />
