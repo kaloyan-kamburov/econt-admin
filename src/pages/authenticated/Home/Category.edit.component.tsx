@@ -24,6 +24,7 @@ import axios from "../../../utils/api";
 //hooks
 import useAuth from "../../../hooks/useAuth";
 import useCategories from "../../../hooks/useCategories";
+import usePageError from "../../../hooks/usePageError";
 
 //types
 import { TLanguage } from "../../../context/auth";
@@ -38,6 +39,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
   const { languages } = useAuth();
   const { t } = useTranslation();
   const { categories, setCategories } = useCategories();
+  const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
 
   const [initialValues, setInitialValues] = useState<any>({});
   const [tab, setTab] = useState<number>(0);
@@ -45,6 +47,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
 
   const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
 
+  //get category
   const { refetch: getCategoryData } = useQuery(
     "getCategoryData",
     async () => {
@@ -59,8 +62,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
         }
       },
       onError: (error: AxiosError) => {
-        // setLoadFailed(true);
-        toast.error(error?.message || `${t("pages.login.loginError")}`);
+        setVisibleError(true);
       },
     }
   );
@@ -105,13 +107,16 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
           }
         }
       },
+      onError: (error) => {
+        setVisibleError(true);
+      },
     }
   );
 
   //publish category
   const publishCategory = useMutation(
     async () => {
-      const data = await axios.patch(`categories/${id}/publish`, {
+      const data = await axios.patch(`categoriess/${id}/publish`, {
         published: true,
       });
       return data;
@@ -127,20 +132,31 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
           }
           toast.success(`${t("pages.home.categoryPublished")}`);
           setShouldPublish(false);
-          closeFn();
         }
+      },
+      onError: () => {
+        setErrorMsg(t("common.errorPublishCategory"));
+        setVisibleError(true);
       },
     }
   );
 
   useEffect(() => {
+    setRetryFn({
+      execute: () => getCategoryData(),
+    });
     getCategoryData();
   }, []);
 
   return (
     <>
       <Form
-        onSubmit={(values) => updateCategory.mutate(values)}
+        onSubmit={(values) => {
+          setRetryFn({
+            execute: () => updateCategory.mutate(values),
+          });
+          updateCategory.mutate(values);
+        }}
         initialValues={initialValues}
         validate={(values) => {
           const errors: any = {};
@@ -246,6 +262,9 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     setShouldPublish(true);
+                    setRetryFn({
+                      execute: () => updateCategory.mutate(values),
+                    });
                     setTimeout(() => {
                       updateCategory.mutate(values);
                     });

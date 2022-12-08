@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
@@ -91,7 +91,7 @@ const AddCategory: React.FC<Props> = ({ closeFn }) => {
             setCategories(newCategories);
           }
           toast.success(`${t("pages.home.categoryPublished")}`);
-          setShouldPublish(false);
+          // setShouldPublish(false);
           closeFn();
         }
       },

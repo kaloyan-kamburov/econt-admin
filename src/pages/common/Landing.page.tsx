@@ -12,7 +12,7 @@ import PageLogin from "./Login.page";
 import axios from "../../utils/api";
 
 //hooks
-import { useAuth, useCategories } from "../../hooks/hooks";
+import { useAuth, useCategories, usePageError } from "../../hooks/hooks";
 
 interface Props {}
 
@@ -20,7 +20,8 @@ const PageHome: FC<Props> = () => {
   const [appLoaded, setAppLoaded] = useState<boolean>(false);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const { user, setUser, setLanguages } = useAuth();
-  const { categories, setCategories } = useCategories();
+  const { setCategories } = useCategories();
+  const { setVisibleError, setRetryFn } = usePageError();
   const { t } = useTranslation();
 
   const { refetch: getUser } = useQuery(
@@ -88,17 +89,14 @@ const PageHome: FC<Props> = () => {
   useEffect(() => {
     if (user) {
       getLanguages();
+      setRetryFn({
+        execute: () => getCategories(),
+      });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // useEffect(() => {
-  //   getUser();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   return loadFailed ? <PageLogin /> : appLoaded ? <Outlet /> : null;
-
-  // return appLoaded ? <Outlet /> : loadFailed ? <PageLogin /> : null;
 };
 
 export default PageHome;

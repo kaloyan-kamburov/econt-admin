@@ -23,7 +23,7 @@ const PageErrorWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 4;
+  z-index: 10000;
   background: rgba(227, 227, 227, 0.8);
 
   .content {
@@ -60,7 +60,7 @@ const PageErrorWrapper = styled.div`
 
 const PageError: React.FC<Props> = () => {
   const { t } = useTranslation();
-  const { errorMsg, setVisibleError, retryFn } = usePageError();
+  const { errorMsg, setVisibleError, setErrorMsg, retryFn } = usePageError();
   return (
     <PageErrorWrapper>
       <div className="content">
@@ -88,6 +88,7 @@ const PageError: React.FC<Props> = () => {
             size="large"
             onClick={() => {
               setVisibleError(false);
+              setErrorMsg("");
             }}
           >
             {t("common.close")}

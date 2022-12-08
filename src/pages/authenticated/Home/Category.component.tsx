@@ -60,6 +60,13 @@ const CategoryWrapper = styled.div`
       align-items: center;
       cursor: pointer;
 
+      .img-wrapper {
+        height: calc(32 * var(--atom));
+        max-height: calc(32 * var(--atom));
+        display: flex;
+        align-items: center;
+      }
+
       &.unpublished {
         opacity: 0.5;
       }
@@ -206,11 +213,13 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
                   data && navigate(`/categories/${data.id}`);
                 }}
               >
-                <LazyLoadImage
-                  alt={data?.image?.alt}
-                  src={data?.image?.path}
-                  effect="opacity"
-                />
+                <div className="img-wrapper">
+                  <LazyLoadImage
+                    alt={data?.image?.alt}
+                    src={data?.image?.path}
+                    effect="opacity"
+                  />
+                </div>
                 <span className="title">
                   {data && data["name:bg"]}
                   {/* <br />

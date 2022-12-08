@@ -84,6 +84,7 @@
     "deleteImageSuccess": "Изображението е изтрито",
     "positionsUpdated": "Позициите са променени",
     "errorGettingData": "Възникна грешка при взимането на данните",
+    "errorPublishCategory": "Възникна грешка при публикуване",
     "tryAgain": "Опитай пак"
   },
   "languages": {

@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 
 //custom components
 import Category from "./Category.component";
-import PageError from "../../../components/common/PageError/pageError.component";
 
 //hooks
 import usePageTitle from "../../../hooks/usePageTitle";
@@ -26,19 +25,25 @@ const PageHome: React.FC<{}> = () => {
 
   //save category
   const updatePositions = useMutation(
-    async (values: any) => {
-      await axios.put("categories/update", values);
-      return values;
+    async (values: { currPos: number; newPos: number; id: number | string }) => {
+      const data = await axios.patch(`categories/${values?.id}/order`, {
+        position: values.newPos + 1,
+      });
+      return { ...data, newPos: values.newPos, currPos: values.currPos };
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setCategories(data);
-          toast.success(`${t("common.categoriesUpdated")}`);
+          const currPos = data?.currPos;
+          const newPos = data?.newPos;
+          const newCategories = [...categories];
+          const tempCategory = newCategories.splice(currPos, 1)[0];
+          newCategories.splice(newPos, 0, tempCategory);
+          setCategories(newCategories);
+          toast.success(`${t("common.positionsUpdated")}`);
         }
       },
       onError: (error: AxiosError) => {
-        setCategories([...categories]);
         toast.error(error?.message || `${t("common.errorGettingData")}`);
         setVisibleError(true);
       },
@@ -62,19 +67,14 @@ const PageHome: React.FC<{}> = () => {
   return (
     <>
       <div className="page-wrapper">
-        {/* {JSON.stringify(categories)} */}
         <Category isAdd />
         {categoriesRendered && (
           <Draggable
             onPosChange={(currPos, newPos) => {
-              console.log(newPos, currPos);
-              const newCategories = [...categories];
-              const tempCategory = categories[currPos];
-              newCategories[currPos] = newCategories[newPos];
-              newCategories[newPos] = tempCategory;
-              updatePositions.mutate(newCategories);
+              const values = { newPos, currPos, id: categories?.[currPos]?.id || "" };
+              updatePositions.mutate(values);
               setRetryFn({
-                execute: () => updatePositions.mutate(newCategories),
+                execute: () => updatePositions.mutate(values),
               });
             }}
           >

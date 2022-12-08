@@ -1,13 +1,6 @@
 import React from "react";
 import { Toaster, ToastBar, toast } from "react-hot-toast";
-import {
-  informationColor,
-  informationBgColor,
-  successColor,
-  successBgColor,
-  errorColor,
-  errorBgColor,
-} from "../../../styles/theme";
+import { informationColor, informationBgColor, successColor, successBgColor, errorColor, errorBgColor } from "../../../styles/theme";
 import IconError from "@mui/icons-material/Error";
 import IconCheckCircle from "@mui/icons-material/CheckCircle";
 import IconInfo from "@mui/icons-material/Info";
@@ -50,6 +43,7 @@ const Toast: React.FC<Props> = () => (
           background: errorBgColor,
           color: errorColor,
           borderColor: errorColor,
+          zIndex: 10002,
         },
         icon: <IconError />,
       },
