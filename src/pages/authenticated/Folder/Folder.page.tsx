@@ -85,14 +85,14 @@ const PageFolder: React.FC<Props> = () => {
         <PageGroup data={pageData} />
       ) : (
         <>
-          {((Array.isArray(records) && records.length === 0) || pageData.isFolders) && <Folder isAdd />}
+          {/* {((Array.isArray(records) && records.length === 0) || pageData.isFolders) && <Folder isAdd />} */}
           {((Array.isArray(records) && records.length === 0) || !pageData.isFolders) && (
             <Group
               isAdd
               published
             />
           )}
-          {records.length > 0 && (
+          {/* {records.length > 0 && (
             <Draggable
               onPosChange={(currPos, newPos) => {
                 // updatePositions.mutate(true);
@@ -114,7 +114,7 @@ const PageFolder: React.FC<Props> = () => {
                     />
                   ))}
             </Draggable>
-          )}
+          )} */}
         </>
       )}
     </div>

@@ -179,9 +179,12 @@ interface Props {
   isAdd?: boolean;
   data?: TFolder;
   published?: boolean;
+  parentId?: number | null;
+  categoryId: string | number;
+  onAddFolder?: (folder?: TFolder) => void;
 }
 
-const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
+const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, parentId = null, onAddFolder }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -194,8 +197,6 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
   const [modalUnublishFolder, setModalUnublishFolder] = useState<boolean>(false);
   const [modalArchiveFolder, setModalArchiveFolder] = useState<boolean>(false);
   const [modalDeleteFolder, setModalDeleteFolder] = useState<boolean>(false);
-
-  console.log(data);
 
   return (
     <>
@@ -225,11 +226,10 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
                 onClick={() => navigate("/categories/1/1")}
               >
                 <LazyLoadImage
-                    alt={data?.image?.alt}
-                    src={data?.image?.path}
-                    effect="opacity"
-                  />
-                
+                  alt={data?.image?.alt}
+                  src={data?.image?.path}
+                  effect="opacity"
+                />
               </div>
 
               <div className="drag-handle">
@@ -307,7 +307,14 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published }) => {
           closeFn={() => setModalCreateFolder(false)}
         >
           <>
-            <AddFolder closeFn={() => setModalCreateFolder(false)} />
+            <AddFolder
+              categoryId={categoryId}
+              parentId={parentId}
+              closeFn={(newFolder?: TFolder) => {
+                onAddFolder && onAddFolder(newFolder);
+                setModalCreateFolder(false);
+              }}
+            />
           </>
         </Modal>
       )}

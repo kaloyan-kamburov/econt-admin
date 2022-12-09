@@ -31,7 +31,7 @@ const PageCategory: React.FC<Props> = () => {
   const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
   const [folders, setFolders] = useState<TFolder[]>([]);
   const [foldersRendered, setfoldersRendered] = useState<boolean>(true);
-  const [path, setPath] = useState<Path[]>([])
+  const [path, setPath] = useState<Path[]>([]);
 
   //save positions
   const updatePositions = useMutation(
@@ -56,7 +56,8 @@ const PageCategory: React.FC<Props> = () => {
     "getCategoryData",
     async () => {
       // setVisible(false);
-      const data = await axios(`folders?include=category.image&filter[folder_id]=${id}`);
+      const data = await axios(`folders?include=category.image&filter[category_id]=${id}&filter[folder_id]=null`);
+      // const data = await axios(`folders?include=category.image&filter[folder_id]=${id}`);
       return data;
     },
     {
@@ -64,7 +65,7 @@ const PageCategory: React.FC<Props> = () => {
         if (!axiosOrg.isAxiosError(data)) {
           setFolders(data?.data?.data || []);
           setTitle(data?.data?.path?.[0]?.name || "");
-          setPath(data?.data?.path || [])
+          setPath(data?.data?.path || []);
           // setTitle(data?.data?.data?.name);
           // setFolders(data?.data?.data?.folders);
         }
@@ -84,7 +85,7 @@ const PageCategory: React.FC<Props> = () => {
     getCategoryData();
     return () => setErrorMsg("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]); 
+  }, [pathname]);
 
   useEffect(() => {
     if (folders.length) {
@@ -98,7 +99,13 @@ const PageCategory: React.FC<Props> = () => {
   return (
     <div className="page-wrapper xxl">
       <Breadcrumb routePath={path} />
-      <Folder isAdd />
+      <Folder
+        categoryId={id || ""}
+        isAdd
+        onAddFolder={(newFolder?: TFolder) => {
+          newFolder && setFolders([...folders, newFolder]);
+        }}
+      />
       {foldersRendered && (
         <Draggable
           onPosChange={(currPos, newPos) => {
@@ -110,6 +117,7 @@ const PageCategory: React.FC<Props> = () => {
               key={folder.id}
               published={folder.published}
               data={folder}
+              categoryId={id || ""}
             />
           ))}
         </Draggable>

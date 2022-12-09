@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import axiosOrg, { AxiosError, AxiosResponse } from "axios";
+import axiosOrg, { AxiosError } from "axios";
 import toast from "react-hot-toast";
 
 //MUI components
@@ -27,48 +27,76 @@ import useCategories from "../../../hooks/useCategories";
 
 //types
 import { TLanguage } from "../../../context/auth";
+import { TCategory, TFolder } from "../../../context/categories";
 
 interface Props {
-  closeFn: () => void;
+  categoryId: string | number;
+  parentId?: string | number | null;
+  closeFn: (newFolder?: TFolder) => void;
 }
 
-const AddFolder: React.FC<Props> = ({ closeFn }) => {
+const AddFolder: React.FC<Props> = ({ categoryId, parentId = null, closeFn }) => {
   const { t } = useTranslation();
-  const [tab, setTab] = useState<number>(0);
-
-  const { user, languages } = useAuth();
+  const { languages } = useAuth();
   const { categories, setCategories } = useCategories();
+
+  const [tab, setTab] = useState<number>(0);
+  const [shouldPublish, setShouldPublish] = useState<boolean>(false);
 
   const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
 
-  //save and publish category
-  const saveAndPublishCategory = useMutation(
+  //save folder
+  const saveFolder = useMutation(
     async (values: any) => {
-      const data = await axios.post("categories/save-publish", values);
-      return data;
-    },
-    {
-      onSuccess: (data: AxiosResponse<any>) => {
-        if (!axiosOrg.isAxiosError(data)) {
-          setCategories([...categories, data?.data]);
-          toast.success(`${t("pages.home.categorySavedAndPublished")}`);
-          closeFn();
-        }
-      },
-    }
-  );
-
-  //save category
-  const saveCategory = useMutation(
-    async (values: any) => {
-      const data = await axios.post("categories/save", values);
+      const valuesForSend: any = {
+        image_id: values.image,
+        category_id: +categoryId,
+        parent_id: parentId,
+        type: "folder",
+      };
+      Array.isArray(languages) &&
+        languages.forEach((lang: TLanguage) => {
+          valuesForSend[`name:${lang.code}`] = values?.[`name:${lang.code}`];
+          valuesForSend[`description:${lang.code}`] = values?.[`description:${lang.code}`];
+        });
+      const data = await axios.post("folders", valuesForSend);
       return data;
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setCategories([...categories, data?.data]);
+          const newFolder = data?.data?.data || {};
           toast.success(`${t("pages.home.categorySaved")}`);
+
+          if (shouldPublish) {
+            setTimeout(() => publishFolder.mutate(newFolder.id));
+          } else {
+            closeFn(newFolder);
+          }
+        }
+      },
+    }
+  );
+
+  //publish folder
+  const publishFolder = useMutation(
+    async (folderId: number | string) => {
+      const data = await axios.patch(`categories/${folderId}/publish`, {
+        published: true,
+      });
+      return { ...data, folderId };
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          const updatedCategoryIndex = categories.findIndex((cat: TCategory) => cat.id === data?.catId);
+          if (updatedCategoryIndex) {
+            const newCategories = [...categories];
+            newCategories[updatedCategoryIndex].published = true;
+            setCategories(newCategories);
+          }
+          toast.success(`${t("pages.home.categoryPublished")}`);
+          // setShouldPublish(false);
           closeFn();
         }
       },
@@ -78,21 +106,21 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
   return (
     <>
       <Form
-        onSubmit={(values) => saveAndPublishCategory.mutate(values)}
+        onSubmit={(values) => saveFolder.mutate(values)}
         validate={(values) => {
           const errors: any = {};
-          if (!values.file) {
-            errors.file = t("form.validations.required");
+          if (!values.image) {
+            errors.image = t("form.validations.required");
           }
 
-          // if (
-          //   Array.isArray(languages) &&
-          //   languages.every((lang) => {
-          //     return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
-          //   })
-          // ) {
-          //   errors.notFilled = t("form.validations.required");
-          // }
+          if (
+            Array.isArray(languages) &&
+            !languages.every((lang: TLanguage) => {
+              return values?.[`name:${lang.code}`] && values?.[`description:${lang.code}`];
+            })
+          ) {
+            errors.notFilled = t("form.validations.required");
+          }
           return errors;
         }}
         mutators={{
@@ -117,11 +145,12 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
                 xs={12}
               >
                 <InputImage
-                  name="file"
+                  name="image"
                   label={t("form.labels.uploadImage")}
                   desc={t("pages.home.uploadFileDesc")}
                   onImgPick={(values) => {
-                    form.mutators.setFormValue("file", values.file || values.id);
+                    form.mutators.setFormValue("image", values.image);
+                    form.mutators.setFormValue("imgPath", values.imgPath || values.path);
                   }}
                 />
               </Grid>
@@ -134,7 +163,7 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  {Array.isArray(languages) ? languages.map((lang: TLanguage) => <Tab label={t(`languages.${lang}`)} />) : null}
+                  {Array.isArray(languages) ? languages.map((lang: TLanguage) => <Tab label={t(`languages.${lang.code}`)} />) : null}
                 </Tabs>
               </Grid>
               {Array.isArray(languages)
@@ -179,9 +208,14 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
                 <Button
                   variant="contained"
                   color="primary"
-                  type="submit"
                   size="large"
-                  onClick={() => {}}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShouldPublish(true);
+                    setTimeout(() => {
+                      saveFolder.mutate(values);
+                    });
+                  }}
                   sx={{
                     width: "auto",
                   }}
@@ -193,7 +227,7 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
                   variant="contained"
                   color="info"
                   size="large"
-                  onClick={() => saveCategory.mutate(values)}
+                  type="submit"
                   sx={{
                     width: "auto",
                     marginLeft: "auto",
@@ -207,7 +241,7 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
                   variant="text"
                   color="primary"
                   size="large"
-                  onClick={closeFn}
+                  onClick={() => closeFn()}
                   sx={{
                     width: "auto",
                     marginLeft: 0,
@@ -217,7 +251,6 @@ const AddFolder: React.FC<Props> = ({ closeFn }) => {
                 </Button>
               </Grid>
             </Grid>
-            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
           </form>
         )}
       />
