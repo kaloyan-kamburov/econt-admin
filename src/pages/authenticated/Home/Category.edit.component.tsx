@@ -87,7 +87,7 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
           let updatedCategoryIndex = categories.findIndex((cat: TCategory) => cat.id === id);
-          if (updatedCategoryIndex) {
+          if (updatedCategoryIndex > -1) {
             const newValues = data?.newValues || {};
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const newCategories = [...categories];
@@ -116,7 +116,10 @@ const EditCategory: React.FC<Props> = ({ closeFn, id }) => {
   //publish category
   const publishCategory = useMutation(
     async () => {
-      const data = await axios.patch(`categoriess/${id}/publish`, {
+      setRetryFn({
+        execute: () => publishCategory.mutate(),
+      });
+      const data = await axios.patch(`categories/${id}/publish`, {
         published: true,
       });
       return data;

@@ -24,102 +24,159 @@ import axios from "../../../utils/api";
 //hooks
 import useAuth from "../../../hooks/useAuth";
 import useCategories from "../../../hooks/useCategories";
+import usePageError from "../../../hooks/usePageError";
 
 //types
 import { TLanguage } from "../../../context/auth";
+import { TCategory, TFolder } from "../../../context/categories";
 
 interface Props {
-  closeFn: () => void;
-  id: string | number;
+  closeFn: (editedFolderData?: TFolder) => void;
+  id: number | string;
 }
 
 const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
-  const [tab, setTab] = useState<number>(0);
-  const [initialValues, setInitialValues] = useState<any>({});
-
-  const { user, languages } = useAuth();
+  const { languages } = useAuth();
   const { t } = useTranslation();
   const { categories, setCategories } = useCategories();
+  const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
+
+  const [initialValues, setInitialValues] = useState<any>({});
+  const [tab, setTab] = useState<number>(0);
+  const [shouldPublish, setShouldPublish] = useState<boolean>(false);
 
   const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
 
-  const { refetch: getCategoryData } = useQuery(
-    "getCategoryData",
+  //get folder
+  const { refetch: getFolderData } = useQuery(
+    "getFolderData",
     async () => {
-      const data = await axios(`categories/${id}`);
+      const data = await axios(`folders/${id}/edit`);
       return data;
     },
     {
       onSuccess: (data: AxiosResponse<any>) => {
         if (!axiosOrg.isAxiosError(data)) {
           // setCategories(data?.data || []);
-          setInitialValues(data?.data);
+          setInitialValues(data?.data?.data);
         }
       },
       onError: (error: AxiosError) => {
-        // setLoadFailed(true);
-        toast.error(error?.message || `${t("pages.login.loginError")}`);
+        setVisibleError(true);
       },
     }
   );
 
-  //save and publish category
-  const saveAndPublishCategory = useMutation(
+  //update folder
+  const updateFolder = useMutation(
     async (values: any) => {
-      const data = await axios.post("categories/save-publish", values);
-      return data;
+      const valuesForSend: any = {
+        id,
+        image_id: values?.image?.id || values.image,
+        path: values?.imgPath || values?.image.path || null,
+        published: false,
+      };
+      Array.isArray(languages) &&
+        languages.forEach((lang: TLanguage) => {
+          valuesForSend[`name:${lang.code}`] = values?.[`name:${lang.code}`];
+          valuesForSend[`description:${lang.code}`] = values?.[`description:${lang.code}`];
+        });
+      const data = await axios.put(`folders/${id}`, valuesForSend);
+      return { ...data, newValues: valuesForSend };
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setCategories([...categories, data?.data]);
-          toast.success(`${t("pages.home.categorySavedAndPublished")}`);
-          closeFn();
+          const newValues = data?.newValues || {};
+
+          toast.success(`${t("pages.category.folderUpdated")}`);
+
+          if (shouldPublish) {
+            setTimeout(() =>
+              publishFolder.mutate({
+                ...newValues,
+                image: {
+                  path: newValues?.path,
+                },
+              })
+            );
+          } else {
+            closeFn({
+              ...newValues,
+              image: {
+                path: newValues?.path,
+              },
+            });
+          }
         }
+      },
+      onError: (error) => {
+        setVisibleError(true);
       },
     }
   );
 
-  //save category
-  const saveCategory = useMutation(
-    async (values: any) => {
-      const data = await axios.post("categories/save", values);
-      return data;
+  //publish folder
+  const publishFolder = useMutation(
+    async (newValues: TFolder) => {
+      setRetryFn({
+        execute: () => publishFolder.mutate(newValues),
+      });
+      const data = await axios.patch(`folders/${newValues?.id || id}/publish`, {
+        published: true,
+      });
+      return { ...data, newValues };
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          setCategories([...categories, data?.data]);
-          toast.success(`${t("pages.home.categorySaved")}`);
-          closeFn();
+          toast.success(`${t("pages.category.folderPublished")}`);
+          setShouldPublish(false);
+          const newValues = data?.newValues;
+
+          if (newValues) {
+            closeFn({ ...newValues, published: true });
+          }
         }
+      },
+      onError: () => {
+        setErrorMsg(t("common.errorPublishCategory"));
+        setVisibleError(true);
       },
     }
   );
 
   useEffect(() => {
-    getCategoryData();
+    setRetryFn({
+      execute: () => getFolderData(),
+    });
+    getFolderData();
   }, []);
 
   return (
     <>
       <Form
-        onSubmit={(values) => saveAndPublishCategory.mutate(values)}
+        onSubmit={(values) => {
+          setRetryFn({
+            execute: () => updateFolder.mutate(values),
+          });
+          updateFolder.mutate(values);
+        }}
         initialValues={initialValues}
         validate={(values) => {
           const errors: any = {};
-          if (!values.file) {
-            errors.file = t("form.validations.required");
+          if (!values.image) {
+            errors.image = t("form.validations.required");
           }
 
-          // if (
-          //   Array.isArray(languages) &&
-          //   !languages.every((lang) => {
-          //     return values?.languages?.[lang]?.name && values?.languages?.[lang]?.description;
-          //   })
-          // ) {
-          //   errors.notFilled = t("form.validations.required");
-          // }
+          if (
+            Array.isArray(languages) &&
+            !languages.every((lang: TLanguage) => {
+              return values?.[`name:${lang.code}`] && values?.[`description:${lang.code}`];
+            })
+          ) {
+            errors.notFilled = t("form.validations.required");
+          }
           return errors;
         }}
         mutators={{
@@ -133,6 +190,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
             onSubmit={handleSubmit}
             style={{ width: "100%" }}
           >
+            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
             <Grid
               container
               spacing={2}
@@ -143,11 +201,12 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
                 xs={12}
               >
                 <InputImage
-                  name="file"
+                  name="image"
                   label={t("form.labels.uploadImage")}
-                  desc={t("pages.home.uploadFileDesc")}
+                  desc={t("pages.category.uploadFileDesc")}
                   onImgPick={(values) => {
-                    form.mutators.setFormValue("file", values.file || values.id);
+                    form.mutators.setFormValue("image", values.image);
+                    form.mutators.setFormValue("imgPath", values.imgPath);
                   }}
                 />
               </Grid>
@@ -160,7 +219,14 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  {Array.isArray(languages) ? languages.map((lang: TLanguage) => <Tab label={t(`languages.${lang}`)} />) : null}
+                  {Array.isArray(languages)
+                    ? languages.map((lang: TLanguage) => (
+                        <Tab
+                          key={lang.code}
+                          label={t(`languages.${lang.code}`)}
+                        />
+                      ))
+                    : null}
                 </Tabs>
               </Grid>
               {Array.isArray(languages)
@@ -183,7 +249,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
                           xs={12}
                         >
                           <Input
-                            name={`description.${lang.code}`}
+                            name={`description:${lang.code}`}
                             label={t("form.labels.description")}
                             validate={[required(t("form.validations.required"))]}
                             required
@@ -205,9 +271,17 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
                 <Button
                   variant="contained"
                   color="primary"
-                  type="submit"
                   size="large"
-                  onClick={() => {}}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShouldPublish(true);
+                    setRetryFn({
+                      execute: () => updateFolder.mutate(values),
+                    });
+                    setTimeout(() => {
+                      updateFolder.mutate(values);
+                    });
+                  }}
                   sx={{
                     width: "auto",
                   }}
@@ -219,7 +293,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
                   variant="contained"
                   color="info"
                   size="large"
-                  onClick={() => saveCategory.mutate(values)}
+                  type="submit"
                   sx={{
                     width: "auto",
                     marginLeft: "auto",
@@ -233,7 +307,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
                   variant="text"
                   color="primary"
                   size="large"
-                  onClick={closeFn}
+                  onClick={() => closeFn()}
                   sx={{
                     width: "auto",
                     marginLeft: 0,
@@ -243,7 +317,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
                 </Button>
               </Grid>
             </Grid>
-            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
+            {/* <pre>{JSON.stringify(errors, null, 4)}</pre> */}
           </form>
         )}
       />

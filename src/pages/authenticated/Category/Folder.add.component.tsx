@@ -69,7 +69,7 @@ const AddFolder: React.FC<Props> = ({ categoryId, parentId = null, closeFn }) =>
           toast.success(`${t("pages.home.categorySaved")}`);
 
           if (shouldPublish) {
-            setTimeout(() => publishFolder.mutate(newFolder.id));
+            setTimeout(() => publishFolder.mutate(newFolder));
           } else {
             closeFn(newFolder);
           }
@@ -80,24 +80,21 @@ const AddFolder: React.FC<Props> = ({ categoryId, parentId = null, closeFn }) =>
 
   //publish folder
   const publishFolder = useMutation(
-    async (folderId: number | string) => {
-      const data = await axios.patch(`categories/${folderId}/publish`, {
+    async (newValues: TFolder) => {
+      const data = await axios.patch(`folders/${newValues.id}/publish`, {
         published: true,
       });
-      return { ...data, folderId };
+      return { ...data, newValues };
     },
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
-          const updatedCategoryIndex = categories.findIndex((cat: TCategory) => cat.id === data?.catId);
-          if (updatedCategoryIndex) {
-            const newCategories = [...categories];
-            newCategories[updatedCategoryIndex].published = true;
-            setCategories(newCategories);
+          toast.success(`${t("pages.category.folderPublished")}`);
+          setShouldPublish(false);
+          const newValues = data?.newValues;
+          if (newValues) {
+            closeFn({ ...newValues, published: true });
           }
-          toast.success(`${t("pages.home.categoryPublished")}`);
-          // setShouldPublish(false);
-          closeFn();
         }
       },
     }

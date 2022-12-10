@@ -182,9 +182,11 @@ interface Props {
   parentId?: number | null;
   categoryId: string | number;
   onAddFolder?: (folder?: TFolder) => void;
+  onEditFolder?: (folder: TFolder, categoryId: number | string) => void;
+  onDeleteFolder?: (folderId: number | string, categoryId: number | string) => void;
 }
 
-const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, parentId = null, onAddFolder }) => {
+const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, parentId = null, onAddFolder, onEditFolder, onDeleteFolder }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -326,7 +328,12 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
           <>
             <EditFolder
               id={data?.id || ""}
-              closeFn={() => setModalEditFolder(false)}
+              closeFn={(newFolderData?: TFolder) => {
+                if (newFolderData) {
+                  onEditFolder && onEditFolder(newFolderData, categoryId);
+                }
+                setModalEditFolder(false);
+              }}
             />
             {/* <Loader showExplicit inModal /> */}
           </>
@@ -352,7 +359,6 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
             setModalPublishFolder(false);
           }}
           title={t("pages.category.confirmPublish")}
-          large
         >
           <PublishFolder
             closeFn={() => {
@@ -383,10 +389,12 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
           }}
         >
           <DeleteFolder
-            closeFn={() => {
+            name={`${data?.["name:bg"]}`}
+            id={data?.id || 0}
+            closeFn={(folderId?: string | number) => {
               setModalDeleteFolder(false);
+              onDeleteFolder && onDeleteFolder(+`${folderId}`, categoryId);
             }}
-            folder={"Забравени предмети"}
           />
         </Modal>
       )}

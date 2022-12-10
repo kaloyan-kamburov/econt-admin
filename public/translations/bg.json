@@ -20,7 +20,12 @@
       "unpublishFolderQuestion": "Сигурен ли си, че искаш премахнеш <0>\"{{folder}}\"</0> от публикувани?",
       "deleteFolder": "Изтриване на папка",
       "deleteFolderQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{folder}}\"</0>?",
-      "confirmPublish": "Потвърждение за публикуване"
+      "confirmPublish": "Потвърждение за публикуване",
+      "folderSaved": "Папката е създадена",
+      "folderPublished": "Папката е публикувана",
+      "folderDeleted": "Папката е изтрита",
+      "folderUpdated": "Папката е обновена",
+      "folderSavedAndPublished": "Папката е създадена и публикувана"
     },
     "folder": {
       "addGroup": "Създай група документи",
