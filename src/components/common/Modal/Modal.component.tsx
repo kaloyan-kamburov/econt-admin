@@ -36,6 +36,7 @@ const ModalContent = styled.div`
   span {
     font-size: calc(3.6 * var(--atom));
     line-height: calc(5.2 * var(--atom));
+    text-align: center;
 
     strong {
       color: ${linkColor};
@@ -62,7 +63,14 @@ interface Props {
   xxl?: boolean;
 }
 
-const Modal: React.FC<Props> = ({ title = "", closeFn = () => {}, children, small = false, large = false, xxl = false }) => {
+const Modal: React.FC<Props> = ({
+  title = "",
+  closeFn = () => {},
+  children,
+  small = false,
+  large = false,
+  xxl = false,
+}) => {
   return (
     <Dialog
       aria-labelledby="customized-dialog-title"

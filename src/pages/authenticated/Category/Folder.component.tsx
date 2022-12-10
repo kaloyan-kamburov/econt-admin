@@ -361,6 +361,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
           title={t("pages.category.confirmPublish")}
         >
           <PublishFolder
+            folder={123}
             closeFn={() => {
               setModalPublishFolder(false);
             }}

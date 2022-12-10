@@ -15,6 +15,8 @@ import OpenWith from "@mui/icons-material/OpenWith";
 import AddCategory from "./Category.add.component";
 import EditCategory from "./Category.edit.component";
 import DeleteCategory from "./Category.delete.component";
+import PublishCategory from "./Category.publish.component";
+import UnpublishCategory from "./Category.unpublish.component";
 import Modal from "../../../components/common/Modal/Modal.component";
 import { TCategory } from "../../../context/categories";
 
@@ -23,12 +25,18 @@ import { IconPlus } from "../../../Icons/icons";
 import iconMap from "../../../Icons/map.svg";
 
 //theme
-import { bgSections, btnContainedPrimaryBgColor, linkColor, dragActive } from "../../../styles/theme";
+import {
+  bgSections,
+  btnContainedPrimaryBgColor,
+  linkColor,
+  dragActive,
+} from "../../../styles/theme";
 
 const CategoryWrapper = styled.div`
   background: ${bgSections};
   padding: calc(4 * var(--atom));
-  box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom)) rgba(0, 0, 0, 0.15);
+  box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom))
+    rgba(0, 0, 0, 0.15);
   border-radius: calc(1.6 * var(--atom));
   height: 100%;
   min-height: calc(51.6 * var(--atom));
@@ -135,7 +143,8 @@ const CategoryWrapper = styled.div`
     top: calc(8 * var(--atom));
     right: calc(2 * var(--atom));
     background: ${bgSections};
-    box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom)) rgba(0, 0, 0, 0.15);
+    box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom))
+      rgba(0, 0, 0, 0.15);
     border-radius: calc(0.8 * var(--atom));
     flex-direction: column;
 
@@ -175,21 +184,35 @@ interface Props {
   isAdd?: boolean;
   data?: TCategory;
   published?: boolean;
+  resetRender?: () => void;
 }
 
-const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
+const Item: React.FC<Props> = ({
+  isAdd = false,
+  data,
+  published = true,
+  resetRender,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
-  const [modalCreateCategory, setModalCreateCategory] = useState<boolean>(false);
+  const [modalCreateCategory, setModalCreateCategory] =
+    useState<boolean>(false);
   const [modalEditCategory, setModalEditCategory] = useState<boolean>(false);
-  const [modalDeleteCategory, setModalDeleteCategory] = useState<boolean>(false);
+  const [modalDeleteCategory, setModalDeleteCategory] =
+    useState<boolean>(false);
+  const [modalPublishCategory, setModalPublishCategory] =
+    useState<boolean>(false);
+  const [modalUnpublishCategory, setModalUnpublishCategory] =
+    useState<boolean>(false);
 
   return (
     <>
       <CategoryWrapper
-        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${isDragging ? " is-dragging" : ""}`}
+        className={`${
+          isAdd ? "btn-add" : `${published ? "" : " non-published"}`
+        }${isDragging ? " is-dragging" : ""}`}
         onClick={() => (isAdd ? setModalCreateCategory(true) : undefined)}
         onDragOver={(e) => {
           if (!isAdd) {
@@ -225,7 +248,9 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
                   {/* <br />
                   (Непубликуван) */}
                 </span>
-                <span className="description">{data && data["description:bg"]}</span>
+                <span className="description">
+                  {data && data["description:bg"]}
+                </span>
               </div>
               <div className="drag-handle">
                 <OpenWith />
@@ -261,6 +286,29 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
                   >
                     {t("common.change")}
                   </Button>
+                  {published ? (
+                    <Button
+                      variant="text"
+                      color="primary"
+                      size="small"
+                      sx={{ borderRadius: 0 }}
+                      onClick={() => setModalUnpublishCategory(true)}
+                    >
+                      {t("common.removeFromPublish")}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="text"
+                      color="primary"
+                      size="small"
+                      sx={{ borderRadius: 0 }}
+                      onClick={() => {
+                        setModalPublishCategory(true);
+                      }}
+                    >
+                      {t("common.publish")}
+                    </Button>
+                  )}
                   <Button
                     variant="text"
                     color="error"
@@ -316,6 +364,40 @@ const Item: React.FC<Props> = ({ isAdd = false, data, published = true }) => {
               setModalDeleteCategory(false);
             }}
             category={data || null}
+          />
+        </Modal>
+      )}
+      {modalPublishCategory && (
+        <Modal
+          closeFn={() => {
+            setModalPublishCategory(false);
+          }}
+          large
+          title={t("pages.category.confirmPublish")}
+        >
+          <PublishCategory
+            categoryData={data}
+            closeFn={() => {
+              setModalPublishCategory(false);
+              setMenuOpened(false);
+              resetRender && resetRender();
+            }}
+          />
+        </Modal>
+      )}
+      {modalUnpublishCategory && (
+        <Modal
+          closeFn={() => {
+            setModalUnpublishCategory(false);
+          }}
+        >
+          <UnpublishCategory
+            categoryData={data}
+            closeFn={() => {
+              setModalPublishCategory(false);
+              setMenuOpened(false);
+              resetRender && resetRender();
+            }}
           />
         </Modal>
       )}

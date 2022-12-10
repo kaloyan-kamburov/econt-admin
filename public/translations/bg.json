@@ -70,6 +70,7 @@
     "saveAndPublish": "Запази и публикувай",
     "save": "Запази",
     "publish": "Публикувай",
+    "removeFromPublishTitle": "Премахване от публикувани",
     "removeFromPublish": "Премахни от публикувани",
     "archive": "Архивирай",
     "copyright": "Всички права запазени (C) 2022 - Еконт Експрес ООД",
@@ -90,7 +91,8 @@
     "positionsUpdated": "Позициите са променени",
     "errorGettingData": "Възникна грешка при взимането на данните",
     "errorPublishCategory": "Възникна грешка при публикуване",
-    "tryAgain": "Опитай пак"
+    "tryAgain": "Опитай пак",
+    "errorRemovingData": "Възникна грешка при триене"
   },
   "languages": {
     "bg": "Български",

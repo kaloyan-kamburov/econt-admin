@@ -37,9 +37,16 @@ const DeleteCategory: React.FC<Props> = ({ category, closeFn }) => {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
           toast.success(`${t("pages.home.categoryDeleted")}`);
-          setCategories(categories.filter((cat: TCategory) => cat.id !== category?.id));
+          setCategories(
+            categories.filter((cat: TCategory) => cat.id !== category?.id)
+          );
           closeFn();
         }
+      },
+      onError: (e: AxiosError<any>) => {
+        toast.error(
+          e.response?.data?.message || `${t("common.errorRemovingData")}`
+        );
       },
     }
   );

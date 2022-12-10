@@ -25,7 +25,11 @@ const PageHome: React.FC<{}> = () => {
 
   //save category
   const updatePositions = useMutation(
-    async (values: { currPos: number; newPos: number; id: number | string }) => {
+    async (values: {
+      currPos: number;
+      newPos: number;
+      id: number | string;
+    }) => {
       const data = await axios.patch(`categories/${values?.id}/order`, {
         position: values.newPos + 1,
       });
@@ -50,6 +54,13 @@ const PageHome: React.FC<{}> = () => {
     }
   );
 
+  const reloadContent = () => {
+    setCategoriesRendered(false);
+    setTimeout(() => {
+      setCategoriesRendered(true);
+    }, 10);
+  };
+
   useEffect(() => {
     setTitle(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,10 +68,7 @@ const PageHome: React.FC<{}> = () => {
 
   useEffect(() => {
     if (categories.length) {
-      setCategoriesRendered(false);
-      setTimeout(() => {
-        setCategoriesRendered(true);
-      }, 10);
+      reloadContent();
     }
   }, [categories]);
 
@@ -71,7 +79,11 @@ const PageHome: React.FC<{}> = () => {
         {categoriesRendered && (
           <Draggable
             onPosChange={(currPos, newPos) => {
-              const values = { newPos, currPos, id: categories?.[currPos]?.id || "" };
+              const values = {
+                newPos,
+                currPos,
+                id: categories?.[currPos]?.id || "",
+              };
               updatePositions.mutate(values);
               setRetryFn({
                 execute: () => updatePositions.mutate(values),
@@ -83,6 +95,7 @@ const PageHome: React.FC<{}> = () => {
                 key={item.id}
                 data={item}
                 published={item.published}
+                resetRender={() => reloadContent()}
               />
             ))}
           </Draggable>
