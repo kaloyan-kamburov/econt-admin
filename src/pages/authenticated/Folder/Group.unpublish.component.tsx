@@ -1,5 +1,11 @@
 import React, { useState } from "react";
+import { useMutation } from "react-query";
+import axiosOrg, { AxiosError } from "axios";
+import toast from "react-hot-toast";
 import { useTranslation, Trans } from "react-i18next";
+
+//hooks
+import { useCategories } from "../../../hooks/hooks";
 
 //MUI components
 import Button from "@mui/material/Button";
@@ -10,22 +16,46 @@ import Loader from "../../../components/common/Loader/Loader.component";
 //icons
 import { IconUnpublish } from "../../../Icons/icons";
 
+//utils
+import axios from "../../../utils/api";
+
 interface Props {
-  closeFn: () => void;
-  group: any;
+  closeFn: any;
+  folderData: any;
 }
 
-const ArchiveFolder: React.FC<Props> = ({ group, closeFn }) => {
-  const [loading, setLoading] = useState<boolean>(false);
+const UnpublishGroup: React.FC<Props> = ({ folderData, closeFn }) => {
   const { t } = useTranslation();
+  const [loading] = useState<boolean>(false);
+
+  const unpublishCategory = useMutation(
+    async () => {
+      const data = await axios.patch(`folders/${folderData?.id}/publish`, {
+        published: false,
+      });
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          closeFn({ ...(folderData || {}), published: false }, folderData?.category_id);
+          toast.success(`${t("pages.folder.groupPublished")}`);
+        }
+      },
+      onError: () => {
+        toast.error(`${t("common.errorPublishFolder")}`);
+      },
+    }
+  );
+
   return (
     <>
       <IconUnpublish />
       <h6>{t("common.removeFromPublish")}</h6>
       <span>
         <Trans
-          i18nKey="pages.folder.unpublishGroupQuestion"
-          tOptions={{ group: "asd" }}
+          i18nKey="pages.folder.unpublishFolderQuestion"
+          tOptions={{ folder: folderData?.["name:bg"] }}
         >
           <strong />
         </Trans>
@@ -36,13 +66,7 @@ const ArchiveFolder: React.FC<Props> = ({ group, closeFn }) => {
           color="primary"
           type="submit"
           size="large"
-          onClick={() => {
-            setLoading(true);
-            setTimeout(() => {
-              setLoading(false);
-              closeFn();
-            }, 1000);
-          }}
+          onClick={() => unpublishCategory.mutate()}
         >
           {t("common.save")}
         </Button>
@@ -66,4 +90,4 @@ const ArchiveFolder: React.FC<Props> = ({ group, closeFn }) => {
   );
 };
 
-export default ArchiveFolder;
+export default UnpublishGroup;

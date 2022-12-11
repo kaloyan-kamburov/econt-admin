@@ -1,31 +1,62 @@
 import React, { useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
+import { useMutation } from "react-query";
+
+import axiosOrg, { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 //MUI components
 import Button from "@mui/material/Button";
 
-//custom components
-import Loader from "../../../components/common/Loader/Loader.component";
-
 //icons
 import { IconTrash } from "../../../Icons/icons";
 
+//hooks
+import { usePageError } from "../../../hooks/hooks";
+
+//utils
+import axios from "../../../utils/api";
+
 interface Props {
-  folder: string;
-  closeFn: () => void;
+  name: string;
+  id: number | string;
+  closeFn: (folderId?: string | number) => void;
 }
 
-const DeleteGroup: React.FC<Props> = ({ folder, closeFn }) => {
-  const [loading, setLoading] = useState<boolean>(false);
+const DeleteGroup: React.FC<Props> = ({ name, id, closeFn }) => {
   const { t } = useTranslation();
+  const { setRetryFn, setVisibleError } = usePageError();
+
+  //delete category
+  const deleteGroup = useMutation(
+    async () => {
+      setRetryFn({
+        execute: () => deleteGroup.mutate(),
+      });
+      const data = await axios.delete(`folders/${id}`);
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          toast.success(`${t("pages.folder.groupDeleted")}`);
+          closeFn(id);
+        }
+      },
+      onError: () => {
+        // setVisibleError(true);
+      },
+    }
+  );
+
   return (
     <>
       <IconTrash />
-      <h6>{t("pages.category.deleteFolder")}</h6>
+      <h6>{t("pages.folder.deleteGroup")}</h6>
       <span>
         <Trans
-          i18nKey="pages.category.deleteFolderQuestion"
-          tOptions={{ folder }}
+          i18nKey="pages.folder.deleteGroupQuestion"
+          tOptions={{ folder: name }}
         >
           <strong />
         </Trans>
@@ -36,13 +67,7 @@ const DeleteGroup: React.FC<Props> = ({ folder, closeFn }) => {
           color="error"
           type="submit"
           size="large"
-          onClick={() => {
-            setLoading(true);
-            setTimeout(() => {
-              setLoading(false);
-              closeFn();
-            }, 1000);
-          }}
+          onClick={() => deleteGroup.mutate()}
         >
           {t("common.delete")}
         </Button>
@@ -56,12 +81,6 @@ const DeleteGroup: React.FC<Props> = ({ folder, closeFn }) => {
           {t("common.cancel")}
         </Button>
       </div>
-      {loading && (
-        <Loader
-          showExplicit
-          inModal
-        />
-      )}
     </>
   );
 };

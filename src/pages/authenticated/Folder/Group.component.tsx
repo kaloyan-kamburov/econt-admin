@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
-//MUI component
+//MUI components
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 
@@ -12,7 +13,6 @@ import OpenWith from "@mui/icons-material/OpenWith";
 
 //custom components
 import AddGroup from "./Group.add.component";
-import MoveGroup from "./Group.move.component";
 import EditGroup from "./Group.edit.component";
 import ArchiveGroup from "./Group.archive.component";
 import PublishGroup from "./Group.publish.component";
@@ -22,27 +22,38 @@ import Modal from "../../../components/common/Modal/Modal.component";
 
 //icons
 import iconMap from "../../../Icons/map.svg";
-import { IconGroup, IconGroupAdd, IconGroupUnpublished, IconDots, IconPlus } from "../../../Icons/icons";
+import {
+  IconDots,
+  IconPlus,
+  IconGroup,
+  IconGroupAdd,
+  IconGroupUnpublished,
+} from "../../../Icons/icons";
 
 //theme
-import { bgSections, btnContainedPrimaryBgColor, lightColor, dragActive } from "../../../styles/theme";
+import {
+  bgSections,
+  btnContainedPrimaryBgColor,
+  lightColor,
+  dragActive,
+} from "../../../styles/theme";
+
+//type
+import { TFolder } from "../../../context/categories";
 
 const GroupWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-
   @media (max-width: 768px) {
     width: 100%;
   }
-
   .bg-wrapper {
     width: 144px;
     height: 174px;
     position: relative;
     // background: red;
-
     &.default {
       > svg {
         position: relative;
@@ -51,7 +62,6 @@ const GroupWrapper = styled.div`
       }
     }
   }
-
   .img-wrapper {
     position: absolute;
     width: 70px;
@@ -68,7 +78,6 @@ const GroupWrapper = styled.div`
       max-height: 100%;
     }
   }
-
   .content {
     padding-top: var(--atom);
     // padding-top: 14px;
@@ -83,7 +92,6 @@ const GroupWrapper = styled.div`
       line-height: 25px;
     }
   }
-
   .add-wrapper {
     position: absolute;
     top: 36px;
@@ -95,7 +103,6 @@ const GroupWrapper = styled.div`
     transform: translateX(11px);
     max-width: 110px;
     text-align: center;
-
     span {
       font-size: 15px;
       line-height: 25px;
@@ -104,7 +111,6 @@ const GroupWrapper = styled.div`
       margin-top: 7px;
     }
   }
-
   .file-count {
     width: 18px;
     position: absolute;
@@ -116,20 +122,17 @@ const GroupWrapper = styled.div`
     font-weight: 600;
     text-align: center;
   }
-
   .menu-wrapper {
     position: absolute;
     top: 10px;
     left: 150px;
     z-index: 2;
-
     // .btn-menu {
     //   &.active {
     //     background: ${lightColor};
     //     opacity: 0.15;
     //   }
     // }
-
     .sub-menu {
       display: flex;
       position: absolute;
@@ -141,7 +144,6 @@ const GroupWrapper = styled.div`
       box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom)) rgba(0, 0, 0, 0.15);
       border-radius: calc(0.8 * var(--atom));
       flex-direction: column;
-
       button {
         font-size: calc(4 * var(--atom));
         line-height: calc(5.4 * var(--atom));
@@ -151,7 +153,6 @@ const GroupWrapper = styled.div`
       }
     }
   }
-
   &.non-published {
     .bg-wrapper {
       > svg,
@@ -160,7 +161,6 @@ const GroupWrapper = styled.div`
       }
     }
   }
-
   .drag-handle {
     position: absolute;
     top: 8px;
@@ -170,7 +170,6 @@ const GroupWrapper = styled.div`
       cursor: grabbing;
     }
   }
-
   &.is-dragging {
     opacity: 0.5;
     // svg {
@@ -181,33 +180,51 @@ const GroupWrapper = styled.div`
   }
 `;
 
-const renderBackground = (isAdd: boolean, published: boolean) => (isAdd ? <IconGroupAdd /> : published ? <IconGroup /> : <IconGroupUnpublished />);
+const renderBackground = (isAdd: boolean, published: boolean) =>
+  isAdd ? <IconGroupAdd /> : published ? <IconGroup /> : <IconGroupUnpublished />;
 
 interface Props {
   isAdd?: boolean;
-  title?: string;
-  published: boolean;
-  data?: any;
+  data?: TFolder;
+  published?: boolean;
+  parentId?: number | null;
+  categoryId: string | number;
+  onAddGroup?: (folder?: TFolder) => void;
+  onEditGroup?: (folder: TFolder, categoryId: number | string) => void;
+  onDeleteGroup?: (folderId: number | string, categoryId: number | string) => void;
+  groups?: TFolder[];
 }
 
-const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
+const Group: React.FC<Props> = ({
+  isAdd = false,
+  data,
+  published,
+  categoryId,
+  parentId = null,
+  onAddGroup,
+  onEditGroup,
+  onDeleteGroup,
+  groups,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [menuOpened, setMenuOpened] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  const [modalAddGroup, setModalAddGroup] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [menuOpened, setMenuOpened] = useState<boolean>(false);
+
+  const [modalCreateGroup, setModalCreateGroup] = useState<boolean>(false);
   const [modalEditGroup, setModalEditGroup] = useState<boolean>(false);
-  const [modalMoveGroup, setModalMoveGroup] = useState<boolean>(false);
-  const [modalArchiveGroup, setModalArchiveGroup] = useState<boolean>(false);
   const [modalPublishGroup, setModalPublishGroup] = useState<boolean>(false);
   const [modalUnublishGroup, setModalUnublishGroup] = useState<boolean>(false);
+  const [modalArchiveGroup, setModalArchiveGroup] = useState<boolean>(false);
   const [modalDeleteGroup, setModalDeleteGroup] = useState<boolean>(false);
 
   return (
     <>
       <GroupWrapper
-        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${isDragging ? " is-dragging" : ""}`}
+        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${
+          isDragging ? " is-dragging" : ""
+        }`}
         onDragOver={(e) => {
           if (!isAdd) {
             e.preventDefault();
@@ -215,29 +232,29 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
           }
         }}
         onDragLeave={() => !isAdd && setIsDragging(false)}
+        onClick={() => isAdd && setModalCreateGroup(true)}
       >
         {isAdd && (
-          <div
-            className="add-wrapper"
-            onClick={() => setModalAddGroup(true)}
-          >
+          <div className="add-wrapper">
             <IconPlus />
             <span className="text-add">{t("pages.folder.addGroup")}</span>
           </div>
         )}
         <div className={`bg-wrapper${!isAdd ? " default" : ""}`}>
-          {renderBackground(isAdd, published)}
+          {renderBackground(isAdd, !!published)}
           {!isAdd && (
             <>
               <div
                 className="img-wrapper"
-                onClick={() => navigate("/category/1/1")}
+                onClick={() => navigate(`/categories/${data?.category_id}/${data?.id}`)}
               >
-                <img
-                  src={iconMap}
-                  alt="icon"
+                <LazyLoadImage
+                  alt={data?.image?.alt}
+                  src={data?.image?.path}
+                  effect="opacity"
                 />
               </div>
+
               <div className="drag-handle">
                 <OpenWith />
               </div>
@@ -262,31 +279,33 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
                     >
                       {t("common.change")}
                     </Button>
-                    <Button
-                      variant="text"
-                      color="primary"
-                      size="small"
-                      sx={{ borderRadius: 0 }}
-                      onClick={() => {
-                        published ? setModalUnublishGroup(true) : setModalPublishGroup(true);
-                        setMenuOpened(false);
-                      }}
-                    >
-                      {t(`common.${published ? "removeFromPublish" : "publish"}`)}
-                    </Button>
-                    <Button
-                      variant="text"
-                      color="primary"
-                      size="small"
-                      sx={{ borderRadius: 0 }}
-                      onClick={() => {
-                        // setModalArchiveFolder(true);
-                        setModalMoveGroup(true);
-                        setMenuOpened(false);
-                      }}
-                    >
-                      {t("common.move")}
-                    </Button>
+                    {published ? (
+                      <Button
+                        variant="text"
+                        color="primary"
+                        size="small"
+                        sx={{
+                          borderRadius: 0,
+                        }}
+                        onClick={() => setModalUnublishGroup(true)}
+                      >
+                        {t("common.removeFromPublish")}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="text"
+                        color="primary"
+                        size="small"
+                        sx={{
+                          borderRadius: 0,
+                        }}
+                        onClick={() => {
+                          setModalPublishGroup(true);
+                        }}
+                      >
+                        {t("common.publish")}
+                      </Button>
+                    )}
                     <Button
                       variant="text"
                       color="primary"
@@ -314,49 +333,51 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
                   </div>
                 )}
               </div>
-              <div className="file-count">99</div>
             </>
           )}
         </div>
-        <div className="content">{!isAdd && <span>Услуги от България</span>}</div>
+        <div className="content">{!isAdd && <span>{data?.["name:bg"]}</span>}</div>
       </GroupWrapper>
-
-      {modalAddGroup && (
+      {modalCreateGroup && (
         <Modal
           title={t("pages.folder.addGroup")}
-          closeFn={() => setModalAddGroup(false)}
-          small
+          closeFn={() => setModalCreateGroup(false)}
         >
           <>
-            <AddGroup closeFn={() => setModalAddGroup(false)} />
+            <AddGroup
+              categoryId={categoryId}
+              parentId={parentId}
+              closeFn={(newGroup?: TFolder) => {
+                onAddGroup && onAddGroup(newGroup);
+                setModalCreateGroup(false);
+              }}
+            />
           </>
         </Modal>
       )}
-
       {modalEditGroup && (
         <Modal
           title={t("pages.folder.changeGroup")}
-          closeFn={() => setModalEditGroup(false)}
-          small
+          closeFn={() => {
+            setModalEditGroup(false);
+            setMenuOpened(false);
+          }}
         >
           <>
-            <EditGroup closeFn={() => setModalEditGroup(false)} />
+            <EditGroup
+              folderData={data}
+              closeFn={(newGroupData?: TFolder) => {
+                if (newGroupData) {
+                  onEditGroup && onEditGroup(newGroupData, categoryId);
+                }
+                setModalEditGroup(false);
+                setMenuOpened(false);
+              }}
+            />
+            {/* <Loader showExplicit inModal /> */}
           </>
         </Modal>
       )}
-
-      {modalMoveGroup && (
-        <Modal
-          title={t("pages.folder.moveGroup")}
-          closeFn={() => setModalMoveGroup(false)}
-          small
-        >
-          <>
-            <MoveGroup closeFn={() => setModalMoveGroup(false)} />
-          </>
-        </Modal>
-      )}
-
       {modalArchiveGroup && (
         <Modal
           closeFn={() => {
@@ -367,7 +388,7 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
             closeFn={() => {
               setModalArchiveGroup(false);
             }}
-            groupForArchive={"asd"}
+            folderForArchive={"asd"}
           />
         </Modal>
       )}
@@ -375,14 +396,20 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
         <Modal
           closeFn={() => {
             setModalPublishGroup(false);
+            setMenuOpened(false);
           }}
-          title={t("pages.category.confirmPublish")}
-          large
+          title={t("pages.folder.confirmPublish")}
         >
           <PublishGroup
-            closeFn={() => {
+            folderData={data}
+            closeFn={(newGroupData?: TFolder) => {
+              if (newGroupData) {
+                onEditGroup && onEditGroup(newGroupData, categoryId);
+              }
               setModalPublishGroup(false);
+              setMenuOpened(false);
             }}
+            groups={groups}
           />
         </Modal>
       )}
@@ -393,10 +420,14 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
           }}
         >
           <UnpublishGroup
-            closeFn={() => {
-              setModalUnublishGroup(false);
+            folderData={data}
+            closeFn={(newGroupData?: TFolder) => {
+              if (newGroupData) {
+                onEditGroup && onEditGroup(newGroupData, categoryId);
+              }
+              setModalPublishGroup(false);
+              setMenuOpened(false);
             }}
-            group={"asd"}
           />
         </Modal>
       )}
@@ -407,10 +438,12 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
           }}
         >
           <DeleteGroup
-            closeFn={() => {
+            name={`${data?.["name:bg"]}`}
+            id={data?.id || 0}
+            closeFn={(folderId?: string | number) => {
               setModalDeleteGroup(false);
+              onDeleteGroup && onDeleteGroup(+`${folderId}`, categoryId);
             }}
-            folder={"Забравени предмети"}
           />
         </Modal>
       )}
@@ -418,4 +451,4 @@ const Folder: React.FC<Props> = ({ isAdd = false, title, published, data }) => {
   );
 };
 
-export default Folder;
+export default Group;

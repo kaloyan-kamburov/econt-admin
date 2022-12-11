@@ -11,21 +11,21 @@ import Loader from "../../../components/common/Loader/Loader.component";
 import { IconArchive } from "../../../Icons/icons";
 
 interface Props {
-  groupForArchive: string;
+  folderForArchive: string;
   closeFn: () => void;
 }
 
-const ArchiveGroup: React.FC<Props> = ({ groupForArchive, closeFn }) => {
+const ArchiveFolder: React.FC<Props> = ({ folderForArchive, closeFn }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
   return (
     <>
       <IconArchive />
-      <h6>{t("pages.folder.archiveGroup")}</h6>
+      <h6>{t("pages.folder.archiveFolder")}</h6>
       <span>
         <Trans
-          i18nKey="pages.folder.archiveGroupQuestion"
-          tOptions={{ group: groupForArchive }}
+          i18nKey="pages.folder.archiveFolderQuestion"
+          tOptions={{ folder: folderForArchive }}
         >
           <strong />
         </Trans>
@@ -66,4 +66,4 @@ const ArchiveGroup: React.FC<Props> = ({ groupForArchive, closeFn }) => {
   );
 };
 
-export default ArchiveGroup;
+export default ArchiveFolder;

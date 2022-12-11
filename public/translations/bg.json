@@ -35,7 +35,11 @@
       "unpublishGroupQuestion": "Сигурен ли си, че искаш премахнеш <0>\"{{group}}\"</0> от публикувани?",
       "deleteGroup": "Изтриване на група от документи",
       "deleteGroupQuestion": "Сигурен ли си, че искаш да изтриеш <0>\"{{group}}\"</0>?",
-      "moveGroup": "Местене на група от документи"
+      "moveGroup": "Местене на група от документи",
+      "groupPublished": "Групата е публикувана",
+      "groupDeleted": "Групата е изтрита",
+      "groupUpdated": "Групата е обновена",
+      "groupSavedAndPublished": "Групата е създадена и публикувана"
     },
     "login": {
       "loginError": "Грешка при влизане"

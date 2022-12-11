@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
+import { useMutation, useQuery } from "react-query";
+import axiosOrg, { AxiosError, AxiosResponse } from "axios";
+import toast from "react-hot-toast";
 
 //MUI components
 import Grid from "@mui/material/Grid";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import Button from "@mui/material/Button";
 
 //validations
@@ -11,26 +16,175 @@ import { required } from "../../../utils/validations/validations";
 
 //custom components
 import Input from "../../../components/form/Input/Input.component";
-import Loader from "../../../components/common/Loader/Loader.component";
-// import Select from "../../../components/form/Select/Select.component";
+import InputImage from "../../../components/form/InputImage/InputImage.component";
+
+//utils
+import axios from "../../../utils/api";
+
+//hooks
+import useAuth from "../../../hooks/useAuth";
+import useCategories from "../../../hooks/useCategories";
+import usePageError from "../../../hooks/usePageError";
+
+//types
+import { TLanguage } from "../../../context/auth";
+import { TFolder } from "../../../context/categories";
 
 interface Props {
-  closeFn: () => void;
+  closeFn: (editedGroupData?: TFolder, categoryId?: number | string) => void;
+  folderData: TFolder | any;
 }
 
-const EditGroup: React.FC<Props> = ({ closeFn }) => {
-  const [loading, setLoading] = useState<boolean>(false);
+const EditGroup: React.FC<Props> = ({ closeFn, folderData }) => {
+  const { languages } = useAuth();
   const { t } = useTranslation();
+  const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
+
+  const [initialValues, setInitialValues] = useState<any>({});
+  const [tab, setTab] = useState<number>(0);
+  const [shouldPublish, setShouldPublish] = useState<boolean>(false);
+
+  const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
+
+  //get folder
+  const { refetch: getGroupData } = useQuery(
+    "getGroupData",
+    async () => {
+      const data = await axios(`folders/${folderData?.id}/edit`);
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosResponse<any>) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          // setCategories(data?.data || []);
+          setInitialValues(data?.data?.data);
+        }
+      },
+      onError: (error: AxiosError) => {
+        setVisibleError(true);
+      },
+    }
+  );
+
+  //update folder
+  const updateGroup = useMutation(
+    async (values: any) => {
+      const valuesForSend: any = {
+        id: folderData?.id,
+        image_id: values?.image?.id || values.image,
+        path: values?.imgPath || values?.image.path || null,
+        published: false,
+      };
+      Array.isArray(languages) &&
+        languages.forEach((lang: TLanguage) => {
+          valuesForSend[`name:${lang.code}`] = values?.[`name:${lang.code}`];
+          valuesForSend[`description:${lang.code}`] = values?.[`description:${lang.code}`];
+        });
+      const data = await axios.put(`folders/${folderData?.id}`, valuesForSend);
+      return { ...data, newValues: valuesForSend };
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          const newValues = data?.newValues || {};
+
+          toast.success(`${t("pages.folder.folderUpdated")}`);
+
+          if (shouldPublish) {
+            setTimeout(() =>
+              publishGroup.mutate({
+                ...newValues,
+                image: {
+                  path: newValues?.path,
+                },
+              })
+            );
+          } else {
+            closeFn(
+              {
+                ...newValues,
+                image: {
+                  path: newValues?.path,
+                },
+              },
+              folderData?.category_id
+            );
+          }
+        }
+      },
+      onError: (error) => {
+        setVisibleError(true);
+      },
+    }
+  );
+
+  //publish folder
+  const publishGroup = useMutation(
+    async (newValues: TFolder) => {
+      setRetryFn({
+        execute: () => publishGroup.mutate(newValues),
+      });
+      const data = await axios.patch(`folders/${newValues?.id || folderData.id}/publish`, {
+        published: true,
+      });
+      return { ...data, newValues };
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          toast.success(`${t("pages.folder.folderPublished")}`);
+          setShouldPublish(false);
+          const newValues = data?.newValues;
+
+          if (newValues) {
+            closeFn({ ...newValues, published: true }, folderData.category_id);
+          }
+        }
+      },
+      onError: () => {
+        setErrorMsg(t("common.errorPublishCategory"));
+        setVisibleError(true);
+      },
+    }
+  );
+
+  useEffect(() => {
+    setRetryFn({
+      execute: () => getGroupData(),
+    });
+    getGroupData();
+  }, []);
 
   return (
     <>
       <Form
-        onSubmit={() => {
-          setLoading(true);
-          setTimeout(() => {
-            setLoading(false);
-            closeFn();
-          }, 1000);
+        onSubmit={(values) => {
+          setRetryFn({
+            execute: () => updateGroup.mutate(values),
+          });
+          updateGroup.mutate(values);
+        }}
+        initialValues={initialValues}
+        validate={(values) => {
+          const errors: any = {};
+          if (!values.image) {
+            errors.image = t("form.validations.required");
+          }
+
+          if (
+            Array.isArray(languages) &&
+            !languages.every((lang: TLanguage) => {
+              return values?.[`name:${lang.code}`] && values?.[`description:${lang.code}`];
+            })
+          ) {
+            errors.notFilled = t("form.validations.required");
+          }
+          return errors;
+        }}
+        mutators={{
+          setFormValue: ([fieldName, fieldVal], state, form) => {
+            form.changeValue(state, fieldName, () => fieldVal);
+          },
         }}
         render={({ handleSubmit, invalid, errors, values, form }) => (
           <form
@@ -38,6 +192,7 @@ const EditGroup: React.FC<Props> = ({ closeFn }) => {
             onSubmit={handleSubmit}
             style={{ width: "100%" }}
           >
+            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
             <Grid
               container
               spacing={2}
@@ -47,24 +202,68 @@ const EditGroup: React.FC<Props> = ({ closeFn }) => {
                 item
                 xs={12}
               >
-                <Input
-                  name="name"
-                  label={t("form.labels.groupName")}
-                  validate={[required(t("form.validations.required"))]}
-                  required
+                <InputImage
+                  name="image"
+                  label={t("form.labels.uploadImage")}
+                  desc={t("pages.home.uploadFileDesc")}
+                  onImgPick={(values) => {
+                    form.mutators.setFormValue("image", values.image);
+                    form.mutators.setFormValue("imgPath", values.imgPath);
+                  }}
                 />
-                {/* <Select
-                  name="place"
-                  label="Тип на сметката"
-                  options={[
-                    {
-                      label: "asd",
-                      value: "asd",
-                    },
-                  ]}
-                  validate={[required("form.validations.required")]}
-                /> */}
               </Grid>
+              <Grid
+                item
+                xs={12}
+              >
+                <Tabs
+                  value={tab}
+                  onChange={onChangeTab}
+                  aria-label="basic tabs example"
+                >
+                  {Array.isArray(languages)
+                    ? languages.map((lang: TLanguage) => (
+                        <Tab
+                          key={lang.code}
+                          label={t(`languages.${lang.code}`)}
+                        />
+                      ))
+                    : null}
+                </Tabs>
+              </Grid>
+              {Array.isArray(languages)
+                ? languages.map((lang, i) =>
+                    tab === i ? (
+                      <React.Fragment key={lang.code}>
+                        <Grid
+                          item
+                          xs={12}
+                        >
+                          <Input
+                            name={`name:${lang.code}`}
+                            label={t("form.labels.categoryName")}
+                            validate={[required(t("form.validations.required"))]}
+                            required
+                          />
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                        >
+                          <Input
+                            name={`description:${lang.code}`}
+                            label={t("form.labels.description")}
+                            validate={[required(t("form.validations.required"))]}
+                            required
+                            rows={3}
+                            maxRows={3}
+                            multiline
+                          />
+                        </Grid>
+                      </React.Fragment>
+                    ) : null
+                  )
+                : null}
 
               <Grid
                 item
@@ -74,11 +273,33 @@ const EditGroup: React.FC<Props> = ({ closeFn }) => {
                 <Button
                   variant="contained"
                   color="primary"
-                  type="submit"
                   size="large"
-                  onClick={() => {}}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShouldPublish(true);
+                    setRetryFn({
+                      execute: () => updateGroup.mutate(values),
+                    });
+                    setTimeout(() => {
+                      updateGroup.mutate(values);
+                    });
+                  }}
                   sx={{
                     width: "auto",
+                  }}
+                  disabled={invalid}
+                >
+                  {t("common.saveAndPublish")}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="info"
+                  size="large"
+                  type="submit"
+                  sx={{
+                    width: "auto",
+                    marginLeft: "auto",
+                    marginRight: "calc(2 * var(--atom))",
                   }}
                   disabled={invalid}
                 >
@@ -88,25 +309,20 @@ const EditGroup: React.FC<Props> = ({ closeFn }) => {
                   variant="text"
                   color="primary"
                   size="large"
-                  onClick={closeFn}
+                  onClick={() => closeFn()}
                   sx={{
                     width: "auto",
+                    marginLeft: 0,
                   }}
                 >
                   {t("common.cancel")}
                 </Button>
               </Grid>
             </Grid>
-            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
+            {/* <pre>{JSON.stringify(errors, null, 4)}</pre> */}
           </form>
         )}
       />
-      {loading && (
-        <Loader
-          showExplicit
-          inModal
-        />
-      )}
     </>
   );
 };

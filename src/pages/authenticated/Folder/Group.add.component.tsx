@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { Form } from "react-final-form";
 import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import axiosOrg, { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 //MUI components
 import Grid from "@mui/material/Grid";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import Button from "@mui/material/Button";
 
 //validations
@@ -11,26 +16,117 @@ import { required } from "../../../utils/validations/validations";
 
 //custom components
 import Input from "../../../components/form/Input/Input.component";
-import Loader from "../../../components/common/Loader/Loader.component";
-// import Select from "../../../components/form/Select/Select.component";
+import InputImage from "../../../components/form/InputImage/InputImage.component";
+
+//utils
+import axios from "../../../utils/api";
+
+//hooks
+import useAuth from "../../../hooks/useAuth";
+import useCategories from "../../../hooks/useCategories";
+
+//types
+import { TLanguage } from "../../../context/auth";
+import { TCategory, TFolder } from "../../../context/categories";
 
 interface Props {
-  closeFn: () => void;
+  categoryId: string | number;
+  parentId?: string | number | null;
+  closeFn: (newGroup?: TFolder) => void;
 }
 
-const AddGroup: React.FC<Props> = ({ closeFn }) => {
-  const [loading, setLoading] = useState<boolean>(false);
+const AddGroup: React.FC<Props> = ({ categoryId, parentId = null, closeFn }) => {
   const { t } = useTranslation();
+  const { languages } = useAuth();
+  const { categories, setCategories } = useCategories();
+
+  const [tab, setTab] = useState<number>(0);
+  const [shouldPublish, setShouldPublish] = useState<boolean>(false);
+
+  const onChangeTab = (event: React.SyntheticEvent, newValue: number) => setTab(newValue);
+
+  //save folder
+  const saveGroup = useMutation(
+    async (values: any) => {
+      const valuesForSend: any = {
+        image_id: values.image,
+        category_id: +categoryId,
+        parent_id: parentId,
+        type: "file",
+      };
+      Array.isArray(languages) &&
+        languages.forEach((lang: TLanguage) => {
+          valuesForSend[`name:${lang.code}`] = values?.[`name:${lang.code}`];
+          valuesForSend[`description:${lang.code}`] = values?.[`description:${lang.code}`];
+        });
+      const data = await axios.post("folders", valuesForSend);
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          const newGroup = data?.data?.data || {};
+          toast.success(`${t("pages.folder.categorySaved")}`);
+
+          if (shouldPublish) {
+            setTimeout(() => publishGroup.mutate(newGroup));
+          } else {
+            closeFn(newGroup);
+          }
+        }
+      },
+    }
+  );
+
+  //publish folder
+  const publishGroup = useMutation(
+    async (newValues: TFolder) => {
+      const data = await axios.patch(`folders/${newValues.id}/publish`, {
+        published: true,
+      });
+      return { ...data, newValues };
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          toast.success(`${t("pages.folder.groupPublished")}`);
+          setShouldPublish(false);
+          const newValues = data?.newValues;
+          if (newValues) {
+            closeFn({ ...newValues, published: true });
+          }
+        }
+      },
+      onError: (e: AxiosError<any>) => {
+        toast.error(e.response?.data?.message || `${t("common.errorRemovingData")}`);
+      },
+    }
+  );
 
   return (
     <>
       <Form
-        onSubmit={() => {
-          setLoading(true);
-          setTimeout(() => {
-            setLoading(false);
-            closeFn();
-          }, 1000);
+        onSubmit={(values) => saveGroup.mutate(values)}
+        validate={(values) => {
+          const errors: any = {};
+          if (!values.image) {
+            errors.image = t("form.validations.required");
+          }
+
+          if (
+            Array.isArray(languages) &&
+            !languages.every((lang: TLanguage) => {
+              return values?.[`name:${lang.code}`] && values?.[`description:${lang.code}`];
+            })
+          ) {
+            errors.notFilled = t("form.validations.required");
+          }
+          return errors;
+        }}
+        mutators={{
+          setFormValue: ([fieldName, fieldVal], state, form) => {
+            form.changeValue(state, fieldName, () => fieldVal);
+          },
         }}
         render={({ handleSubmit, invalid, errors, values, form }) => (
           <form
@@ -38,6 +134,7 @@ const AddGroup: React.FC<Props> = ({ closeFn }) => {
             onSubmit={handleSubmit}
             style={{ width: "100%" }}
           >
+            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
             <Grid
               container
               spacing={2}
@@ -47,24 +144,65 @@ const AddGroup: React.FC<Props> = ({ closeFn }) => {
                 item
                 xs={12}
               >
-                <Input
-                  name="name"
-                  label={t("form.labels.groupName")}
-                  validate={[required(t("form.validations.required"))]}
-                  required
+                <InputImage
+                  name="image"
+                  label={t("form.labels.uploadImage")}
+                  desc={t("pages.home.uploadFileDesc")}
+                  onImgPick={(values) => {
+                    form.mutators.setFormValue("image", values.image);
+                    form.mutators.setFormValue("imgPath", values.imgPath || values.path);
+                  }}
                 />
-                {/* <Select
-                  name="place"
-                  label="Тип на сметката"
-                  options={[
-                    {
-                      label: "asd",
-                      value: "asd",
-                    },
-                  ]}
-                  validate={[required("form.validations.required")]}
-                /> */}
               </Grid>
+              <Grid
+                item
+                xs={12}
+              >
+                <Tabs
+                  value={tab}
+                  onChange={onChangeTab}
+                  aria-label="basic tabs example"
+                >
+                  {Array.isArray(languages)
+                    ? languages.map((lang: TLanguage) => (
+                        <Tab label={t(`languages.${lang.code}`)} />
+                      ))
+                    : null}
+                </Tabs>
+              </Grid>
+              {Array.isArray(languages)
+                ? languages.map((lang, i) =>
+                    tab === i ? (
+                      <React.Fragment key={lang.code}>
+                        <Grid
+                          item
+                          xs={12}
+                        >
+                          <Input
+                            name={`name:${lang.code}`}
+                            label={t("form.labels.categoryName")}
+                            validate={[required(t("form.validations.required"))]}
+                            required
+                          />
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                        >
+                          <Input
+                            name={`description:${lang.code}`}
+                            label={t("form.labels.description")}
+                            validate={[required(t("form.validations.required"))]}
+                            required
+                            rows={3}
+                            maxRows={3}
+                            multiline
+                          />
+                        </Grid>
+                      </React.Fragment>
+                    ) : null
+                  )
+                : null}
 
               <Grid
                 item
@@ -74,39 +212,52 @@ const AddGroup: React.FC<Props> = ({ closeFn }) => {
                 <Button
                   variant="contained"
                   color="primary"
-                  type="submit"
                   size="large"
-                  onClick={() => {}}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShouldPublish(true);
+                    setTimeout(() => {
+                      saveGroup.mutate(values);
+                    });
+                  }}
                   sx={{
                     width: "auto",
                   }}
                   disabled={invalid}
                 >
-                  {t("common.upload")}
+                  {t("common.saveAndPublish")}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="info"
+                  size="large"
+                  type="submit"
+                  sx={{
+                    width: "auto",
+                    marginLeft: "auto",
+                    marginRight: "calc(2 * var(--atom))",
+                  }}
+                  disabled={invalid}
+                >
+                  {t("common.save")}
                 </Button>
                 <Button
                   variant="text"
                   color="primary"
                   size="large"
-                  onClick={closeFn}
+                  onClick={() => closeFn()}
                   sx={{
                     width: "auto",
+                    marginLeft: 0,
                   }}
                 >
                   {t("common.cancel")}
                 </Button>
               </Grid>
             </Grid>
-            {/* <pre>{JSON.stringify(values, null, 4)}</pre> */}
           </form>
         )}
       />
-      {loading && (
-        <Loader
-          showExplicit
-          inModal
-        />
-      )}
     </>
   );
 };

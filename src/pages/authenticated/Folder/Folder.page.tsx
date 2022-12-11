@@ -145,16 +145,26 @@ const PageFolder: React.FC<Props> = () => {
               parentId={+entityId}
               isAdd
               onAddFolder={(newFolder?: TFolder) => {
-                newFolder && setRecords([...records, newFolder]);
-                setPageType("only_folders");
+                if (newFolder) {
+                  setRecords([...records, newFolder]);
+                  setPageType("only_folders");
+                }
                 refreshContent();
               }}
             />
           )}
           {["all", "only_files"].includes(pageType) && (
             <Group
-              published
+              categoryId={id || ""}
+              parentId={+entityId}
               isAdd
+              onAddGroup={(newGroup?: TFolder) => {
+                if (newGroup) {
+                  setRecords([...records, newGroup]);
+                  setPageType("only_files");
+                }
+                refreshContent();
+              }}
             />
           )}
           <Draggable
@@ -223,6 +233,45 @@ const PageFolder: React.FC<Props> = () => {
                     key={folder.id}
                     published={folder.published}
                     data={folder}
+                    categoryId={id || ""}
+                    parentId={+entityId}
+                    groups={records}
+                    onEditGroup={(editedFolderData: TFolder, categoryId: number | string) => {
+                      if (editedFolderData) {
+                        const updatedFolderIndex = records.findIndex(
+                          (folder: TFolder) => folder.id === editedFolderData.id
+                        );
+                        if (updatedFolderIndex > -1) {
+                          const currentFolders = [...records];
+                          currentFolders[updatedFolderIndex] = editedFolderData;
+                          setRecords(currentFolders);
+                        }
+                      }
+                      // if (editedFolderData?.published) {
+                      //   const currentCategoryIndex = categories.findIndex(
+                      //     (cat) => +cat.id === +categoryId
+                      //   );
+                      //   if (currentCategoryIndex > -1) {
+                      //     const newCategories = [...categories];
+                      //     const editedCategoryIndex = newCategories[
+                      //       currentCategoryIndex
+                      //     ].folders.findIndex((cat) => cat.id === editedFolderData.id);
+                      //     if (editedCategoryIndex > -1) {
+                      //       newCategories[currentCategoryIndex].folders[editedCategoryIndex] = {
+                      //         ...newCategories[currentCategoryIndex].folders[editedCategoryIndex],
+                      //         ...editedFolderData,
+                      //       };
+                      //       setCategories(newCategories);
+                      //     }
+                      //   }
+                      // }
+
+                      refreshContent();
+                    }}
+                    onDeleteGroup={(folderId: number | string, categoryId: number | string) => {
+                      setRecords(records.filter((record: TFolder) => record.id !== +folderId));
+                      refreshContent();
+                    }}
                   />
                 ))}
           </Draggable>
