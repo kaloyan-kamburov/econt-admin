@@ -25,7 +25,12 @@ import iconMap from "../../../Icons/map.svg";
 import { IconDots, IconPlus, IconFolder, IconAddFolder } from "../../../Icons/icons";
 
 //theme
-import { bgSections, btnContainedPrimaryBgColor, lightColor, dragActive } from "../../../styles/theme";
+import {
+  bgSections,
+  btnContainedPrimaryBgColor,
+  lightColor,
+  dragActive,
+} from "../../../styles/theme";
 
 //type
 import { TFolder } from "../../../context/categories";
@@ -184,9 +189,20 @@ interface Props {
   onAddFolder?: (folder?: TFolder) => void;
   onEditFolder?: (folder: TFolder, categoryId: number | string) => void;
   onDeleteFolder?: (folderId: number | string, categoryId: number | string) => void;
+  folders?: TFolder[];
 }
 
-const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, parentId = null, onAddFolder, onEditFolder, onDeleteFolder }) => {
+const Folder: React.FC<Props> = ({
+  isAdd = false,
+  data,
+  published,
+  categoryId,
+  parentId = null,
+  onAddFolder,
+  onEditFolder,
+  onDeleteFolder,
+  folders,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -203,7 +219,9 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
   return (
     <>
       <FolderWrapper
-        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${isDragging ? " is-dragging" : ""}`}
+        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${
+          isDragging ? " is-dragging" : ""
+        }`}
         onDragOver={(e) => {
           if (!isAdd) {
             e.preventDefault();
@@ -258,18 +276,33 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
                     >
                       {t("common.change")}
                     </Button>
-                    <Button
-                      variant="text"
-                      color="primary"
-                      size="small"
-                      sx={{ borderRadius: 0 }}
-                      onClick={() => {
-                        published ? setModalUnublishFolder(true) : setModalPublishFolder(true);
-                        setMenuOpened(false);
-                      }}
-                    >
-                      {t(`common.${published ? "removeFromPublish" : "publish"}`)}
-                    </Button>
+                    {published ? (
+                      <Button
+                        variant="text"
+                        color="primary"
+                        size="small"
+                        sx={{
+                          borderRadius: 0,
+                        }}
+                        onClick={() => setModalUnublishFolder(true)}
+                      >
+                        {t("common.removeFromPublish")}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="text"
+                        color="primary"
+                        size="small"
+                        sx={{
+                          borderRadius: 0,
+                        }}
+                        onClick={() => {
+                          setModalPublishFolder(true);
+                        }}
+                      >
+                        {t("common.publish")}
+                      </Button>
+                    )}
                     <Button
                       variant="text"
                       color="primary"
@@ -323,16 +356,20 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
       {modalEditFolder && (
         <Modal
           title={t("pages.category.changeFolder")}
-          closeFn={() => setModalEditFolder(false)}
+          closeFn={() => {
+            setModalEditFolder(false);
+            setMenuOpened(false);
+          }}
         >
           <>
             <EditFolder
-              id={data?.id || ""}
+              folderData={data}
               closeFn={(newFolderData?: TFolder) => {
                 if (newFolderData) {
                   onEditFolder && onEditFolder(newFolderData, categoryId);
                 }
                 setModalEditFolder(false);
+                setMenuOpened(false);
               }}
             />
             {/* <Loader showExplicit inModal /> */}
@@ -357,15 +394,20 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
         <Modal
           closeFn={() => {
             setModalPublishFolder(false);
+            setMenuOpened(false);
           }}
           title={t("pages.category.confirmPublish")}
         >
           <PublishFolder
-            folder={123}
-            closeFn={() => {
+            folderData={data}
+            closeFn={(newFolderData?: TFolder) => {
+              if (newFolderData) {
+                onEditFolder && onEditFolder(newFolderData, categoryId);
+              }
               setModalPublishFolder(false);
+              setMenuOpened(false);
             }}
-            // folderForArchive={"sda"}
+            folders={folders}
           />
         </Modal>
       )}
@@ -376,10 +418,14 @@ const Folder: React.FC<Props> = ({ isAdd = false, data, published, categoryId, p
           }}
         >
           <UnpublishFolder
-            closeFn={() => {
-              setModalUnublishFolder(false);
+            folderData={data}
+            closeFn={(newFolderData?: TFolder) => {
+              if (newFolderData) {
+                onEditFolder && onEditFolder(newFolderData, categoryId);
+              }
+              setModalPublishFolder(false);
+              setMenuOpened(false);
             }}
-            folder={""}
           />
         </Modal>
       )}

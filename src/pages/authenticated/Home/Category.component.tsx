@@ -35,8 +35,7 @@ import {
 const CategoryWrapper = styled.div`
   background: ${bgSections};
   padding: calc(4 * var(--atom));
-  box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom))
-    rgba(0, 0, 0, 0.15);
+  box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom)) rgba(0, 0, 0, 0.15);
   border-radius: calc(1.6 * var(--atom));
   height: 100%;
   min-height: calc(51.6 * var(--atom));
@@ -143,8 +142,7 @@ const CategoryWrapper = styled.div`
     top: calc(8 * var(--atom));
     right: calc(2 * var(--atom));
     background: ${bgSections};
-    box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom))
-      rgba(0, 0, 0, 0.15);
+    box-shadow: 0px calc(0.8 * var(--atom)) calc(2.4 * var(--atom)) rgba(0, 0, 0, 0.15);
     border-radius: calc(0.8 * var(--atom));
     flex-direction: column;
 
@@ -187,32 +185,23 @@ interface Props {
   resetRender?: () => void;
 }
 
-const Item: React.FC<Props> = ({
-  isAdd = false,
-  data,
-  published = true,
-  resetRender,
-}) => {
+const Item: React.FC<Props> = ({ isAdd = false, data, published = true, resetRender }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
-  const [modalCreateCategory, setModalCreateCategory] =
-    useState<boolean>(false);
+  const [modalCreateCategory, setModalCreateCategory] = useState<boolean>(false);
   const [modalEditCategory, setModalEditCategory] = useState<boolean>(false);
-  const [modalDeleteCategory, setModalDeleteCategory] =
-    useState<boolean>(false);
-  const [modalPublishCategory, setModalPublishCategory] =
-    useState<boolean>(false);
-  const [modalUnpublishCategory, setModalUnpublishCategory] =
-    useState<boolean>(false);
+  const [modalDeleteCategory, setModalDeleteCategory] = useState<boolean>(false);
+  const [modalPublishCategory, setModalPublishCategory] = useState<boolean>(false);
+  const [modalUnpublishCategory, setModalUnpublishCategory] = useState<boolean>(false);
 
   return (
     <>
       <CategoryWrapper
-        className={`${
-          isAdd ? "btn-add" : `${published ? "" : " non-published"}`
-        }${isDragging ? " is-dragging" : ""}`}
+        className={`${isAdd ? "btn-add" : `${published ? "" : " non-published"}`}${
+          isDragging ? " is-dragging" : ""
+        }`}
         onClick={() => (isAdd ? setModalCreateCategory(true) : undefined)}
         onDragOver={(e) => {
           if (!isAdd) {
@@ -248,9 +237,7 @@ const Item: React.FC<Props> = ({
                   {/* <br />
                   (Непубликуван) */}
                 </span>
-                <span className="description">
-                  {data && data["description:bg"]}
-                </span>
+                <span className="description">{data && data["description:bg"]}</span>
               </div>
               <div className="drag-handle">
                 <OpenWith />
@@ -278,7 +265,9 @@ const Item: React.FC<Props> = ({
                     variant="text"
                     color="primary"
                     size="small"
-                    sx={{ borderRadius: 0 }}
+                    sx={{
+                      borderRadius: 0,
+                    }}
                     onClick={() => {
                       setModalEditCategory(true);
                       setMenuOpened(false);
@@ -291,7 +280,9 @@ const Item: React.FC<Props> = ({
                       variant="text"
                       color="primary"
                       size="small"
-                      sx={{ borderRadius: 0 }}
+                      sx={{
+                        borderRadius: 0,
+                      }}
                       onClick={() => setModalUnpublishCategory(true)}
                     >
                       {t("common.removeFromPublish")}
@@ -301,7 +292,9 @@ const Item: React.FC<Props> = ({
                       variant="text"
                       color="primary"
                       size="small"
-                      sx={{ borderRadius: 0 }}
+                      sx={{
+                        borderRadius: 0,
+                      }}
                       onClick={() => {
                         setModalPublishCategory(true);
                       }}
@@ -313,7 +306,9 @@ const Item: React.FC<Props> = ({
                     variant="text"
                     color="error"
                     size="small"
-                    sx={{ borderRadius: 0 }}
+                    sx={{
+                      borderRadius: 0,
+                    }}
                     onClick={() => {
                       setModalDeleteCategory(true);
                       setMenuOpened(false);

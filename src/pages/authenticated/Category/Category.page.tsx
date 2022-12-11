@@ -34,10 +34,13 @@ const PageCategory: React.FC<Props> = () => {
   const [path, setPath] = useState<Path[]>([]);
 
   //save positions
+
   const updatePositions = useMutation(
-    async (values: any) => {
-      await axios.put("categories/update", values);
-      return values;
+    async (values: { currPos: number; newPos: number; id: number | string }) => {
+      const data = await axios.patch(`folders/${values?.id}/order`, {
+        position: values.newPos + 1,
+      });
+      return { ...data, newPos: values.newPos, currPos: values.currPos };
     },
     {
       onSuccess: (data: AxiosError | any) => {
@@ -46,7 +49,8 @@ const PageCategory: React.FC<Props> = () => {
         }
       },
       onError: (error: AxiosError) => {
-        toast.error(error?.message || `${t("pages.login.loginError")}`);
+        toast.error(error?.message || `${t("common.errorGettingData")}`);
+        setVisibleError(true);
       },
     }
   );
@@ -56,7 +60,9 @@ const PageCategory: React.FC<Props> = () => {
     "getCategoryData",
     async () => {
       // setVisible(false);
-      const data = await axios(`folders?include=category.image&filter[category_id]=${id}&filter[folder_id]=null`);
+      const data = await axios(
+        `folders?include=category.image&filter[category_id]=${id}&filter[folder_id]=null`
+      );
       // const data = await axios(`folders?include=category.image&filter[folder_id]=${id}`);
       return data;
     },
@@ -103,13 +109,34 @@ const PageCategory: React.FC<Props> = () => {
         isAdd
         onAddFolder={(newFolder?: TFolder) => {
           newFolder && setFolders([...folders, newFolder]);
+          const currentCategoryIndex = newFolder
+            ? categories.findIndex((cat) => cat.id === +newFolder.category_id)
+            : -1;
+          if (currentCategoryIndex > -1) {
+            const newCategories = [...categories];
+            // const categoryFolders = newFolder
+            //   ? newCategories[currentCategoryIndex].folders.filter(
+            //       (folder) => folder.id !== +newFolder?.category_id
+            //     )
+            //   : [];
+            newFolder && newCategories[currentCategoryIndex].folders.push(newFolder);
+            setCategories(newCategories);
+          }
           refreshContent();
         }}
       />
       {foldersRendered && (
         <Draggable
           onPosChange={(currPos, newPos) => {
-            updatePositions.mutate(true);
+            const values = {
+              newPos,
+              currPos,
+              id: folders?.[currPos]?.id || "",
+            };
+            updatePositions.mutate(values);
+            setRetryFn({
+              execute: () => updatePositions.mutate(values),
+            });
           }}
         >
           {folders.map((folder: any) => (
@@ -118,19 +145,24 @@ const PageCategory: React.FC<Props> = () => {
               published={folder.published}
               data={folder}
               categoryId={id || ""}
+              folders={folders}
               onEditFolder={(editedFolderData: TFolder, categoryId: number | string) => {
                 if (editedFolderData) {
-                  const updatedFolderIndex = folders.findIndex((folder) => folder.id === editedFolderData.id);
+                  const updatedFolderIndex = folders.findIndex(
+                    (folder) => folder.id === editedFolderData.id
+                  );
                   if (updatedFolderIndex > -1) {
                     const currentFolders = [...folders];
                     currentFolders[updatedFolderIndex] = editedFolderData;
                     setFolders(currentFolders);
                   }
                 }
-                const currentCategoryIndex = categories.findIndex((cat) => cat.id === categoryId);
+                const currentCategoryIndex = categories.findIndex((cat) => +cat.id === +categoryId);
                 if (currentCategoryIndex > -1) {
                   const newCategories = [...categories];
-                  const editedCategoryIndex = newCategories[currentCategoryIndex].folders.findIndex((cat) => cat.id === editedFolderData.id);
+                  const editedCategoryIndex = newCategories[currentCategoryIndex].folders.findIndex(
+                    (cat) => cat.id === editedFolderData.id
+                  );
                   if (editedCategoryIndex > -1) {
                     newCategories[currentCategoryIndex].folders[editedCategoryIndex] = {
                       ...newCategories[currentCategoryIndex].folders[editedCategoryIndex],
@@ -144,9 +176,11 @@ const PageCategory: React.FC<Props> = () => {
               onDeleteFolder={(folderId: number | string, categoryId: number | string) => {
                 setFolders(folders.filter((folder) => folder.id !== +folderId));
                 const currentCategoryIndex = categories.findIndex((cat) => cat.id === +categoryId);
-                if (currentCategoryIndex) {
+                if (currentCategoryIndex > -1) {
                   const newCategories = [...categories];
-                  const categoryFolders = newCategories[currentCategoryIndex].folders.filter((folder) => folder.id !== folderId);
+                  const categoryFolders = newCategories[currentCategoryIndex].folders.filter(
+                    (folder) => folder.id !== folderId
+                  );
                   newCategories[currentCategoryIndex].folders = categoryFolders;
                   setCategories(newCategories);
                 }

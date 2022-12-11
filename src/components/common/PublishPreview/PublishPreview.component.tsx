@@ -13,13 +13,7 @@ import { IconSearch, EcontLogo2 } from "../../../Icons/icons";
 import flags from "../../../Icons/flags/flags";
 
 //styles
-import {
-  bgSections,
-  inputBorder,
-  bgForms,
-  footerBg,
-  dragActive,
-} from "../../../styles/theme";
+import { bgSections, inputBorder, bgForms, footerBg, dragActive } from "../../../styles/theme";
 
 const PreviewWrapper = styled.div`
   width: 100%;
@@ -171,12 +165,12 @@ const BtnsWrapper = styled.div`
   .content {
     display: flex;
     width: 100%;
-    padding: 0 calc(4 * var(--atom));
-    justify-content: flex-start;
+    // padding: 0 calc(4 * var(--atom));
+    justify-content: space-between;
     button {
       width: auto;
       padding: 0 calc(4 * var(--atom));
-      margin-right: calc(4 * var(--atom));
+      // margin-right: calc(4 * var(--atom));
     }
   }
 `;
@@ -188,17 +182,12 @@ const BtnsWrapper = styled.div`
 
 interface Props {
   closeFn: () => void;
-  items: any[];
+  items?: any[];
   publishItem: any;
   publishFn: () => void;
 }
 
-const PublishPreview: React.FC<Props> = ({
-  closeFn,
-  items,
-  publishItem,
-  publishFn,
-}) => {
+const PublishPreview: React.FC<Props> = ({ closeFn, items, publishItem, publishFn }) => {
   const { t, i18n } = useTranslation();
   return (
     <>
@@ -227,25 +216,24 @@ const PublishPreview: React.FC<Props> = ({
           //   ref={contentRef}
         >
           {/* <pre>{JSON.stringify(items, null, 4)}</pre> */}
-          {items
-            .filter((item) => item.published || item.id === publishItem.id)
-            .map((item) => (
-              <div
-                className="item"
-                key={item.id}
-              >
-                <div className="item-content">
-                  <img
-                    src={item?.image?.path}
-                    alt={item?.item?.alt}
-                  />
-                  <span className="title">{item?.["name:bg"]}</span>
-                  <span className="description">
-                    {item?.["description:bg"]}
-                  </span>
+          {Array.isArray(items) &&
+            items
+              .filter((item: any) => item.published || item.id === publishItem.id)
+              .map((item: any) => (
+                <div
+                  className="item"
+                  key={item.id}
+                >
+                  <div className="item-content">
+                    <img
+                      src={item?.image?.path}
+                      alt={item?.item?.alt}
+                    />
+                    <span className="title">{item?.["name:bg"]}</span>
+                    <span className="description">{item?.["description:bg"]}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           {/* <div className="item">
             <div className="item-content">
               <img

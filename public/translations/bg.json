@@ -91,6 +91,7 @@
     "positionsUpdated": "Позициите са променени",
     "errorGettingData": "Възникна грешка при взимането на данните",
     "errorPublishCategory": "Възникна грешка при публикуване",
+    "errorPublishFolder": "Възникна грешка при публикуване",
     "tryAgain": "Опитай пак",
     "errorRemovingData": "Възникна грешка при триене"
   },

@@ -28,17 +28,16 @@ import usePageError from "../../../hooks/usePageError";
 
 //types
 import { TLanguage } from "../../../context/auth";
-import { TCategory, TFolder } from "../../../context/categories";
+import { TFolder } from "../../../context/categories";
 
 interface Props {
-  closeFn: (editedFolderData?: TFolder) => void;
-  id: number | string;
+  closeFn: (editedFolderData?: TFolder, categoryId?: number | string) => void;
+  folderData: TFolder | any;
 }
 
-const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
+const EditFolder: React.FC<Props> = ({ closeFn, folderData }) => {
   const { languages } = useAuth();
   const { t } = useTranslation();
-  const { categories, setCategories } = useCategories();
   const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
 
   const [initialValues, setInitialValues] = useState<any>({});
@@ -51,7 +50,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
   const { refetch: getFolderData } = useQuery(
     "getFolderData",
     async () => {
-      const data = await axios(`folders/${id}/edit`);
+      const data = await axios(`folders/${folderData?.id}/edit`);
       return data;
     },
     {
@@ -71,7 +70,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
   const updateFolder = useMutation(
     async (values: any) => {
       const valuesForSend: any = {
-        id,
+        id: folderData?.id,
         image_id: values?.image?.id || values.image,
         path: values?.imgPath || values?.image.path || null,
         published: false,
@@ -81,7 +80,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
           valuesForSend[`name:${lang.code}`] = values?.[`name:${lang.code}`];
           valuesForSend[`description:${lang.code}`] = values?.[`description:${lang.code}`];
         });
-      const data = await axios.put(`folders/${id}`, valuesForSend);
+      const data = await axios.put(`folders/${folderData?.id}`, valuesForSend);
       return { ...data, newValues: valuesForSend };
     },
     {
@@ -101,12 +100,15 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
               })
             );
           } else {
-            closeFn({
-              ...newValues,
-              image: {
-                path: newValues?.path,
+            closeFn(
+              {
+                ...newValues,
+                image: {
+                  path: newValues?.path,
+                },
               },
-            });
+              folderData?.category_id
+            );
           }
         }
       },
@@ -122,7 +124,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
       setRetryFn({
         execute: () => publishFolder.mutate(newValues),
       });
-      const data = await axios.patch(`folders/${newValues?.id || id}/publish`, {
+      const data = await axios.patch(`folders/${newValues?.id || folderData.id}/publish`, {
         published: true,
       });
       return { ...data, newValues };
@@ -135,7 +137,7 @@ const EditFolder: React.FC<Props> = ({ closeFn, id }) => {
           const newValues = data?.newValues;
 
           if (newValues) {
-            closeFn({ ...newValues, published: true });
+            closeFn({ ...newValues, published: true }, folderData.category_id);
           }
         }
       },

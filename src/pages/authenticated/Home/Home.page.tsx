@@ -23,13 +23,9 @@ const PageHome: React.FC<{}> = () => {
   const { categories, setCategories } = useCategories();
   const [categoriesRendered, setCategoriesRendered] = useState<boolean>(true);
 
-  //save category
+  //update category positions
   const updatePositions = useMutation(
-    async (values: {
-      currPos: number;
-      newPos: number;
-      id: number | string;
-    }) => {
+    async (values: { currPos: number; newPos: number; id: number | string }) => {
       const data = await axios.patch(`categories/${values?.id}/order`, {
         position: values.newPos + 1,
       });

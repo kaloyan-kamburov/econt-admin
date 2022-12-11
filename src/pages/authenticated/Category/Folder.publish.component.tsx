@@ -1,69 +1,91 @@
-import React, { useState } from "react";
-import { useTranslation, Trans } from "react-i18next";
+import React from "react";
+import { useMutation } from "react-query";
+import { useTranslation } from "react-i18next";
+import axiosOrg, { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
-//MUI components
-import Button from "@mui/material/Button";
+//hooks
+import { usePageError } from "../../../hooks/hooks";
 
-//custom components
-import Loader from "../../../components/common/Loader/Loader.component";
+//components
+import PublishPreview from "../../../components/common/PublishPreview/PublishPreview.component";
 
-//icons
-import { IconUnpublish } from "../../../Icons/icons";
+//utils
+import axios from "../../../utils/api";
+
+//types
+import { TFolder } from "../../../context/categories";
 
 interface Props {
-  closeFn: () => void;
-  folder: any;
+  closeFn: any;
+  // closeFn: (editedFolderData?: TFolder, categoryId?: number | string) => void;
+  folderData?: TFolder;
+  folders?: any[];
 }
 
-const PublishFolder: React.FC<Props> = ({ folder, closeFn }) => {
-  const [loading, setLoading] = useState<boolean>(false);
+const FolderPublish: React.FC<Props> = ({ closeFn, folderData, folders }) => {
   const { t } = useTranslation();
+  const { setVisibleError, setRetryFn, setErrorMsg } = usePageError();
+
+  const publishFolder = useMutation(
+    async () => {
+      const data = await axios.patch(`folders/${folderData?.id}/publish`, {
+        published: true,
+      });
+      return data;
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          closeFn({ ...(folderData || {}), published: true }, folderData?.category_id);
+          toast.success(`${t("pages.category.folderPublished")}`);
+        }
+      },
+      onError: () => {
+        toast.error(`${t("common.errorPublishFolder")}`);
+      },
+    }
+  );
+
+  // const publishFolder = useMutation(
+  //   async (newValues: TFolder) => {
+  //     setRetryFn({
+  //       execute: () => publishFolder.mutate(newValues),
+  //     });
+  //     const data = await axios.patch(
+  //       `folders/${newValues?.id || folderData?.id}/publish`,
+  //       {
+  //         published: true,
+  //       }
+  //     );
+  //     return { ...data, newValues };
+  //   },
+  //   {
+  //     onSuccess: (data: AxiosError | any) => {
+  //       if (!axiosOrg.isAxiosError(data)) {
+  //         toast.success(`${t("pages.category.folderPublished")}`);
+  //         const newValues = data?.newValues;
+
+  //         if (newValues) {
+  //           closeFn({ ...newValues, published: true }, folderData.category_id);
+  //         }
+  //       }
+  //     },
+  //     onError: () => {
+  //       setErrorMsg(t("common.errorPublishCategory"));
+  //       setVisibleError(true);
+  //     },
+  //   }
+  // );
+
   return (
-    <>
-      <IconUnpublish />
-      <h6>{t("common.removeFromPublish")}</h6>
-      <span>
-        <Trans
-          i18nKey="pages.category.unpublishFolderQuestion"
-          tOptions={{ folder: "asd" }}
-        >
-          <strong />
-        </Trans>
-      </span>
-      <div className="btns-wrapper">
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          size="large"
-          onClick={() => {
-            setLoading(true);
-            setTimeout(() => {
-              setLoading(false);
-              closeFn();
-            }, 1000);
-          }}
-        >
-          {t("common.save")}
-        </Button>
-        <Button
-          variant="contained"
-          color="info"
-          type="submit"
-          size="large"
-          onClick={() => closeFn()}
-        >
-          {t("common.cancel")}
-        </Button>
-      </div>
-      {loading && (
-        <Loader
-          showExplicit
-          inModal
-        />
-      )}
-    </>
+    <PublishPreview
+      closeFn={() => closeFn()}
+      items={folders}
+      publishItem={folderData}
+      publishFn={publishFolder.mutate}
+    />
   );
 };
 
-export default PublishFolder;
+export default FolderPublish;
