@@ -243,7 +243,7 @@ const Folder: React.FC<Props> = ({
             <>
               <div
                 className="img-wrapper"
-                onClick={() => navigate("/categories/1/1")}
+                onClick={() => navigate(`/categories/${data?.category_id}/${data?.id}`)}
               >
                 <LazyLoadImage
                   alt={data?.image?.alt}

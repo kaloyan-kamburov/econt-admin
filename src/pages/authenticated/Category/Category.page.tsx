@@ -33,39 +33,6 @@ const PageCategory: React.FC<Props> = () => {
   const [foldersRendered, setfoldersRendered] = useState<boolean>(true);
   const [path, setPath] = useState<Path[]>([]);
 
-  //save positions
-
-  const updatePositions = useMutation(
-    async (values: { currPos: number; newPos: number; id: number | string }) => {
-      const data = await axios.patch(`folders/${values?.id}/order`, {
-        position: values.newPos + 1,
-      });
-      return { ...data, newPos: values.newPos, currPos: values.currPos };
-    },
-    {
-      onSuccess: (data: AxiosError | any) => {
-        if (!axiosOrg.isAxiosError(data)) {
-          const currPos = data?.currPos;
-          const newPos = data?.newPos;
-          const newCategories = [...categories];
-          const editedCategoryIndex = newCategories.findIndex((cat) => cat.id === +(id || 0));
-
-          if (editedCategoryIndex > -1) {
-            const tempPfolder = newCategories[editedCategoryIndex].folders.splice(currPos, 1)[0];
-            newCategories[editedCategoryIndex].folders.splice(newPos, 0, tempPfolder);
-            setCategories(newCategories);
-          }
-
-          toast.success(`${t("common.positionsUpdated")}`);
-        }
-      },
-      onError: (error: AxiosError) => {
-        toast.error(error?.message || `${t("common.errorGettingData")}`);
-        setVisibleError(true);
-      },
-    }
-  );
-
   //get category data
   const { refetch: getCategoryData } = useQuery(
     "getCategoryData",
@@ -97,6 +64,38 @@ const PageCategory: React.FC<Props> = () => {
         setRetryFn({
           execute: getCategoryData,
         });
+      },
+    }
+  );
+
+  //update positions
+  const updatePositions = useMutation(
+    async (values: { currPos: number; newPos: number; id: number | string }) => {
+      const data = await axios.patch(`folders/${values?.id}/order`, {
+        position: values.newPos + 1,
+      });
+      return { ...data, newPos: values.newPos, currPos: values.currPos };
+    },
+    {
+      onSuccess: (data: AxiosError | any) => {
+        if (!axiosOrg.isAxiosError(data)) {
+          const currPos = data?.currPos;
+          const newPos = data?.newPos;
+          const newCategories = [...categories];
+          const editedCategoryIndex = newCategories.findIndex((cat) => cat.id === +(id || 0));
+
+          if (editedCategoryIndex > -1) {
+            const tempPfolder = newCategories[editedCategoryIndex].folders.splice(currPos, 1)[0];
+            newCategories[editedCategoryIndex].folders.splice(newPos, 0, tempPfolder);
+            setCategories(newCategories);
+          }
+
+          toast.success(`${t("common.positionsUpdated")}`);
+        }
+      },
+      onError: (error: AxiosError) => {
+        toast.error(error?.message || `${t("common.errorGettingData")}`);
+        setVisibleError(true);
       },
     }
   );

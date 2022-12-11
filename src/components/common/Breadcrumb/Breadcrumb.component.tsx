@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 //MUI icons
 import ChevronRight from "@mui/icons-material/ChevronRight";
 
 //styles
-import { linkColor } from "../../../styles/theme"
+import { linkColor } from "../../../styles/theme";
 
 const BreadcrumbWrapper = styled.div`
   display: flex;
@@ -40,7 +40,7 @@ export type Path = {
   id: number | string;
   name: string;
   type: string;
-}
+};
 
 interface Props {
   routePath: Path[];
@@ -50,9 +50,21 @@ const Breadcrumb: React.FC<Props> = ({ routePath }) => {
   const navigate = useNavigate();
   return (
     <BreadcrumbWrapper>
+      {/* <pre>{JSON.stringify(routePath, null, 4)}</pre> */}
       {routePath.map((path, i) => (
         <React.Fragment key={i}>
-          <div className="text" onClick={() => navigate(`/categories/${path.id}`)}>{path.name}</div>
+          <div
+            className="text"
+            onClick={() =>
+              navigate(
+                path.type === "category"
+                  ? `/categories/${path.id}`
+                  : `/categories/${routePath[0].id}/${path.id}`
+              )
+            }
+          >
+            {path.name}
+          </div>
           {i < routePath.length - 1 && (
             <div className="separator">
               <ChevronRight />

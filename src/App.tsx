@@ -84,7 +84,7 @@ const routes = createBrowserRouter([
         ),
       },
       {
-        path: "categories/:id/*",
+        path: "categories/:id/:entityId",
         element: (
           <AppWrapper>
             <PageFolder />

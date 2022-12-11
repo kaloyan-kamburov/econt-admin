@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate, Link, useLocation, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -33,6 +33,10 @@ const SidebarWrapper = styled.aside`
 
   .accordion-wrapper {
     margin-top: calc(6.4 * var(--atom));
+
+    .active {
+      font-weight: 500;
+    }
   }
 `;
 
@@ -42,6 +46,19 @@ const Sidebar: React.FC<{}> = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
 
+  const [navRendered, setNavRendered] = useState<boolean>(false);
+
+  const resetNav = () => {
+    setNavRendered(false);
+    setTimeout(() => {
+      setNavRendered(true);
+    });
+  };
+
+  useEffect(() => {
+    resetNav();
+  }, [pathname]);
+
   return (
     <SidebarWrapper>
       <Link
@@ -50,61 +67,76 @@ const Sidebar: React.FC<{}> = () => {
       >
         <Logo />
       </Link>
-      <div className="accordion-wrapper">
-        {/* {JSON.stringify(categories)} */}
-        {categories.length ? (
-          categories.map((cat) => (
-            cat.folders?.length ? (
-              <Accordion
-                key={cat.id}
-                defaultExpanded={pathname.indexOf(`/category/${cat.id}`) > -1}
-              >
-                <AccordionSummary
+      {navRendered && (
+        <div className="accordion-wrapper">
+          {/* {JSON.stringify(categories)} */}
+          {categories.length ? (
+            categories.map((cat) =>
+              cat.folders?.length ? (
+                <Accordion
                   key={cat.id}
-                  expandIcon={
-                    <svg
-                      width="8"
-                      height="5"
-                      viewBox="0 0 8 5"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M0.5 1.02673L3.9927 4L7.5 1"
-                        stroke="#212121"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  }
+                  defaultExpanded={pathname.indexOf(`/categories/${cat.id}`) > -1}
                 >
-                  <span onClick={() => navigate(`/categories/${cat.id}`)}>{cat["name:bg"]}</span>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {cat.folders.map((folder: TFolder) => (
-                    <Accordion key={folder.id}>
-                      <NavLink
-                        to={`/categories/${cat.id}/${folder.id}`}
-                        className={() => (pathname === `/categories/${cat.id}/${folder.id}` ? "active" : "")}
+                  <AccordionSummary
+                    key={cat.id}
+                    expandIcon={
+                      <svg
+                        width="8"
+                        height="5"
+                        viewBox="0 0 8 5"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        <AccordionSummary>
-                          <span>{folder["name:bg"]}</span>
-                        </AccordionSummary>
-                      </NavLink>
-                    </Accordion>
-                  ))}
-                </AccordionDetails>
-              </Accordion>
-            ) : (
-              <AccordionSummary key={cat.id}>
-              <span onClick={() => navigate(`/categories/${cat.id}`)}>{cat["name:bg"]}</span>
-            </AccordionSummary>
+                        <path
+                          d="M0.5 1.02673L3.9927 4L7.5 1"
+                          stroke="#212121"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    }
+                  >
+                    <span
+                      onClick={() => navigate(`/categories/${cat.id}`)}
+                      className={pathname === `/categories/${cat.id}` ? "active" : ""}
+                    >
+                      {cat["name:bg"]}
+                    </span>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {cat.folders.map((folder: TFolder) => (
+                      <Accordion key={folder.id}>
+                        <NavLink to={`/categories/${cat.id}/${folder.id}`}>
+                          <AccordionSummary>
+                            <span
+                              className={
+                                pathname === `/categories/${cat.id}/${folder.id}` ? "active" : ""
+                              }
+                            >
+                              {folder["name:bg"]}
+                            </span>
+                          </AccordionSummary>
+                        </NavLink>
+                      </Accordion>
+                    ))}
+                  </AccordionDetails>
+                </Accordion>
+              ) : (
+                <AccordionSummary key={cat.id}>
+                  <span
+                    onClick={() => navigate(`/categories/${cat.id}`)}
+                    className={pathname === `/categories/${cat.id}` ? "active" : ""}
+                  >
+                    {cat["name:bg"]}
+                  </span>
+                </AccordionSummary>
+              )
             )
-          ))
-        ) : (
-          <span>{t("common.noCategories")}</span>
-        )}
-      </div>
+          ) : (
+            <span>{t("common.noCategories")}</span>
+          )}
+        </div>
+      )}
     </SidebarWrapper>
   );
 };
