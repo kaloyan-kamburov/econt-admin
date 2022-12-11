@@ -45,6 +45,17 @@ const PageCategory: React.FC<Props> = () => {
     {
       onSuccess: (data: AxiosError | any) => {
         if (!axiosOrg.isAxiosError(data)) {
+          const currPos = data?.currPos;
+          const newPos = data?.newPos;
+          const newCategories = [...categories];
+          const editedCategoryIndex = newCategories.findIndex((cat) => cat.id === +(id || 0));
+
+          if (editedCategoryIndex > -1) {
+            const tempPfolder = newCategories[editedCategoryIndex].folders.splice(currPos, 1)[0];
+            newCategories[editedCategoryIndex].folders.splice(newPos, 0, tempPfolder);
+            setCategories(newCategories);
+          }
+
           toast.success(`${t("common.positionsUpdated")}`);
         }
       },
@@ -157,20 +168,25 @@ const PageCategory: React.FC<Props> = () => {
                     setFolders(currentFolders);
                   }
                 }
-                const currentCategoryIndex = categories.findIndex((cat) => +cat.id === +categoryId);
-                if (currentCategoryIndex > -1) {
-                  const newCategories = [...categories];
-                  const editedCategoryIndex = newCategories[currentCategoryIndex].folders.findIndex(
-                    (cat) => cat.id === editedFolderData.id
+                if (editedFolderData?.published) {
+                  const currentCategoryIndex = categories.findIndex(
+                    (cat) => +cat.id === +categoryId
                   );
-                  if (editedCategoryIndex > -1) {
-                    newCategories[currentCategoryIndex].folders[editedCategoryIndex] = {
-                      ...newCategories[currentCategoryIndex].folders[editedCategoryIndex],
-                      ...editedFolderData,
-                    };
-                    setCategories(newCategories);
+                  if (currentCategoryIndex > -1) {
+                    const newCategories = [...categories];
+                    const editedCategoryIndex = newCategories[
+                      currentCategoryIndex
+                    ].folders.findIndex((cat) => cat.id === editedFolderData.id);
+                    if (editedCategoryIndex > -1) {
+                      newCategories[currentCategoryIndex].folders[editedCategoryIndex] = {
+                        ...newCategories[currentCategoryIndex].folders[editedCategoryIndex],
+                        ...editedFolderData,
+                      };
+                      setCategories(newCategories);
+                    }
                   }
                 }
+
                 refreshContent();
               }}
               onDeleteFolder={(folderId: number | string, categoryId: number | string) => {

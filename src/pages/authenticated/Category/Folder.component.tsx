@@ -335,7 +335,6 @@ const Folder: React.FC<Props> = ({
         </div>
         <div className="content">{!isAdd && <span>{data?.["name:bg"]}</span>}</div>
       </FolderWrapper>
-
       {modalCreateFolder && (
         <Modal
           title={t("pages.category.addFolder")}

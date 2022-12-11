@@ -97,6 +97,9 @@ const AddFolder: React.FC<Props> = ({ categoryId, parentId = null, closeFn }) =>
           }
         }
       },
+      onError: (e: AxiosError<any>) => {
+        toast.error(e.response?.data?.message || `${t("common.errorRemovingData")}`);
+      },
     }
   );
 
@@ -160,7 +163,11 @@ const AddFolder: React.FC<Props> = ({ categoryId, parentId = null, closeFn }) =>
                   onChange={onChangeTab}
                   aria-label="basic tabs example"
                 >
-                  {Array.isArray(languages) ? languages.map((lang: TLanguage) => <Tab label={t(`languages.${lang.code}`)} />) : null}
+                  {Array.isArray(languages)
+                    ? languages.map((lang: TLanguage) => (
+                        <Tab label={t(`languages.${lang.code}`)} />
+                      ))
+                    : null}
                 </Tabs>
               </Grid>
               {Array.isArray(languages)

@@ -88,10 +88,11 @@ const PreviewWrapper = styled.div`
     background: ${bgSections};
     float: left;
     width: 100%;
-    display: flex;
+    // display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
+    // align-items: flex-start;
+    // justify-content: space-between;
+    padding-top: calc(6 * var(--atom));
     &:after {
       content: "";
       width: 100%;
@@ -104,12 +105,16 @@ const PreviewWrapper = styled.div`
     transform-origin: center;
     float: left;
     width: 31%;
+    margin-right: 2%;
     flex: 1 1 1;
     margin-bottom: 3%;
     padding: calc(2 * var(--atom));
     height: calc(21 * var(--atom));
+    &:nth-last-child(3n) {
+      margin-righht: 2%;
+    }
     &:nth-last-child(-n+3) {
-      margin-bottom :0;
+      // margin-bottom :0;
     }
   }
 

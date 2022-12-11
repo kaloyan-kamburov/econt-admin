@@ -50,8 +50,8 @@ const queryClient = new QueryClient({
     mutations: {
       retry: false,
       // cacheTime: 0,
-      onError: (error: any) => {
-        // toast.error(error?.message || "Something went wrong.");
+      onError: (e: any) => {
+        toast.error(e.response?.data?.message || "Something went wrong.");
       },
     },
   },
